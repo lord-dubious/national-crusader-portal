@@ -1,4 +1,5 @@
 import { Facebook, Twitter, Instagram } from "lucide-react";
+import { Button } from "@/components/ui/button"; // Add this import
 
 export const Footer = () => {
   return (
