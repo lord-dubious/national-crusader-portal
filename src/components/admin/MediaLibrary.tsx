@@ -7,7 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Image, Upload, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export const MediaLibrary = () => {
+interface MediaLibraryProps {
+  onSelect?: (url: string) => void;
+}
+
+export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
 
@@ -76,6 +80,13 @@ export const MediaLibrary = () => {
     }
   };
 
+  const handleSelect = (file: any) => {
+    if (onSelect) {
+      const url = supabase.storage.from('media').getPublicUrl(file.name).data.publicUrl;
+      onSelect(url);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -99,7 +110,8 @@ export const MediaLibrary = () => {
               <img
                 src={`${supabase.storage.from('media').getPublicUrl(file.name).data.publicUrl}`}
                 alt={file.name}
-                className="w-full aspect-square object-cover rounded-lg"
+                className="w-full aspect-square object-cover rounded-lg cursor-pointer"
+                onClick={() => handleSelect(file)}
               />
               <Button
                 variant="destructive"
