@@ -24,7 +24,13 @@ export const RecentArticles = () => {
         .limit(5);
       
       if (error) throw error;
-      return data as Article[];
+      
+      // Transform the data to match our Article type
+      return (data as any[]).map(article => ({
+        ...article,
+        author: article.author?.[0] || null,
+        category: article.category || null
+      })) as Article[];
     },
   });
 
