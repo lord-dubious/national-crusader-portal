@@ -12,19 +12,31 @@ export const Header = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
-      if (session?.user?.email === 'admin@nationalcrusader.com') {
-        setIsAdmin(true);
+      if (session?.user?.email) {
+        const { data } = await supabase
+          .from('admin_users')
+          .select('email')
+          .eq('email', session.user.email)
+          .single();
+        
+        setIsAdmin(!!data);
       }
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
-      if (session?.user?.email === 'admin@nationalcrusader.com') {
-        setIsAdmin(true);
+      if (session?.user?.email) {
+        const { data } = await supabase
+          .from('admin_users')
+          .select('email')
+          .eq('email', session.user.email)
+          .single();
+        
+        setIsAdmin(!!data);
       } else {
         setIsAdmin(false);
       }
