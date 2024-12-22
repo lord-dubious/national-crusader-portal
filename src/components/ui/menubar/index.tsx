@@ -1,5 +1,6 @@
 import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
+import { cn } from "@/lib/utils"  // Add this import
 import { MenubarRoot } from "./menubar-root"
 import { MenubarTrigger } from "./menubar-trigger"
 import { MenubarContent } from "./menubar-content"
