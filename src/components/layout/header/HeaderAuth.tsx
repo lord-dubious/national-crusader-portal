@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 export const HeaderAuth = () => {
   const { toast } = useToast();
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading } = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -49,6 +49,10 @@ export const HeaderAuth = () => {
       window.location.href = "/";
     }
   };
+
+  if (isLoading) {
+    return null; // Or a loading spinner if you prefer
+  }
 
   if (!profile) {
     return (
@@ -91,6 +95,9 @@ export const HeaderAuth = () => {
             <Link to="/admin">Admin Dashboard</Link>
           </DropdownMenuItem>
         )}
+        <DropdownMenuItem asChild>
+          <Link to="/profile">Profile</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
           Sign Out
         </DropdownMenuItem>
