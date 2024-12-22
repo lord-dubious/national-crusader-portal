@@ -17,15 +17,15 @@ interface Article {
   id: number;
   title: string;
   content: string;
-  category_id: number;  // Changed from string to number to match DB schema
-  status: string;
-  author_id: string | null;  // Made nullable to match DB schema
-  created_at: string | null;  // Made nullable to match DB schema
-  updated_at: string | null;  // Made nullable to match DB schema
-  excerpt: string | null;  // Made nullable to match DB schema
-  featured_image: string | null;  // Made nullable to match DB schema
-  is_featured: boolean | null;  // Made nullable to match DB schema
-  published_at: string | null;  // Made nullable to match DB schema
+  category_id: number | null;  // Made nullable to match DB schema
+  status: string | null;  // Made nullable to match DB schema
+  author_id: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  excerpt: string | null;
+  featured_image: string | null;
+  is_featured: boolean | null;
+  published_at: string | null;
   slug: string;
 }
 
@@ -60,18 +60,20 @@ export const ArticleForm = ({ articleId, onSubmit }: ArticleFormProps) => {
         .from("articles")
         .select("*")
         .eq("id", articleId)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
     },
     enabled: !!articleId,
-    onSettled: (data) => {
-      if (data) {
-        form.reset(data);
-      }
-    }
   });
+
+  // Use React's useEffect to update form when article data is loaded
+  React.useEffect(() => {
+    if (article) {
+      form.reset(article);
+    }
+  }, [article, form]);
 
   const handleSubmit = async (data: any) => {
     try {
@@ -113,7 +115,7 @@ export const ArticleForm = ({ articleId, onSubmit }: ArticleFormProps) => {
               <FormLabel>Category</FormLabel>
               <Select 
                 onValueChange={field.onChange} 
-                defaultValue={field.value}
+                defaultValue={field.value?.toString()}
               >
                 <FormControl>
                   <SelectTrigger>
