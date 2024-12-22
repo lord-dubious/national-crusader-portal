@@ -97,36 +97,47 @@ export const RecentArticles = () => {
   };
 
   return (
-    <Card className="bg-[#222222] border-[#333333] overflow-hidden">
+    <Card className="bg-[#222222] border-[#333333]">
       <CardHeader>
         <CardTitle className="text-white">Recent Articles</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="w-full overflow-x-auto">
+        <div className="w-full">
           <div className="min-w-full">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[#333333]">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider">Title</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider hidden md:table-cell">Author</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider hidden lg:table-cell">Category</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#333333]">
-                {articles?.map((article) => (
-                  <ArticleRow
-                    key={article.id}
-                    article={article}
-                    onEdit={(id) => navigate(`/admin/edit-article/${id}`)}
-                    onArchive={handleArchiveArticle}
-                    onHide={handleHideArticle}
-                    onDelete={handleDeleteArticle}
-                  />
-                ))}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="w-full table-auto">
+                <thead>
+                  <tr className="border-b border-[#333333]">
+                    <th className="px-2 py-2 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider">
+                      <span className="hidden sm:inline">Title</span>
+                      <span className="sm:hidden">Articles</span>
+                    </th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider hidden md:table-cell">Author</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider hidden lg:table-cell">Category</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider">
+                      <span className="hidden sm:inline">Status</span>
+                      <span className="sm:hidden">St.</span>
+                    </th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider">
+                      <span className="hidden sm:inline">Actions</span>
+                      <span className="sm:hidden">Act.</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#333333]">
+                  {articles?.map((article) => (
+                    <ArticleRow
+                      key={article.id}
+                      article={article}
+                      onEdit={(id) => navigate(`/admin/edit-article/${id}`)}
+                      onArchive={handleArchiveArticle}
+                      onHide={handleHideArticle}
+                      onDelete={handleDeleteArticle}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </CardContent>
