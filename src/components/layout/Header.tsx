@@ -23,24 +23,24 @@ export const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-md">
       <div className="container mx-auto px-4">
-        <div className="h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+        <div className="h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-4 flex-shrink-0">
             <MobileMenu />
             <Link
               to="/"
-              className="text-xl md:text-2xl font-bold text-primary-foreground hover:text-accent transition-colors whitespace-nowrap"
+              className="text-xl font-bold text-primary-foreground hover:text-accent transition-colors whitespace-nowrap"
             >
               National Crusader
             </Link>
           </div>
           
-          <nav className="hidden lg:flex items-center">
-            <ul className="flex items-center gap-x-6">
+          <nav className="hidden lg:flex items-center overflow-x-auto">
+            <ul className="flex items-center gap-x-4">
               {categories?.map((category) => (
                 <li key={category.id}>
                   <Link
                     to={`/category/${category.slug}`}
-                    className="text-sm md:text-base text-primary-foreground hover:text-accent transition-colors whitespace-nowrap px-2 py-1"
+                    className="text-sm text-primary-foreground hover:text-accent transition-colors whitespace-nowrap px-2 py-1"
                   >
                     {category.name}
                   </Link>
@@ -49,11 +49,11 @@ export const Header = () => {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex relative w-64 lg:w-72">
+          <div className="flex items-center gap-2">
+            <div className="hidden md:flex relative w-48 lg:w-56">
               <Input
                 type="search"
-                placeholder="Search articles..."
+                placeholder="Search..."
                 className="w-full bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 text-sm"
               />
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary-foreground/50" />
@@ -61,6 +61,12 @@ export const Header = () => {
             <Button variant="ghost" size="icon" className="md:hidden text-primary-foreground">
               <Search className="h-5 w-5" />
             </Button>
+            <Link
+              to="/admin"
+              className="text-sm text-primary-foreground hover:text-accent transition-colors whitespace-nowrap ml-4"
+            >
+              Admin
+            </Link>
           </div>
         </div>
       </div>
