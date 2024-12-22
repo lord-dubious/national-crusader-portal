@@ -36,7 +36,7 @@ export const SocialLinks = () => {
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-accent transition-colors"
+            className="text-primary-foreground/70 hover:text-accent transition-colors"
           >
             <IconComponent className="h-5 w-5" />
             <span className="sr-only">{link.platform}</span>
