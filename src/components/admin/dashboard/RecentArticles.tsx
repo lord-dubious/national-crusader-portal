@@ -2,9 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ArticleRow } from "./ArticleRow";
+import type { Article } from "./types";
 
 export const RecentArticles = () => {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ export const RecentArticles = () => {
         .limit(5);
       
       if (error) throw error;
-      return data;
+      return data as Article[];
     },
   });
 
@@ -68,48 +68,12 @@ export const RecentArticles = () => {
             </thead>
             <tbody className="divide-y divide-border">
               {articles?.map((article) => (
-                <tr key={article.id} className="hover:bg-muted/50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="font-medium">{article.title}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span>{article.author?.email}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span>{article.category?.name || 'Uncategorized'}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      article.status === 'published' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {article.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => navigate(`/admin/edit-article/${article.id}`)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          if (window.confirm('Are you sure you want to delete this article?')) {
-                            handleDeleteArticle(article.id);
-                          }
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
+                <ArticleRow
+                  key={article.id}
+                  article={article}
+                  onEdit={(id) => navigate(`/admin/edit-article/${id}`)}
+                  onDelete={handleDeleteArticle}
+                />
               ))}
             </tbody>
           </table>
