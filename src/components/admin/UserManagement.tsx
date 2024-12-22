@@ -60,31 +60,31 @@ export const UserManagement = () => {
   });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="text-white">Loading...</div>;
   }
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold">User Management</h2>
-      <Table>
+      <h2 className="text-2xl font-bold text-white">User Management</h2>
+      <Table className="border-[#333333]">
         <TableHeader>
-          <TableRow>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Created At</TableHead>
-            <TableHead>Actions</TableHead>
+          <TableRow className="hover:bg-[#333333] border-[#333333]">
+            <TableHead className="text-[#8E9196]">Email</TableHead>
+            <TableHead className="text-[#8E9196]">Role</TableHead>
+            <TableHead className="text-[#8E9196]">Created At</TableHead>
+            <TableHead className="text-[#8E9196]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users?.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{user.email}</TableCell>
+            <TableRow key={user.id} className="hover:bg-[#333333] border-[#333333]">
+              <TableCell className="text-white">{user.email}</TableCell>
               <TableCell>
-                <span className={`capitalize ${user.role === "admin" ? "text-accent" : ""}`}>
+                <span className={`capitalize ${user.role === "admin" ? "text-[#DC2626]" : "text-white"}`}>
                   {user.role}
                 </span>
               </TableCell>
-              <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+              <TableCell className="text-white">{new Date(user.created_at).toLocaleDateString()}</TableCell>
               <TableCell>
                 {user.role === "admin" ? (
                   <Button
@@ -95,6 +95,7 @@ export const UserManagement = () => {
                       userId: user.id, 
                       newRole: "viewer"
                     })}
+                    className="border-[#333333] text-white hover:bg-[#DC2626] hover:text-white transition-colors"
                   >
                     Remove Admin
                   </Button>
@@ -107,6 +108,7 @@ export const UserManagement = () => {
                       userId: user.id, 
                       newRole: "admin"
                     })}
+                    className="border-[#333333] text-white hover:bg-[#DC2626] hover:text-white transition-colors"
                   >
                     Make Admin
                   </Button>

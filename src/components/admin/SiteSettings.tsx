@@ -111,10 +111,10 @@ export const SiteSettings = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-4">Site Settings</h2>
+        <h2 className="text-2xl font-bold mb-4 text-white">Site Settings</h2>
         <div className="space-y-6">
-          <div className="bg-card p-6 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-4">Social Links</h3>
+          <div className="bg-[#222222] p-6 rounded-lg border border-[#333333]">
+            <h3 className="text-lg font-semibold mb-4 text-white">Social Links</h3>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -123,9 +123,13 @@ export const SiteSettings = () => {
                     name="platform"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Platform</FormLabel>
+                        <FormLabel className="text-white">Platform</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="e.g., Twitter" />
+                          <Input 
+                            {...field} 
+                            placeholder="e.g., Twitter" 
+                            className="bg-[#333333] border-[#444444] text-white placeholder:text-[#8E9196] focus:border-[#DC2626] focus:ring-[#DC2626]"
+                          />
                         </FormControl>
                       </FormItem>
                     )}
@@ -135,9 +139,13 @@ export const SiteSettings = () => {
                     name="url"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>URL</FormLabel>
+                        <FormLabel className="text-white">URL</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="https://" />
+                          <Input 
+                            {...field} 
+                            placeholder="https://" 
+                            className="bg-[#333333] border-[#444444] text-white placeholder:text-[#8E9196] focus:border-[#DC2626] focus:ring-[#DC2626]"
+                          />
                         </FormControl>
                       </FormItem>
                     )}
@@ -147,29 +155,38 @@ export const SiteSettings = () => {
                     name="icon"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Icon</FormLabel>
+                        <FormLabel className="text-white">Icon</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="e.g., twitter" />
+                          <Input 
+                            {...field} 
+                            placeholder="e.g., twitter" 
+                            className="bg-[#333333] border-[#444444] text-white placeholder:text-[#8E9196] focus:border-[#DC2626] focus:ring-[#DC2626]"
+                          />
                         </FormControl>
                       </FormItem>
                     )}
                   />
                 </div>
-                <Button type="submit">Add Social Link</Button>
+                <Button 
+                  type="submit"
+                  className="bg-[#DC2626] text-white hover:bg-[#DC2626]/90 transition-colors"
+                >
+                  Add Social Link
+                </Button>
               </form>
             </Form>
 
             <div className="mt-6">
-              <h4 className="font-medium mb-2">Current Social Links</h4>
+              <h4 className="font-medium mb-2 text-white">Current Social Links</h4>
               <div className="space-y-2">
                 {socialLinks?.map((link) => (
                   <div
                     key={link.id}
-                    className="flex items-center justify-between p-3 bg-muted rounded-md"
+                    className="flex items-center justify-between p-3 bg-[#333333] rounded-md border border-[#444444]"
                   >
                     <div>
-                      <span className="font-medium">{link.platform}</span>
-                      <span className="text-sm text-muted-foreground ml-2">
+                      <span className="font-medium text-white">{link.platform}</span>
+                      <span className="text-sm text-[#8E9196] ml-2">
                         {link.url}
                       </span>
                     </div>
@@ -181,6 +198,7 @@ export const SiteSettings = () => {
                           deleteMutation.mutate(link.id);
                         }
                       }}
+                      className="text-white hover:bg-[#DC2626] hover:text-white transition-colors"
                     >
                       Delete
                     </Button>
