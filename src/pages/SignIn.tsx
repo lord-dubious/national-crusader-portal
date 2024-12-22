@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const SignIn = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       if (event === 'SIGNED_IN') {
         toast({
           title: "Welcome back!",
@@ -32,7 +33,7 @@ const SignIn = () => {
     });
 
     // Listen for auth errors
-    const authListener = supabase.auth.onAuthStateChange((event, session) => {
+    const authListener = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
         setError(null);
       }
