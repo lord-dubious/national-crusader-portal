@@ -31,7 +31,17 @@ const SignIn = () => {
       }
     });
 
-    return () => subscription.unsubscribe();
+    // Listen for auth errors
+    const authListener = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
+        setError(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      authListener.data.subscription.unsubscribe();
+    };
   }, [navigate, toast]);
 
   return (
@@ -74,17 +84,6 @@ const SignIn = () => {
                 link_text: "Don't have an account? Sign up",
               },
             },
-          }}
-          onError={(error) => {
-            const errorMessage = error.message === "Invalid login credentials" 
-              ? "Incorrect email or password. Please try again."
-              : error.message;
-            setError(errorMessage);
-            toast({
-              variant: "destructive",
-              title: "Authentication Error",
-              description: errorMessage,
-            });
           }}
         />
       </div>
