@@ -38,7 +38,7 @@ export const useArticleForm = (articleId?: string) => {
         throw error;
       }
 
-      return data;
+      return data as Article;
     },
     enabled: !!articleId,
   });

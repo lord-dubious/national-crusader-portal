@@ -30,6 +30,7 @@ export type Database = {
           category_id: number | null
           content: string
           created_at: string | null
+          excerpt: string | null
           featured_image: string | null
           id: number
           is_featured: boolean | null
@@ -44,6 +45,7 @@ export type Database = {
           category_id?: number | null
           content: string
           created_at?: string | null
+          excerpt?: string | null
           featured_image?: string | null
           id?: number
           is_featured?: boolean | null
@@ -58,6 +60,7 @@ export type Database = {
           category_id?: number | null
           content?: string
           created_at?: string | null
+          excerpt?: string | null
           featured_image?: string | null
           id?: number
           is_featured?: boolean | null
