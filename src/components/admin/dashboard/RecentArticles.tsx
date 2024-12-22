@@ -55,23 +55,23 @@ export const RecentArticles = () => {
   };
 
   return (
-    <Card>
+    <Card className="bg-[#222222] border-[#333333]">
       <CardHeader>
-        <CardTitle>Recent Articles</CardTitle>
+        <CardTitle className="text-white">Recent Articles</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Author</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+              <tr className="border-b border-[#333333]">
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider">Title</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider">Author</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#8E9196] uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-[#333333]">
               {articles?.map((article) => (
                 <ArticleRow
                   key={article.id}

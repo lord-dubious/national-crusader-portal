@@ -33,15 +33,15 @@ export const DashboardStats = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {statCards.map((stat) => (
-        <Card key={stat.title} className="bg-card">
+        <Card key={stat.title} className="bg-[#222222] border-[#333333]">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-lg font-medium">
+            <CardTitle className="text-lg font-medium text-white">
               {stat.title}
             </CardTitle>
-            <stat.icon className="h-5 w-5 text-muted-foreground" />
+            <stat.icon className="h-5 w-5 text-[#8E9196]" />
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">{stat.value}</p>
+            <p className="text-4xl font-bold text-white">{stat.value}</p>
           </CardContent>
         </Card>
       ))}

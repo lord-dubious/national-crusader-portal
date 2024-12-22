@@ -16,31 +16,49 @@ export const AdminDashboard = () => {
   return (
     <AdminLayout>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <Button onClick={() => navigate('/admin/new-article')}>
+        <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+        <Button 
+          onClick={() => navigate('/admin/new-article')}
+          className="bg-[#DC2626] text-white hover:bg-[#DC2626]/90"
+        >
           Create New Article
         </Button>
       </div>
 
       <Tabs defaultValue="dashboard" className="space-y-8">
-        <TabsList className="grid grid-cols-5 w-full md:w-auto">
-          <TabsTrigger value="dashboard" className="flex items-center gap-2">
+        <TabsList className="grid grid-cols-5 w-full md:w-auto bg-[#222222] p-1">
+          <TabsTrigger 
+            value="dashboard" 
+            className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white"
+          >
             <LayoutDashboard className="h-4 w-4" />
             Dashboard
           </TabsTrigger>
-          <TabsTrigger value="users" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="users" 
+            className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white"
+          >
             <Users className="h-4 w-4" />
             Users
           </TabsTrigger>
-          <TabsTrigger value="media" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="media" 
+            className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white"
+          >
             <Image className="h-4 w-4" />
             Media
           </TabsTrigger>
-          <TabsTrigger value="categories" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="categories" 
+            className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white"
+          >
             <FolderTree className="h-4 w-4" />
             Categories
           </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="settings" 
+            className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white"
+          >
             <Settings className="h-4 w-4" />
             Settings
           </TabsTrigger>
