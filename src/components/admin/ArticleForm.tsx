@@ -17,15 +17,15 @@ interface Article {
   id: number;
   title: string;
   content: string;
-  category_id: string;
+  category_id: number;  // Changed from string to number to match DB schema
   status: string;
-  author_id: string;
-  created_at: string;
-  updated_at: string;
-  excerpt: string;
-  featured_image: string;
-  is_featured: boolean;
-  published_at: string;
+  author_id: string | null;  // Made nullable to match DB schema
+  created_at: string | null;  // Made nullable to match DB schema
+  updated_at: string | null;  // Made nullable to match DB schema
+  excerpt: string | null;  // Made nullable to match DB schema
+  featured_image: string | null;  // Made nullable to match DB schema
+  is_featured: boolean | null;  // Made nullable to match DB schema
+  published_at: string | null;  // Made nullable to match DB schema
   slug: string;
 }
 
