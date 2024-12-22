@@ -88,10 +88,10 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
   };
 
   return (
-    <Card>
+    <Card className="bg-[#222222] border-[#333333]">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Image className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-2 text-white">
+          <Image className="h-5 w-5 text-white" />
           Media Library
         </CardTitle>
       </CardHeader>
@@ -102,6 +102,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
             onChange={uploadFile}
             disabled={uploading}
             accept="image/*"
+            className="bg-[#333333] border-[#444444] text-white file:bg-[#444444] file:text-white file:border-[#555555] hover:file:bg-[#DC2626] file:transition-colors"
           />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -110,13 +111,13 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
               <img
                 src={`${supabase.storage.from('media').getPublicUrl(file.name).data.publicUrl}`}
                 alt={file.name}
-                className="w-full aspect-square object-cover rounded-lg cursor-pointer"
+                className="w-full aspect-square object-cover rounded-lg cursor-pointer border border-[#333333] hover:border-[#DC2626] transition-colors"
                 onClick={() => handleSelect(file)}
               />
               <Button
                 variant="destructive"
                 size="icon"
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-[#DC2626] hover:bg-[#DC2626]/80"
                 onClick={() => deleteFile(file.name)}
               >
                 <Trash2 className="h-4 w-4" />

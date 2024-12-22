@@ -95,7 +95,7 @@ export const UserManagement = () => {
                       userId: user.id, 
                       newRole: "viewer"
                     })}
-                    className="border-[#333333] text-white hover:bg-[#DC2626] hover:text-white transition-colors"
+                    className="bg-[#DC2626] text-white hover:bg-[#DC2626]/80 border-none transition-colors"
                   >
                     Remove Admin
                   </Button>
@@ -108,7 +108,7 @@ export const UserManagement = () => {
                       userId: user.id, 
                       newRole: "admin"
                     })}
-                    className="border-[#333333] text-white hover:bg-[#DC2626] hover:text-white transition-colors"
+                    className="bg-[#DC2626] text-white hover:bg-[#DC2626]/80 border-none transition-colors"
                   >
                     Make Admin
                   </Button>
