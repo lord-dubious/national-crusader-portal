@@ -50,11 +50,9 @@ export const ArticleForm = ({ articleId, onSubmit }: ArticleFormProps) => {
       return data;
     },
     enabled: !!articleId,
-    meta: {
-      onSuccess: (data: any) => {
-        if (data) {
-          form.reset(data);
-        }
+    onSuccess: (data: any) => {
+      if (data) {
+        form.reset(data);
       }
     }
   });
