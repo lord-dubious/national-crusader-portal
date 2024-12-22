@@ -1,8 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import * as Icons from "lucide-react";
+import { Facebook, Twitter, Instagram, Github, Youtube, Linkedin, type LucideIcon } from "lucide-react";
 
-type IconName = keyof typeof Icons;
+// Map of icon names to their components
+const iconMap: Record<string, LucideIcon> = {
+  facebook: Facebook,
+  twitter: Twitter,
+  instagram: Instagram,
+  github: Github,
+  youtube: Youtube,
+  linkedin: Linkedin,
+};
 
 export const SocialLinks = () => {
   const { data: socialLinks } = useQuery({
@@ -21,8 +29,7 @@ export const SocialLinks = () => {
   return (
     <div className="flex justify-center space-x-6 py-6">
       {socialLinks?.map((link) => {
-        // Ensure the icon exists in Lucide icons
-        const IconComponent = Icons[link.icon as IconName];
+        const IconComponent = iconMap[link.icon.toLowerCase()];
         return IconComponent ? (
           <a
             key={link.id}
