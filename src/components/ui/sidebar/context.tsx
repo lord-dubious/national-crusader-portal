@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SidebarContext, SidebarProviderProps } from "./types";
+import type { SidebarContext, SidebarProviderProps } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
