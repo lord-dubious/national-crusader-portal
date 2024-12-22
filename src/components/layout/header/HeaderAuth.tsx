@@ -52,11 +52,11 @@ export const HeaderAuth = () => {
 
   if (!profile) {
     return (
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" asChild>
+      <div className="hidden lg:flex items-center gap-4">
+        <Button variant="ghost" size="sm" className="text-primary-foreground" asChild>
           <Link to="/signin">Sign In</Link>
         </Button>
-        <Button asChild>
+        <Button size="sm" className="bg-accent hover:bg-accent/90" asChild>
           <Link to="/signup">Sign Up</Link>
         </Button>
       </div>
@@ -66,11 +66,11 @@ export const HeaderAuth = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" className="text-primary-foreground">
           <User className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuLabel className="text-sm font-normal text-muted-foreground">
           {profile.email}
