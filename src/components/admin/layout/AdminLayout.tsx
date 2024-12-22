@@ -16,33 +16,19 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      // Get user profile
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
       
-      if (profileError) throw profileError;
-
-      // Check if user is in admin_users table
-      const { data: adminUser, error: adminError } = await supabase
-        .from('admin_users')
-        .select('email')
-        .eq('email', profile.email)
-        .single();
-      
-      if (adminError && adminError.code !== 'PGRST116') throw adminError;
-
-      return {
-        ...profile,
-        isAdmin: !!adminUser
-      };
+      if (error) throw error;
+      return profile;
     },
   });
 
   useEffect(() => {
-    if (profile && !profile.isAdmin) {
+    if (profile && profile.role !== 'admin') {
       navigate('/');
       toast({
         variant: "destructive",
@@ -51,6 +37,10 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       });
     }
   }, [profile, navigate, toast]);
+
+  if (!profile) {
+    return null;
+  }
 
   return (
     <SidebarProvider>

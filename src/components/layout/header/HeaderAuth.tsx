@@ -11,42 +11,43 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export const HeaderAuth = () => {
+  const { toast } = useToast();
+
   const { data: profile } = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      // Get user profile
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
       
-      if (profileError) throw profileError;
-
-      // Check if user is in admin_users table
-      const { data: adminUser, error: adminError } = await supabase
-        .from('admin_users')
-        .select('email')
-        .eq('email', profile.email)
-        .single();
-      
-      if (adminError && adminError.code !== 'PGRST116') throw adminError;
-
-      return {
-        ...profile,
-        isAdmin: !!adminUser
-      };
+      if (error) throw error;
+      return profile;
     },
   });
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    } else {
+      toast({
+        title: "Signed out",
+        description: "You have been signed out successfully.",
+      });
+      window.location.href = "/";
+    }
   };
 
   if (!profile) {
@@ -75,7 +76,7 @@ export const HeaderAuth = () => {
           {profile.email}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {profile.isAdmin && (
+        {profile.role === 'admin' && (
           <DropdownMenuItem asChild>
             <Link to="/admin">Admin Dashboard</Link>
           </DropdownMenuItem>

@@ -1,49 +1,32 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 export const MobileMenu = () => {
   const [open, setOpen] = useState(false);
-  const [session, setSession] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { toast } = useToast();
 
-  useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      if (session?.user?.email) {
-        const { data } = await supabase
-          .from('admin_users')
-          .select('email')
-          .eq('email', session.user.email)
-          .single();
-        
-        setIsAdmin(!!data);
-      }
-    });
+  const { data: profile } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      if (session?.user?.email) {
-        const { data } = await supabase
-          .from('admin_users')
-          .select('email')
-          .eq('email', session.user.email)
-          .single();
-        
-        setIsAdmin(!!data);
-      } else {
-        setIsAdmin(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) throw error;
+      return profile;
+    },
+  });
 
   const { data: categories } = useQuery({
     queryKey: ["categories"],
@@ -59,8 +42,16 @@ export const MobileMenu = () => {
   });
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setOpen(false);
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    } else {
+      setOpen(false);
+    }
   };
 
   return (
@@ -92,9 +83,9 @@ export const MobileMenu = () => {
             ))}
           </div>
           <div className="mt-auto px-6">
-            {session ? (
+            {profile ? (
               <div className="flex flex-col gap-2">
-                {isAdmin && (
+                {profile.role === 'admin' && (
                   <Link
                     to="/admin"
                     className="text-base text-primary-foreground hover:text-accent transition-colors"
