@@ -1,6 +1,6 @@
 import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
-import { cn } from "@/lib/utils"  // Add this import
+import { cn } from "@/lib/utils"
 import { MenubarRoot } from "./menubar-root"
 import { MenubarTrigger } from "./menubar-trigger"
 import { MenubarContent } from "./menubar-content"
@@ -13,6 +13,8 @@ import { MenubarShortcut } from "./menubar-shortcut"
 const MenubarMenu = MenubarPrimitive.Menu
 const MenubarGroup = MenubarPrimitive.Group
 const MenubarPortal = MenubarPrimitive.Portal
+const RovingFocusGroup = MenubarPrimitive.RovingFocusGroup
+
 const MenubarSeparator = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Separator>
@@ -49,6 +51,7 @@ export {
   MenubarPortal,
   MenubarSub,
   MenubarRadioGroup,
+  RovingFocusGroup,
   MenubarRoot as Menubar,
   MenubarTrigger,
   MenubarContent,
