@@ -25,7 +25,6 @@ export const RecentArticles = () => {
       
       if (error) throw error;
       
-      // Transform the data to match our Article type
       return (data as any[]).map(article => ({
         ...article,
         author: article.author?.[0] || null,
