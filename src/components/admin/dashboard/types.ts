@@ -1,7 +1,7 @@
 export interface Article {
   id: number;
   title: string;
-  status: 'draft' | 'published';
+  status: 'draft' | 'published' | 'archived' | 'hidden';
   created_at: string;
   category: {
     name: string;
@@ -9,7 +9,6 @@ export interface Article {
   author: {
     email: string;
   } | null;
-  // Adding other fields from Supabase schema
   author_id: string | null;
   category_id: number | null;
   content: string;
@@ -24,5 +23,7 @@ export interface Article {
 export interface ArticleRowProps {
   article: Article;
   onEdit: (id: number) => void;
+  onArchive: (id: number) => void;
+  onHide: (id: number) => void;
   onDelete: (id: number) => void;
 }
