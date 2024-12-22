@@ -34,26 +34,26 @@ export const TrendingSection = () => {
   if (!trendingArticles?.length) return null;
 
   return (
-    <section className="bg-muted py-12 animate-fade-up">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center mb-6">
+    <section className="bg-muted rounded-xl py-12 px-6 animate-fade-up">
+      <div className="container mx-auto">
+        <div className="flex items-center mb-8">
           <TrendingUp className="h-6 w-6 text-accent mr-2" />
-          <h2 className="text-2xl font-bold">Trending Now</h2>
-          <div className="h-1 bg-accent flex-grow ml-4 rounded" />
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Trending Now</h2>
+          <div className="h-1 bg-accent flex-grow ml-4 rounded hidden sm:block" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {trendingArticles.map((article, i) => (
             <a 
               key={article.id}
               href={`/article/${article.slug}`}
-              className="flex items-start space-x-4 group cursor-pointer"
+              className="group cursor-pointer hover:bg-background/50 p-4 rounded-lg transition-colors"
             >
-              <span className="text-3xl font-bold text-accent">0{i + 1}</span>
+              <span className="text-4xl font-bold text-accent mb-2 block">0{i + 1}</span>
               <div>
-                <span className="text-xs text-muted-foreground mb-1 block">
+                <span className="text-sm text-muted-foreground mb-2 block">
                   {article.category?.name || "Uncategorized"}
                 </span>
-                <h3 className="font-medium group-hover:text-accent transition-colors">
+                <h3 className="font-medium group-hover:text-accent transition-colors line-clamp-2">
                   {article.title}
                 </h3>
               </div>

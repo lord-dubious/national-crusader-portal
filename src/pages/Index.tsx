@@ -24,12 +24,14 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
-        <div className="container mx-auto px-4 py-8">
-          <FeaturedArticle />
-          <div className="my-16">
+        <div className="container mx-auto px-4">
+          <div className="py-8">
+            <FeaturedArticle />
+          </div>
+          <div className="py-12">
             <TrendingSection />
           </div>
-          <div className="space-y-16">
+          <div className="space-y-16 py-8">
             {categories?.map((category) => (
               <CategorySection key={category.id} categorySlug={category.slug} />
             ))}
