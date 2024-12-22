@@ -20,25 +20,52 @@ export const UserManagement = () => {
   const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      return data;
+      if (profilesError) throw profilesError;
+
+      const { data: adminUsers, error: adminError } = await supabase
+        .from("admin_users")
+        .select("email");
+
+      if (adminError) throw adminError;
+
+      // Combine the data to mark admin users
+      return profiles.map(profile => ({
+        ...profile,
+        isAdmin: adminUsers.some(admin => admin.email === profile.email)
+      }));
     },
   });
 
   const updateRole = useMutation({
-    mutationFn: async ({ userId, newRole }: { userId: string; newRole: string }) => {
+    mutationFn: async ({ userId, newRole, email, isAdmin }: { userId: string; newRole: string; email: string; isAdmin: boolean }) => {
       setLoading(true);
-      const { error } = await supabase
+      
+      // Update profile role
+      const { error: profileError } = await supabase
         .from("profiles")
         .update({ role: newRole })
         .eq("id", userId);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
+
+      // Update admin_users table
+      if (newRole === "admin" && !isAdmin) {
+        const { error: adminError } = await supabase
+          .from("admin_users")
+          .insert({ email });
+        if (adminError) throw adminError;
+      } else if (newRole !== "admin" && isAdmin) {
+        const { error: adminError } = await supabase
+          .from("admin_users")
+          .delete()
+          .eq("email", email);
+        if (adminError) throw adminError;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -71,6 +98,7 @@ export const UserManagement = () => {
           <TableRow>
             <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
+            <TableHead>Admin Status</TableHead>
             <TableHead>Created At</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -84,14 +112,24 @@ export const UserManagement = () => {
                   {user.role}
                 </span>
               </TableCell>
-              <TableCell>{new Date(user.created_at!).toLocaleDateString()}</TableCell>
+              <TableCell>
+                <span className={user.isAdmin ? "text-green-500" : "text-gray-500"}>
+                  {user.isAdmin ? "Admin" : "Not Admin"}
+                </span>
+              </TableCell>
+              <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
               <TableCell>
                 {user.role === "admin" ? (
                   <Button
                     variant="outline"
                     size="sm"
                     disabled={loading}
-                    onClick={() => updateRole.mutate({ userId: user.id, newRole: "viewer" })}
+                    onClick={() => updateRole.mutate({ 
+                      userId: user.id, 
+                      newRole: "viewer",
+                      email: user.email,
+                      isAdmin: user.isAdmin
+                    })}
                   >
                     Remove Admin
                   </Button>
@@ -100,7 +138,12 @@ export const UserManagement = () => {
                     variant="outline"
                     size="sm"
                     disabled={loading}
-                    onClick={() => updateRole.mutate({ userId: user.id, newRole: "admin" })}
+                    onClick={() => updateRole.mutate({ 
+                      userId: user.id, 
+                      newRole: "admin",
+                      email: user.email,
+                      isAdmin: user.isAdmin
+                    })}
                   >
                     Make Admin
                   </Button>

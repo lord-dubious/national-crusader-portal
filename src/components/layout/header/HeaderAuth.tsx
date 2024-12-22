@@ -19,14 +19,28 @@ export const HeaderAuth = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const { data, error } = await supabase
+      // Get user profile
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
       
-      if (error) throw error;
-      return data;
+      if (profileError) throw profileError;
+
+      // Check if user is in admin_users table
+      const { data: adminUser, error: adminError } = await supabase
+        .from('admin_users')
+        .select('email')
+        .eq('email', profile.email)
+        .single();
+      
+      if (adminError && adminError.code !== 'PGRST116') throw adminError;
+
+      return {
+        ...profile,
+        isAdmin: !!adminUser
+      };
     },
   });
 
@@ -57,8 +71,11 @@ export const HeaderAuth = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-sm font-normal text-muted-foreground">
+          {profile.email}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {profile.role === "admin" && (
+        {profile.isAdmin && (
           <DropdownMenuItem asChild>
             <Link to="/admin">Admin Dashboard</Link>
           </DropdownMenuItem>
