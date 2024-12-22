@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -17,8 +18,8 @@ interface Article {
   id: number;
   title: string;
   content: string;
-  category_id: number | null;  // Made nullable to match DB schema
-  status: string | null;  // Made nullable to match DB schema
+  category_id: number | null;
+  status: string | null;
   author_id: string | null;
   created_at: string | null;
   updated_at: string | null;
@@ -68,10 +69,13 @@ export const ArticleForm = ({ articleId, onSubmit }: ArticleFormProps) => {
     enabled: !!articleId,
   });
 
-  // Use React's useEffect to update form when article data is loaded
   React.useEffect(() => {
     if (article) {
-      form.reset(article);
+      // Convert category_id to string for the form
+      form.reset({
+        ...article,
+        category_id: article.category_id?.toString() || "",
+      });
     }
   }, [article, form]);
 
