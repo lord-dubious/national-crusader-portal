@@ -3,7 +3,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -53,14 +53,7 @@ const SignIn = () => {
             },
           }}
           providers={[]}
-          onError={(error) => {
-            setError(error.message);
-            toast({
-              variant: "destructive",
-              title: "Error",
-              description: error.message,
-            });
-          }}
+          view="sign_in"
         />
       </div>
     </div>
