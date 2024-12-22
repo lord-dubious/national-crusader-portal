@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { FeaturedArticle } from "@/components/home/FeaturedArticle";
 import { CategorySection } from "@/components/home/CategorySection";
 import { TrendingSection } from "@/components/home/TrendingSection";
+import { NewspaperSection } from "@/components/home/NewspaperSection";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -31,6 +32,7 @@ const Index = () => {
           <div className="py-12">
             <TrendingSection />
           </div>
+          <NewspaperSection />
           <div className="space-y-16 py-8">
             {categories?.map((category) => (
               <CategorySection key={category.id} categorySlug={category.slug} />

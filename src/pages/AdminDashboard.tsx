@@ -5,9 +5,10 @@ import { UserManagement } from "@/components/admin/UserManagement";
 import { MediaLibrary } from "@/components/admin/MediaLibrary";
 import { CategoryManagement } from "@/components/admin/CategoryManagement";
 import { SiteSettings } from "@/components/admin/SiteSettings";
+import { NewspaperManagement } from "@/components/admin/NewspaperManagement";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutDashboard, Users, Image, FolderTree, Settings } from "lucide-react";
+import { LayoutDashboard, Users, Image, FolderTree, Settings, Newspaper } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -61,6 +62,13 @@ export const AdminDashboard = () => {
               <span className={isMobile ? "hidden" : "inline"}>Categories</span>
             </TabsTrigger>
             <TabsTrigger 
+              value="newspapers" 
+              className="flex-1 md:flex-none min-w-[40px] flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
+            >
+              <Newspaper className="h-4 w-4" />
+              <span className={isMobile ? "hidden" : "inline"}>Newspapers</span>
+            </TabsTrigger>
+            <TabsTrigger 
               value="settings" 
               className="flex-1 md:flex-none min-w-[40px] flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
             >
@@ -85,6 +93,10 @@ export const AdminDashboard = () => {
 
             <TabsContent value="categories">
               <CategoryManagement />
+            </TabsContent>
+
+            <TabsContent value="newspapers">
+              <NewspaperManagement />
             </TabsContent>
 
             <TabsContent value="settings">
