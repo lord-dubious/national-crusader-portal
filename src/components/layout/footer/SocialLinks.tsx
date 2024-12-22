@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import * as Icons from "lucide-react";
 
+type IconName = keyof typeof Icons;
+
 export const SocialLinks = () => {
   const { data: socialLinks } = useQuery({
     queryKey: ["social-links"],
@@ -19,8 +21,9 @@ export const SocialLinks = () => {
   return (
     <div className="flex justify-center space-x-6 py-6">
       {socialLinks?.map((link) => {
-        const Icon = Icons[link.icon as keyof typeof Icons];
-        return (
+        // Ensure the icon exists in Lucide icons
+        const IconComponent = Icons[link.icon as IconName];
+        return IconComponent ? (
           <a
             key={link.id}
             href={link.url}
@@ -28,10 +31,10 @@ export const SocialLinks = () => {
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-accent transition-colors"
           >
-            <Icon className="h-5 w-5" />
+            <IconComponent className="h-5 w-5" />
             <span className="sr-only">{link.platform}</span>
           </a>
-        );
+        ) : null;
       })}
     </div>
   );
