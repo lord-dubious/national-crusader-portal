@@ -1,5 +1,6 @@
 import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
+import * as RovingFocusPrimitive from "@radix-ui/react-roving-focus"
 import { cn } from "@/lib/utils"
 import { MenubarRoot } from "./menubar-root"
 import { MenubarTrigger } from "./menubar-trigger"
@@ -13,7 +14,7 @@ import { MenubarShortcut } from "./menubar-shortcut"
 const MenubarMenu = MenubarPrimitive.Menu
 const MenubarGroup = MenubarPrimitive.Group
 const MenubarPortal = MenubarPrimitive.Portal
-const RovingFocusGroup = MenubarPrimitive.RovingFocusGroup
+const RovingFocusGroup = RovingFocusPrimitive.Root
 
 const MenubarSeparator = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Separator>,

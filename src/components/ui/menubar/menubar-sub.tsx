@@ -1,5 +1,6 @@
 import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
+import * as RovingFocusPrimitive from "@radix-ui/react-roving-focus"
 import { ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -11,7 +12,7 @@ const MenubarSubTrigger = React.forwardRef<
     inset?: boolean
   }
 >(({ className, inset, children, ...props }, ref) => (
-  <MenubarPrimitive.RovingFocusGroup>
+  <RovingFocusPrimitive.Root>
     <MenubarPrimitive.SubTrigger
       ref={ref}
       className={cn(
@@ -24,7 +25,7 @@ const MenubarSubTrigger = React.forwardRef<
       {children}
       <ChevronRight className="ml-auto h-4 w-4" />
     </MenubarPrimitive.SubTrigger>
-  </MenubarPrimitive.RovingFocusGroup>
+  </RovingFocusPrimitive.Root>
 ))
 MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName
 

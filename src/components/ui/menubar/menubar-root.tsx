@@ -1,5 +1,6 @@
 import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
+import * as RovingFocusPrimitive from "@radix-ui/react-roving-focus"
 import { cn } from "@/lib/utils"
 
 const MenubarRoot = React.forwardRef<
@@ -14,9 +15,9 @@ const MenubarRoot = React.forwardRef<
     )}
     {...props}
   >
-    <MenubarPrimitive.RovingFocusGroup asChild>
+    <RovingFocusPrimitive.Root asChild>
       {props.children}
-    </MenubarPrimitive.RovingFocusGroup>
+    </RovingFocusPrimitive.Root>
   </MenubarPrimitive.Root>
 ))
 MenubarRoot.displayName = MenubarPrimitive.Root.displayName
