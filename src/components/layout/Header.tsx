@@ -5,8 +5,34 @@ import { MobileMenu } from "./MobileMenu";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export const Header = () => {
+  const [session, setSession] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user?.email === 'admin@nationalcrusader.com') {
+        setIsAdmin(true);
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user?.email === 'admin@nationalcrusader.com') {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -19,6 +45,10 @@ export const Header = () => {
       return data;
     },
   });
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-md">
@@ -34,13 +64,13 @@ export const Header = () => {
             </Link>
           </div>
           
-          <nav className="hidden lg:flex items-center overflow-x-auto">
-            <ul className="flex items-center gap-x-4">
+          <nav className="hidden lg:flex items-center">
+            <ul className="flex items-center gap-x-1">
               {categories?.map((category) => (
                 <li key={category.id}>
                   <Link
                     to={`/category/${category.slug}`}
-                    className="text-sm text-primary-foreground hover:text-accent transition-colors whitespace-nowrap px-2 py-1"
+                    className="text-[clamp(0.75rem,1.2vw,0.875rem)] text-primary-foreground hover:text-accent transition-colors whitespace-nowrap px-2 py-1"
                   >
                     {category.name}
                   </Link>
@@ -50,7 +80,7 @@ export const Header = () => {
           </nav>
 
           <div className="flex items-center gap-2">
-            <div className="hidden md:flex relative w-48 lg:w-56">
+            <div className="hidden md:flex relative w-40">
               <Input
                 type="search"
                 placeholder="Search..."
@@ -61,12 +91,42 @@ export const Header = () => {
             <Button variant="ghost" size="icon" className="md:hidden text-primary-foreground">
               <Search className="h-5 w-5" />
             </Button>
-            <Link
-              to="/admin"
-              className="text-sm text-primary-foreground hover:text-accent transition-colors whitespace-nowrap ml-4"
-            >
-              Admin
-            </Link>
+            
+            {session ? (
+              <div className="flex items-center gap-2">
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className="text-sm text-primary-foreground hover:text-accent transition-colors whitespace-nowrap ml-4"
+                  >
+                    Admin
+                  </Link>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="text-primary-foreground hover:text-accent ml-2"
+                >
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/signin"
+                  className="text-sm text-primary-foreground hover:text-accent transition-colors whitespace-nowrap ml-4"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="text-sm text-primary-foreground hover:text-accent transition-colors whitespace-nowrap ml-2"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

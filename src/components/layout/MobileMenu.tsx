@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -8,6 +8,30 @@ import { Link } from "react-router-dom";
 
 export const MobileMenu = () => {
   const [open, setOpen] = useState(false);
+  const [session, setSession] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user?.email === 'admin@nationalcrusader.com') {
+        setIsAdmin(true);
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user?.email === 'admin@nationalcrusader.com') {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const { data: categories } = useQuery({
     queryKey: ["categories"],
@@ -21,6 +45,11 @@ export const MobileMenu = () => {
       return data;
     },
   });
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setOpen(false);
+  };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -49,6 +78,45 @@ export const MobileMenu = () => {
                 {category.name}
               </Link>
             ))}
+          </div>
+          <div className="mt-auto px-6">
+            {session ? (
+              <div className="flex flex-col gap-2">
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className="text-base text-primary-foreground hover:text-accent transition-colors"
+                    onClick={() => setOpen(false)}
+                  >
+                    Admin
+                  </Link>
+                )}
+                <Button
+                  variant="ghost"
+                  onClick={handleSignOut}
+                  className="text-primary-foreground hover:text-accent justify-start px-0"
+                >
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <Link
+                  to="/signin"
+                  className="text-base text-primary-foreground hover:text-accent transition-colors"
+                  onClick={() => setOpen(false)}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="text-base text-primary-foreground hover:text-accent transition-colors"
+                  onClick={() => setOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
         </nav>
       </SheetContent>
