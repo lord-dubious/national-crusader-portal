@@ -3,9 +3,11 @@ import { DashboardStats } from "@/components/admin/dashboard/DashboardStats";
 import { RecentArticles } from "@/components/admin/dashboard/RecentArticles";
 import { UserManagement } from "@/components/admin/UserManagement";
 import { MediaLibrary } from "@/components/admin/MediaLibrary";
+import { CategoryManagement } from "@/components/admin/CategoryManagement";
+import { SiteSettings } from "@/components/admin/SiteSettings";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutDashboard, Users, Image } from "lucide-react";
+import { LayoutDashboard, Users, Image, FolderTree, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export const AdminDashboard = () => {
@@ -21,7 +23,7 @@ export const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="dashboard" className="space-y-8">
-        <TabsList>
+        <TabsList className="grid grid-cols-5 w-full md:w-auto">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <LayoutDashboard className="h-4 w-4" />
             Dashboard
@@ -33,6 +35,14 @@ export const AdminDashboard = () => {
           <TabsTrigger value="media" className="flex items-center gap-2">
             <Image className="h-4 w-4" />
             Media
+          </TabsTrigger>
+          <TabsTrigger value="categories" className="flex items-center gap-2">
+            <FolderTree className="h-4 w-4" />
+            Categories
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Settings
           </TabsTrigger>
         </TabsList>
 
@@ -47,6 +57,14 @@ export const AdminDashboard = () => {
 
         <TabsContent value="media">
           <MediaLibrary />
+        </TabsContent>
+
+        <TabsContent value="categories">
+          <CategoryManagement />
+        </TabsContent>
+
+        <TabsContent value="settings">
+          <SiteSettings />
         </TabsContent>
       </Tabs>
     </AdminLayout>
