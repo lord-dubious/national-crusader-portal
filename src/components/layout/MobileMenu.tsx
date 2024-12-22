@@ -11,7 +11,7 @@ export const MobileMenu = () => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading } = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -51,8 +51,13 @@ export const MobileMenu = () => {
       });
     } else {
       setOpen(false);
+      window.location.href = "/";
     }
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -91,9 +96,16 @@ export const MobileMenu = () => {
                     className="text-base text-primary-foreground hover:text-accent transition-colors"
                     onClick={() => setOpen(false)}
                   >
-                    Admin
+                    Admin Dashboard
                   </Link>
                 )}
+                <Link
+                  to="/profile"
+                  className="text-base text-primary-foreground hover:text-accent transition-colors"
+                  onClick={() => setOpen(false)}
+                >
+                  Profile
+                </Link>
                 <Button
                   variant="ghost"
                   onClick={handleSignOut}

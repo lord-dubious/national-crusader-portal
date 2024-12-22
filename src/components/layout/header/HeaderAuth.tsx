@@ -51,7 +51,7 @@ export const HeaderAuth = () => {
   };
 
   if (isLoading) {
-    return null; // Or a loading spinner if you prefer
+    return null;
   }
 
   if (!profile) {
