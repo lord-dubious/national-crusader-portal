@@ -9,7 +9,7 @@ const MenubarItem = React.forwardRef<
     inset?: boolean
   }
 >(({ className, inset, ...props }, ref) => (
-  <RovingFocusPrimitive.Root>
+  <RovingFocusPrimitive.Item asChild>
     <MenubarPrimitive.Item
       ref={ref}
       className={cn(
@@ -19,7 +19,7 @@ const MenubarItem = React.forwardRef<
       )}
       {...props}
     />
-  </RovingFocusPrimitive.Root>
+  </RovingFocusPrimitive.Item>
 ))
 MenubarItem.displayName = MenubarPrimitive.Item.displayName
 

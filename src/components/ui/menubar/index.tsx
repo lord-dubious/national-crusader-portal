@@ -14,7 +14,6 @@ import { MenubarShortcut } from "./menubar-shortcut"
 const MenubarMenu = MenubarPrimitive.Menu
 const MenubarGroup = MenubarPrimitive.Group
 const MenubarPortal = MenubarPrimitive.Portal
-const RovingFocusGroup = RovingFocusPrimitive.Root
 
 const MenubarSeparator = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Separator>,
@@ -52,7 +51,6 @@ export {
   MenubarPortal,
   MenubarSub,
   MenubarRadioGroup,
-  RovingFocusGroup,
   MenubarRoot as Menubar,
   MenubarTrigger,
   MenubarContent,

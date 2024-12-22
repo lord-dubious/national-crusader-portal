@@ -15,8 +15,10 @@ const MenubarRoot = React.forwardRef<
     )}
     {...props}
   >
-    <RovingFocusPrimitive.Root asChild>
-      {props.children}
+    <RovingFocusPrimitive.Root>
+      <RovingFocusPrimitive.Group>
+        {props.children}
+      </RovingFocusPrimitive.Group>
     </RovingFocusPrimitive.Root>
   </MenubarPrimitive.Root>
 ))

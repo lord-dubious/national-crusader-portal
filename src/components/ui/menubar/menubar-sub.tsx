@@ -12,7 +12,7 @@ const MenubarSubTrigger = React.forwardRef<
     inset?: boolean
   }
 >(({ className, inset, children, ...props }, ref) => (
-  <RovingFocusPrimitive.Root>
+  <RovingFocusPrimitive.Item asChild>
     <MenubarPrimitive.SubTrigger
       ref={ref}
       className={cn(
@@ -25,7 +25,7 @@ const MenubarSubTrigger = React.forwardRef<
       {children}
       <ChevronRight className="ml-auto h-4 w-4" />
     </MenubarPrimitive.SubTrigger>
-  </RovingFocusPrimitive.Root>
+  </RovingFocusPrimitive.Item>
 ))
 MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName
 
