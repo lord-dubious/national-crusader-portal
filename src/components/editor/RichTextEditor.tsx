@@ -22,11 +22,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { MediaLibrary } from '@/components/admin/MediaLibrary';
 
 interface RichTextEditorProps {
-  content: string;
+  value?: string;
   onChange: (content: string) => void;
 }
 
-export const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
+export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) => {
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [isMediaDialogOpen, setIsMediaDialogOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -46,7 +46,7 @@ export const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
         },
       }),
     ],
-    content,
+    content: value,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
