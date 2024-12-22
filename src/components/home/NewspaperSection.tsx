@@ -1,11 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Newspaper } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Script from "@/components/ui/script";
+
+declare global {
+  interface Window {
+    jQuery: any;
+    $: any;
+  }
+}
 
 export const NewspaperSection = () => {
   const [selectedNewspaper, setSelectedNewspaper] = useState<string | null>(null);
+  const [flipBookInitialized, setFlipBookInitialized] = useState(false);
 
   const { data: newspapers } = useQuery({
     queryKey: ["published-newspapers"],
@@ -20,6 +29,71 @@ export const NewspaperSection = () => {
       return data;
     },
   });
+
+  useEffect(() => {
+    // Load jQuery and dFlip scripts
+    const loadScripts = async () => {
+      if (!window.jQuery) {
+        await import('jquery').then(jquery => {
+          window.jQuery = window.$ = jquery.default;
+        });
+      }
+      
+      if (!flipBookInitialized && window.jQuery) {
+        const dflipScript = document.createElement('script');
+        dflipScript.src = 'https://cdn.jsdelivr.net/gh/deepak-ghimire/dearflip-jquery-flipbook/dflip/js/dflip.min.js';
+        dflipScript.async = true;
+        
+        const dflipCss = document.createElement('link');
+        dflipCss.rel = 'stylesheet';
+        dflipCss.href = 'https://cdn.jsdelivr.net/gh/deepak-ghimire/dearflip-jquery-flipbook/dflip/css/dflip.min.css';
+        
+        const dflipUiCss = document.createElement('link');
+        dflipUiCss.rel = 'stylesheet';
+        dflipUiCss.href = 'https://cdn.jsdelivr.net/gh/deepak-ghimire/dearflip-jquery-flipbook/dflip/css/themify-icons.min.css';
+        
+        document.head.appendChild(dflipCss);
+        document.head.appendChild(dflipUiCss);
+        document.body.appendChild(dflipScript);
+        
+        dflipScript.onload = () => {
+          setFlipBookInitialized(true);
+        };
+      }
+    };
+    
+    loadScripts();
+  }, [flipBookInitialized]);
+
+  useEffect(() => {
+    if (selectedNewspaper && flipBookInitialized && window.jQuery) {
+      const flipBookContainer = document.getElementById('flipbook');
+      if (flipBookContainer) {
+        // Destroy existing flipbook instance if any
+        if (window.jQuery(flipBookContainer).data('dflip')) {
+          window.jQuery(flipBookContainer).data('dflip').destroy();
+        }
+
+        // Initialize new flipbook
+        window.jQuery(flipBookContainer).html('');
+        window.jQuery(flipBookContainer).dflip({
+          source: selectedNewspaper,
+          height: 600,
+          duration: 800,
+          autoEnableOutline: true,
+          webgl: true,
+          mobileAutoEnable: true,
+          transparent: false,
+          hard: "none",
+          pageSize: "auto",
+          backgroundColor: "rgb(34, 34, 34)",
+          autoPlay: false,
+          autoPlayDuration: 3000,
+          soundEnable: false,
+        });
+      }
+    }
+  }, [selectedNewspaper, flipBookInitialized]);
 
   return (
     <section className="py-12 bg-[#222222]">
@@ -51,15 +125,7 @@ export const NewspaperSection = () => {
           </Select>
         </div>
 
-        {selectedNewspaper && (
-          <div className="aspect-[3/2] bg-[#333333] rounded-lg overflow-hidden">
-            <iframe
-              src={`${selectedNewspaper}#toolbar=0`}
-              className="w-full h-full"
-              title="PDF Viewer"
-            />
-          </div>
-        )}
+        <div id="flipbook" className="aspect-[3/2] bg-[#333333] rounded-lg overflow-hidden" />
       </div>
     </section>
   );
