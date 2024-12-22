@@ -5,9 +5,11 @@ import { ArrowRight, TrendingUp, Clock } from "lucide-react";
 import { ArticleCard } from "@/components/ArticleCard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const FeaturedArticle = () => {
-  const { data: featuredArticle } = useQuery({
+  const { toast } = useToast();
+  const { data: featuredArticle, error: featuredError } = useQuery({
     queryKey: ["featured-article"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -19,13 +21,21 @@ const FeaturedArticle = () => {
         .eq("status", "published")
         .order("published_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
       
-      if (error) throw error;
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error fetching featured article",
+          description: error.message
+        });
+        throw error;
+      }
       return data;
     },
   });
 
+  if (featuredError) return null;
   if (!featuredArticle) return null;
 
   return (
@@ -67,7 +77,8 @@ const FeaturedArticle = () => {
 };
 
 const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
-  const { data: articles } = useQuery({
+  const { toast } = useToast();
+  const { data: articles, error } = useQuery({
     queryKey: ["category-articles", categorySlug],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -81,11 +92,19 @@ const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
         .order("published_at", { ascending: false })
         .limit(3);
       
-      if (error) throw error;
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error fetching articles",
+          description: error.message
+        });
+        throw error;
+      }
       return data;
     },
   });
 
+  if (error) return null;
   if (!articles?.length) return null;
 
   return (
@@ -118,7 +137,8 @@ const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
 };
 
 const TrendingSection = () => {
-  const { data: trendingArticles } = useQuery({
+  const { toast } = useToast();
+  const { data: trendingArticles, error } = useQuery({
     queryKey: ["trending-articles"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -131,11 +151,19 @@ const TrendingSection = () => {
         .order("published_at", { ascending: false })
         .limit(4);
       
-      if (error) throw error;
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error fetching trending articles",
+          description: error.message
+        });
+        throw error;
+      }
       return data;
     },
   });
 
+  if (error) return null;
   if (!trendingArticles?.length) return null;
 
   return (
