@@ -8,109 +8,89 @@ import { SiteSettings } from "@/components/admin/SiteSettings";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LayoutDashboard, Users, Image, FolderTree, Settings } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export const AdminDashboard = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const isMobile = useIsMobile();
 
   return (
     <AdminLayout>
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Admin Dashboard</h1>
-        <Button 
-          onClick={() => navigate('/admin/new-article')}
-          className="w-full md:w-auto bg-[#DC2626] text-white hover:bg-[#DC2626]/90"
-        >
-          Create New Article
-        </Button>
-      </div>
+      <div className="flex flex-col gap-4 mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Admin Dashboard</h1>
+          <Button 
+            onClick={() => navigate('/admin/new-article')}
+            className="w-full md:w-auto bg-[#DC2626] text-white hover:bg-[#DC2626]/90"
+          >
+            Create New Article
+          </Button>
+        </div>
 
-      <Tabs defaultValue="dashboard" className="space-y-8">
-        <TabsList className={`grid ${isMobile ? 'grid-cols-3 gap-2' : 'grid-cols-5'} w-full bg-[#222222] p-1`}>
-          <TabsTrigger 
-            value="dashboard" 
-            className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            <span className={isMobile ? "hidden" : "inline"}>Dashboard</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="users" 
-            className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
-          >
-            <Users className="h-4 w-4" />
-            <span className={isMobile ? "hidden" : "inline"}>Users</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="media" 
-            className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
-          >
-            <Image className="h-4 w-4" />
-            <span className={isMobile ? "hidden" : "inline"}>Media</span>
-          </TabsTrigger>
-          {!isMobile && (
-            <>
-              <TabsTrigger 
-                value="categories" 
-                className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
-              >
-                <FolderTree className="h-4 w-4" />
-                <span>Categories</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="settings" 
-                className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
-              >
-                <Settings className="h-4 w-4" />
-                <span>Settings</span>
-              </TabsTrigger>
-            </>
-          )}
-        </TabsList>
-
-        {isMobile && (
-          <div className="grid grid-cols-2 gap-2">
+        <Tabs defaultValue="dashboard" className="w-full">
+          <TabsList className="w-full bg-[#222222] p-1 flex flex-wrap gap-1">
+            <TabsTrigger 
+              value="dashboard" 
+              className="flex-1 md:flex-none flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              <span className={isMobile ? "hidden" : "inline"}>Dashboard</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="users" 
+              className="flex-1 md:flex-none flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
+            >
+              <Users className="h-4 w-4" />
+              <span className={isMobile ? "hidden" : "inline"}>Users</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="media" 
+              className="flex-1 md:flex-none flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
+            >
+              <Image className="h-4 w-4" />
+              <span className={isMobile ? "hidden" : "inline"}>Media</span>
+            </TabsTrigger>
             <TabsTrigger 
               value="categories" 
-              className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
+              className="flex-1 md:flex-none flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
             >
               <FolderTree className="h-4 w-4" />
-              <span>Categories</span>
+              <span className={isMobile ? "hidden" : "inline"}>Categories</span>
             </TabsTrigger>
             <TabsTrigger 
               value="settings" 
-              className="flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
+              className="flex-1 md:flex-none flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
             >
               <Settings className="h-4 w-4" />
-              <span>Settings</span>
+              <span className={isMobile ? "hidden" : "inline"}>Settings</span>
             </TabsTrigger>
+          </TabsList>
+
+          <div className="mt-8">
+            <TabsContent value="dashboard" className="space-y-8">
+              <DashboardStats />
+              <RecentArticles />
+            </TabsContent>
+
+            <TabsContent value="users">
+              <UserManagement />
+            </TabsContent>
+
+            <TabsContent value="media">
+              <MediaLibrary />
+            </TabsContent>
+
+            <TabsContent value="categories">
+              <CategoryManagement />
+            </TabsContent>
+
+            <TabsContent value="settings">
+              <SiteSettings />
+            </TabsContent>
           </div>
-        )}
-
-        <TabsContent value="dashboard" className="space-y-8">
-          <DashboardStats />
-          <RecentArticles />
-        </TabsContent>
-
-        <TabsContent value="users">
-          <UserManagement />
-        </TabsContent>
-
-        <TabsContent value="media">
-          <MediaLibrary />
-        </TabsContent>
-
-        <TabsContent value="categories">
-          <CategoryManagement />
-        </TabsContent>
-
-        <TabsContent value="settings">
-          <SiteSettings />
-        </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
     </AdminLayout>
   );
 };
