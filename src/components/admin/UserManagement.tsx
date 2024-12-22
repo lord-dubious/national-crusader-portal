@@ -10,23 +10,29 @@ import { useToast } from "@/hooks/use-toast";
 export const UserManagement = () => {
   const { toast } = useToast();
 
-  const { data: users, error } = useQuery({
-    queryKey: ["admin-users"],
+  const { data: profiles, error, refetch } = useQuery({
+    queryKey: ["admin-profiles"],
     queryFn: async () => {
-      const { data: { users }, error } = await supabase.auth.admin.listUsers();
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
       if (error) throw error;
-      return users;
+      return data;
     },
   });
 
-  const updateUserRole = async (userId: string, role: string) => {
+  const updateUserRole = async (userId: string, role: 'admin' | 'editor' | 'viewer') => {
     try {
-      const { error } = await supabase.auth.admin.updateUserById(
-        userId,
-        { user_metadata: { role } }
-      );
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role })
+        .eq('id', userId);
       
       if (error) throw error;
+      
+      await refetch();
       
       toast({
         title: "Role updated",
@@ -65,35 +71,37 @@ export const UserManagement = () => {
               <TableRow>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
-                <TableHead>Last Sign In</TableHead>
+                <TableHead>Created At</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users?.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.email}</TableCell>
+              {profiles?.map((profile) => (
+                <TableRow key={profile.id}>
+                  <TableCell>{profile.email}</TableCell>
                   <TableCell>
-                    <Badge variant={user.user_metadata?.role === 'admin' ? 'destructive' : 'secondary'}>
-                      {user.user_metadata?.role || 'viewer'}
+                    <Badge variant={profile.role === 'admin' ? 'destructive' : profile.role === 'editor' ? 'default' : 'secondary'}>
+                      {profile.role}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {new Date(user.last_sign_in_at || '').toLocaleDateString()}
+                    {new Date(profile.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => updateUserRole(user.id, 'editor')}
+                        onClick={() => updateUserRole(profile.id, 'editor')}
+                        disabled={profile.email === 'admin@nationalcrusader.com'}
                       >
                         <Shield className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => updateUserRole(user.id, 'admin')}
+                        onClick={() => updateUserRole(profile.id, 'admin')}
+                        disabled={profile.email === 'admin@nationalcrusader.com'}
                       >
                         <ShieldAlert className="h-4 w-4" />
                       </Button>

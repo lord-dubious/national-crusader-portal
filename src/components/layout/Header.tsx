@@ -11,39 +11,41 @@ export const Header = () => {
   const [session, setSession] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const { data: profile } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user,
+  });
+
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (session?.user?.email) {
-        const { data } = await supabase
-          .from('admin_users')
-          .select('email')
-          .eq('email', session.user.email)
-          .single();
-        
-        setIsAdmin(!!data);
-      }
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (session?.user?.email) {
-        const { data } = await supabase
-          .from('admin_users')
-          .select('email')
-          .eq('email', session.user.email)
-          .single();
-        
-        setIsAdmin(!!data);
-      } else {
-        setIsAdmin(false);
-      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    setIsAdmin(profile?.role === 'admin');
+  }, [profile]);
 
   const { data: categories } = useQuery({
     queryKey: ["categories"],
