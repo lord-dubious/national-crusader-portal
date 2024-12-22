@@ -13,7 +13,7 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export const SocialLinks = () => {
-  const { data: socialLinks } = useQuery({
+  const { data: socialLinks, isError } = useQuery({
     queryKey: ["social-links"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -21,10 +21,19 @@ export const SocialLinks = () => {
         .select("*")
         .eq("is_active", true);
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching social links:", error);
+        throw error;
+      }
       return data;
     },
+    retry: 3,
   });
+
+  if (isError) {
+    console.error("Failed to load social links");
+    return null;
+  }
 
   return (
     <div className="flex justify-center space-x-6 py-6">
