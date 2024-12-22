@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useQuery } from "@tanstack/react-query";
@@ -26,29 +26,31 @@ export const MobileMenu = () => {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="lg:hidden text-primary-foreground">
-          <Menu className="h-6 w-6" />
+          <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[300px] bg-primary">
-        <div className="flex flex-col space-y-4 mt-8">
+      <SheetContent side="left" className="w-[280px] bg-primary p-0">
+        <nav className="h-full flex flex-col py-6">
           <Link
             to="/"
-            className="text-xl font-bold text-primary-foreground hover:text-accent transition-colors"
+            className="px-6 py-2 text-lg font-semibold text-primary-foreground hover:text-accent transition-colors"
             onClick={() => setOpen(false)}
           >
             Home
           </Link>
-          {categories?.map((category) => (
-            <Link
-              key={category.id}
-              to={`/category/${category.slug}`}
-              className="text-lg text-primary-foreground hover:text-accent transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              {category.name}
-            </Link>
-          ))}
-        </div>
+          <div className="mt-4">
+            {categories?.map((category) => (
+              <Link
+                key={category.id}
+                to={`/category/${category.slug}`}
+                className="block px-6 py-2 text-base text-primary-foreground hover:text-accent transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                {category.name}
+              </Link>
+            ))}
+          </div>
+        </nav>
       </SheetContent>
     </Sheet>
   );
