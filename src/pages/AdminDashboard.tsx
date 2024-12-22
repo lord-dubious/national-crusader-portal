@@ -19,7 +19,9 @@ export const AdminDashboard = () => {
     <AdminLayout>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Admin Dashboard</h1>
+          {!isMobile && (
+            <h1 className="text-2xl md:text-3xl font-bold text-white">Admin Dashboard</h1>
+          )}
           <Button 
             onClick={() => navigate('/admin/new-article')}
             className="w-full md:w-auto bg-[#DC2626] text-white hover:bg-[#DC2626]/90"
