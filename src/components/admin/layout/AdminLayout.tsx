@@ -10,7 +10,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const { data: session } = useQuery({
+  const { data: session, isLoading: isLoadingSession } = useQuery({
     queryKey: ["session"],
     queryFn: async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
@@ -19,7 +19,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     },
   });
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryKey: ["admin-profile", session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) return null;
@@ -33,11 +33,11 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       if (error) throw error;
       return profile;
     },
-    enabled: !!session?.user?.id,
+    enabled: !!session?.user?.id, // Only run this query when we have a session
   });
 
   useEffect(() => {
-    if (!session) {
+    if (!isLoadingSession && !session) {
       navigate('/signin');
       toast({
         variant: "destructive",
@@ -47,7 +47,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    if (!isLoading && profile && profile.role !== 'admin') {
+    if (!isLoadingProfile && !isLoadingSession && profile && profile.role !== 'admin') {
       navigate('/');
       toast({
         variant: "destructive",
@@ -55,9 +55,15 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         description: "You must be an admin to access this page."
       });
     }
-  }, [session, profile, isLoading, navigate, toast]);
+  }, [session, profile, isLoadingSession, isLoadingProfile, navigate, toast]);
 
-  if (isLoading || !profile || !session) {
+  // Show loading state while checking authentication and profile
+  if (isLoadingSession || isLoadingProfile) {
+    return null;
+  }
+
+  // Don't render anything if not authenticated or not an admin
+  if (!profile || !session) {
     return null;
   }
 
