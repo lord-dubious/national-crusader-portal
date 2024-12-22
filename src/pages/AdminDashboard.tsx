@@ -74,7 +74,7 @@ export const AdminDashboard = () => {
   if (error) return null;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-primary text-primary-foreground">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
@@ -85,44 +85,44 @@ export const AdminDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <Card>
+          <Card className="bg-primary-foreground/10 border-primary-foreground/20">
             <CardHeader>
-              <CardTitle>Total Articles</CardTitle>
+              <CardTitle className="text-primary-foreground">Total Articles</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold">{articles?.length || 0}</p>
+              <p className="text-4xl font-bold text-primary-foreground">{articles?.length || 0}</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-primary-foreground/10 border-primary-foreground/20">
             <CardHeader>
-              <CardTitle>Published Articles</CardTitle>
+              <CardTitle className="text-primary-foreground">Published Articles</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold">
+              <p className="text-4xl font-bold text-primary-foreground">
                 {articles?.filter(a => a.status === 'published').length || 0}
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-primary-foreground/10 border-primary-foreground/20">
             <CardHeader>
-              <CardTitle>Draft Articles</CardTitle>
+              <CardTitle className="text-primary-foreground">Draft Articles</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold">
+              <p className="text-4xl font-bold text-primary-foreground">
                 {articles?.filter(a => a.status === 'draft').length || 0}
               </p>
             </CardContent>
           </Card>
         </div>
 
-        <div className="bg-card rounded-lg shadow overflow-hidden">
+        <div className="bg-primary-foreground/10 rounded-lg shadow overflow-hidden border border-primary-foreground/20">
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-4">Recent Articles</h2>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-muted">
+                <thead className="bg-primary-foreground/5">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Title</th>
                     <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Category</th>
@@ -130,9 +130,9 @@ export const AdminDashboard = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-primary-foreground/10">
                   {articles?.map((article) => (
-                    <tr key={article.id} className="hover:bg-muted/50">
+                    <tr key={article.id} className="hover:bg-primary-foreground/5">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-sm font-medium">{article.title}</span>
                       </td>
@@ -142,8 +142,8 @@ export const AdminDashboard = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           article.status === 'published' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-yellow-100 text-yellow-800'
+                            ? 'bg-green-500/20 text-green-300' 
+                            : 'bg-yellow-500/20 text-yellow-300'
                         }`}>
                           {article.status}
                         </span>
