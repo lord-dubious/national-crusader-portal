@@ -34,11 +34,18 @@ const categorySchema = z.object({
 
 type CategoryFormValues = z.infer<typeof categorySchema>;
 
+type Category = {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+};
+
 export const CategoryManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
@@ -58,7 +65,7 @@ export const CategoryManagement = () => {
         .order("name");
       
       if (error) throw error;
-      return data;
+      return data as Category[];
     },
   });
 
@@ -66,7 +73,11 @@ export const CategoryManagement = () => {
     mutationFn: async (values: CategoryFormValues) => {
       const { data, error } = await supabase
         .from("categories")
-        .insert([values])
+        .insert([{
+          name: values.name,
+          slug: values.slug,
+          description: values.description || null,
+        }])
         .select()
         .single();
 
@@ -92,7 +103,11 @@ export const CategoryManagement = () => {
     mutationFn: async (values: CategoryFormValues & { id: number }) => {
       const { data, error } = await supabase
         .from("categories")
-        .update(values)
+        .update({
+          name: values.name,
+          slug: values.slug,
+          description: values.description || null,
+        })
         .eq("id", values.id)
         .select()
         .single();

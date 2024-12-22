@@ -16,6 +16,16 @@ const socialLinkSchema = z.object({
 
 type SocialLinkFormValues = z.infer<typeof socialLinkSchema>;
 
+type SocialLink = {
+  id: number;
+  platform: string;
+  url: string;
+  icon: string;
+  is_active: boolean;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
 export const SiteSettings = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -38,7 +48,7 @@ export const SiteSettings = () => {
         .order("platform");
       
       if (error) throw error;
-      return data;
+      return data as SocialLink[];
     },
   });
 
@@ -46,7 +56,12 @@ export const SiteSettings = () => {
     mutationFn: async (values: SocialLinkFormValues) => {
       const { data, error } = await supabase
         .from("social_links")
-        .insert([values])
+        .insert([{
+          platform: values.platform,
+          url: values.url,
+          icon: values.icon,
+          is_active: true,
+        }])
         .select()
         .single();
 
