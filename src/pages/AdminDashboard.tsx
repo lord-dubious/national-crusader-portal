@@ -17,7 +17,7 @@ export const AdminDashboard = () => {
 
   return (
     <AdminLayout>
-      <div className="flex flex-col gap-4 mb-8">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <h1 className="text-2xl md:text-3xl font-bold text-white">Admin Dashboard</h1>
           <Button 
@@ -29,46 +29,46 @@ export const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="w-full bg-[#222222] p-1 flex flex-wrap gap-1">
+          <TabsList className="w-full bg-[#222222] p-1 flex flex-wrap gap-1 overflow-x-auto">
             <TabsTrigger 
               value="dashboard" 
-              className="flex-1 md:flex-none flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
+              className="flex-1 md:flex-none min-w-[40px] flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
             >
               <LayoutDashboard className="h-4 w-4" />
               <span className={isMobile ? "hidden" : "inline"}>Dashboard</span>
             </TabsTrigger>
             <TabsTrigger 
               value="users" 
-              className="flex-1 md:flex-none flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
+              className="flex-1 md:flex-none min-w-[40px] flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
             >
               <Users className="h-4 w-4" />
               <span className={isMobile ? "hidden" : "inline"}>Users</span>
             </TabsTrigger>
             <TabsTrigger 
               value="media" 
-              className="flex-1 md:flex-none flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
+              className="flex-1 md:flex-none min-w-[40px] flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
             >
               <Image className="h-4 w-4" />
               <span className={isMobile ? "hidden" : "inline"}>Media</span>
             </TabsTrigger>
             <TabsTrigger 
               value="categories" 
-              className="flex-1 md:flex-none flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
+              className="flex-1 md:flex-none min-w-[40px] flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
             >
               <FolderTree className="h-4 w-4" />
               <span className={isMobile ? "hidden" : "inline"}>Categories</span>
             </TabsTrigger>
             <TabsTrigger 
               value="settings" 
-              className="flex-1 md:flex-none flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
+              className="flex-1 md:flex-none min-w-[40px] flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
             >
               <Settings className="h-4 w-4" />
               <span className={isMobile ? "hidden" : "inline"}>Settings</span>
             </TabsTrigger>
           </TabsList>
 
-          <div className="mt-8">
-            <TabsContent value="dashboard" className="space-y-8">
+          <div className="mt-4 md:mt-8">
+            <TabsContent value="dashboard" className="space-y-4 md:space-y-8">
               <DashboardStats />
               <RecentArticles />
             </TabsContent>

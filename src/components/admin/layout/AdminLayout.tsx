@@ -5,10 +5,12 @@ import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/layout/AdminSidebar";
 import { useQuery } from "@tanstack/react-query";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const { data: session, isLoading: isLoadingSession } = useQuery({
     queryKey: ["session"],
@@ -33,7 +35,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       if (error) throw error;
       return profile;
     },
-    enabled: !!session?.user?.id, // Only run this query when we have a session
+    enabled: !!session?.user?.id,
   });
 
   useEffect(() => {
@@ -57,12 +59,10 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     }
   }, [session, profile, isLoadingSession, isLoadingProfile, navigate, toast]);
 
-  // Show loading state while checking authentication and profile
   if (isLoadingSession || isLoadingProfile) {
     return null;
   }
 
-  // Don't render anything if not authenticated or not an admin
   if (!profile || !session) {
     return null;
   }
@@ -71,8 +71,10 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-primary text-primary-foreground">
         <AdminSidebar />
-        <main className="flex-1 p-8">
-          {children}
+        <main className="flex-1 p-4 md:p-8 w-full overflow-x-hidden">
+          <div className="max-w-[1400px] mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </SidebarProvider>
