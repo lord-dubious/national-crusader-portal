@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { ArticleCard } from "@/components/ArticleCard";
+import { Link } from "react-router-dom";
 
 export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
   const { toast } = useToast();
@@ -17,7 +18,7 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
           category:categories(name)
         `)
         .eq("status", "published")
-        .eq("category.slug", categorySlug)
+        .eq("categories.slug", categorySlug)
         .order("published_at", { ascending: false })
         .limit(3);
       
@@ -37,15 +38,18 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
   if (!articles?.length) return null;
 
   return (
-    <section className="py-12">
-      <div className="container mx-auto px-4">
+    <section className="py-12 animate-fade-up">
+      <div className="relative">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold">{articles[0]?.category?.name || categorySlug}</h2>
-          <Button variant="ghost" asChild>
-            <a href={`/category/${categorySlug}`} className="group">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold">{articles[0]?.category?.name}</h2>
+            <div className="h-1 w-24 bg-accent rounded hidden sm:block" />
+          </div>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to={`/category/${categorySlug}`} className="group">
               View All
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </a>
+            </Link>
           </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
