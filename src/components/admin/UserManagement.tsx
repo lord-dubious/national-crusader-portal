@@ -1,118 +1,115 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { UserCog, Shield, ShieldAlert } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export const UserManagement = () => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false);
 
-  const { data: profiles, error, refetch } = useQuery({
-    queryKey: ["admin-profiles"],
+  const { data: users, isLoading } = useQuery({
+    queryKey: ["users"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false });
+
       if (error) throw error;
       return data;
     },
   });
 
-  const updateUserRole = async (userId: string, role: 'admin' | 'editor' | 'viewer') => {
-    try {
+  const updateRole = useMutation({
+    mutationFn: async ({ userId, newRole }: { userId: string; newRole: string }) => {
+      setLoading(true);
       const { error } = await supabase
-        .from('profiles')
-        .update({ role })
-        .eq('id', userId);
-      
+        .from("profiles")
+        .update({ role: newRole })
+        .eq("id", userId);
+
       if (error) throw error;
-      
-      await refetch();
-      
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       toast({
-        title: "Role updated",
-        description: "User role has been successfully updated."
+        title: "Success",
+        description: "User role updated successfully",
       });
-    } catch (error) {
+    },
+    onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Error updating role",
-        description: error.message
+        title: "Error",
+        description: error.message,
       });
-    }
-  };
+    },
+    onSettled: () => {
+      setLoading(false);
+    },
+  });
 
-  if (error) {
-    toast({
-      variant: "destructive",
-      title: "Error fetching users",
-      description: error.message
-    });
-    return null;
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <UserCog className="h-5 w-5" />
-          User Management
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Created At</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {profiles?.map((profile) => (
-                <TableRow key={profile.id}>
-                  <TableCell>{profile.email}</TableCell>
-                  <TableCell>
-                    <Badge variant={profile.role === 'admin' ? 'destructive' : profile.role === 'editor' ? 'default' : 'secondary'}>
-                      {profile.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(profile.created_at).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => updateUserRole(profile.id, 'editor')}
-                        disabled={profile.email === 'admin@nationalcrusader.com'}
-                      >
-                        <Shield className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => updateUserRole(profile.id, 'admin')}
-                        disabled={profile.email === 'admin@nationalcrusader.com'}
-                      >
-                        <ShieldAlert className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold">User Management</h2>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Email</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>Created At</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {users?.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>
+                <span className={`capitalize ${user.role === "admin" ? "text-accent" : ""}`}>
+                  {user.role}
+                </span>
+              </TableCell>
+              <TableCell>{new Date(user.created_at!).toLocaleDateString()}</TableCell>
+              <TableCell>
+                {user.role === "admin" ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={loading}
+                    onClick={() => updateRole.mutate({ userId: user.id, newRole: "viewer" })}
+                  >
+                    Remove Admin
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={loading}
+                    onClick={() => updateRole.mutate({ userId: user.id, newRole: "admin" })}
+                  >
+                    Make Admin
+                  </Button>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
