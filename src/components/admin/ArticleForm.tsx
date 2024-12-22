@@ -13,6 +13,22 @@ interface ArticleFormProps {
   onSubmit: (data: any) => Promise<void>;
 }
 
+interface Article {
+  id: number;
+  title: string;
+  content: string;
+  category_id: string;
+  status: string;
+  author_id: string;
+  created_at: string;
+  updated_at: string;
+  excerpt: string;
+  featured_image: string;
+  is_featured: boolean;
+  published_at: string;
+  slug: string;
+}
+
 export const ArticleForm = ({ articleId, onSubmit }: ArticleFormProps) => {
   const { toast } = useToast();
   const form = useForm({
@@ -36,7 +52,7 @@ export const ArticleForm = ({ articleId, onSubmit }: ArticleFormProps) => {
     },
   });
 
-  const { data: article } = useQuery({
+  const { data: article } = useQuery<Article>({
     queryKey: ["article", articleId],
     queryFn: async () => {
       if (!articleId) return null;
@@ -50,7 +66,7 @@ export const ArticleForm = ({ articleId, onSubmit }: ArticleFormProps) => {
       return data;
     },
     enabled: !!articleId,
-    onSuccess: (data: any) => {
+    onSettled: (data) => {
       if (data) {
         form.reset(data);
       }
