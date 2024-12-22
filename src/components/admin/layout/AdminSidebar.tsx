@@ -2,6 +2,7 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGrou
 import { LayoutDashboard, FileText, FolderTree, Tags, Image as ImageIcon, Users, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const menuItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
@@ -14,10 +15,23 @@ const menuItems = [
 
 export const AdminSidebar = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+      return;
+    }
     navigate('/');
+    toast({
+      title: "Signed out successfully",
+      description: "You have been signed out of your account.",
+    });
   };
 
   return (

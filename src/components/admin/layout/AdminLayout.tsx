@@ -10,25 +10,44 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const { data: profile } = useQuery({
-    queryKey: ["user-profile"],
+  const { data: session } = useQuery({
+    queryKey: ["session"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      return session;
+    },
+  });
+
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ["admin-profile", session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
 
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', session.user.id)
         .single();
       
       if (error) throw error;
       return profile;
     },
+    enabled: !!session?.user?.id,
   });
 
   useEffect(() => {
-    if (profile && profile.role !== 'admin') {
+    if (!session) {
+      navigate('/signin');
+      toast({
+        variant: "destructive",
+        title: "Access Denied",
+        description: "Please sign in to access the admin panel."
+      });
+      return;
+    }
+
+    if (!isLoading && profile && profile.role !== 'admin') {
       navigate('/');
       toast({
         variant: "destructive",
@@ -36,9 +55,9 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         description: "You must be an admin to access this page."
       });
     }
-  }, [profile, navigate, toast]);
+  }, [session, profile, isLoading, navigate, toast]);
 
-  if (!profile) {
+  if (isLoading || !profile || !session) {
     return null;
   }
 
