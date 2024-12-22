@@ -53,10 +53,20 @@ export const HeaderAuth = () => {
   if (!profile) {
     return (
       <div className="hidden lg:flex items-center gap-4">
-        <Button variant="ghost" size="sm" className="text-primary-foreground" asChild>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="text-primary-foreground bg-primary border-primary-foreground hover:bg-accent hover:text-accent-foreground" 
+          asChild
+        >
           <Link to="/signin">Sign In</Link>
         </Button>
-        <Button size="sm" className="bg-accent hover:bg-accent/90" asChild>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="text-primary-foreground bg-primary border-primary-foreground hover:bg-accent hover:text-accent-foreground" 
+          asChild
+        >
           <Link to="/signup">Sign Up</Link>
         </Button>
       </div>
