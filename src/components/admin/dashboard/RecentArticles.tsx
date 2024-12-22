@@ -18,7 +18,7 @@ export const RecentArticles = () => {
         .select(`
           *,
           category:categories(name),
-          author:profiles(email)
+          author:profiles!articles_author_id_fkey(email)
         `)
         .order('created_at', { ascending: false })
         .limit(5);
