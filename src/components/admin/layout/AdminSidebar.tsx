@@ -36,6 +36,10 @@ export const AdminSidebar = () => {
     });
   };
 
+  const handleNavigation = (url: string) => {
+    navigate(url);
+  };
+
   return (
     <Sidebar className="bg-[#222222] border-r border-[#333333]">
       <SidebarContent>
@@ -45,17 +49,15 @@ export const AdminSidebar = () => {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a 
-                      href={item.url} 
-                      className={cn(
-                        "flex items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-[#DC2626] transition-colors",
-                        location.pathname === item.url && "bg-[#DC2626]"
-                      )}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </a>
+                  <SidebarMenuButton 
+                    onClick={() => handleNavigation(item.url)}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-[#DC2626] transition-colors",
+                      location.pathname === item.url && "bg-[#DC2626]"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
