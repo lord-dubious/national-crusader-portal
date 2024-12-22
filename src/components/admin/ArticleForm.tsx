@@ -49,11 +49,14 @@ export const ArticleForm = ({ articleId, onSubmit }: ArticleFormProps) => {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
-      if (data) {
-        form.reset(data);
+    enabled: !!articleId,
+    meta: {
+      onSuccess: (data: any) => {
+        if (data) {
+          form.reset(data);
+        }
       }
-    },
+    }
   });
 
   const handleSubmit = async (data: any) => {
