@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { Newspaper } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Script from "@/components/ui/script";
 
 declare global {
@@ -78,7 +77,7 @@ export const NewspaperSection = () => {
         window.jQuery(flipBookContainer).html('');
         window.jQuery(flipBookContainer).dflip({
           source: selectedNewspaper,
-          height: 600,
+          height: 800,
           duration: 800,
           autoEnableOutline: true,
           webgl: true,
@@ -103,29 +102,36 @@ export const NewspaperSection = () => {
           <h2 className="text-2xl md:text-3xl font-bold text-white">Digital Newspapers</h2>
         </div>
 
-        <div className="mb-6">
-          <Select
-            value={selectedNewspaper || ""}
-            onValueChange={(value) => setSelectedNewspaper(value)}
-          >
-            <SelectTrigger className="w-full md:w-[300px] bg-[#333333] border-[#444444] text-white">
-              <SelectValue placeholder="Select a newspaper" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#333333] border-[#444444]">
-              {newspapers?.map((newspaper) => (
-                <SelectItem
-                  key={newspaper.id}
-                  value={newspaper.pdf_url}
-                  className="text-white hover:bg-[#444444]"
-                >
+        <div className="overflow-x-auto pb-4">
+          <div className="flex space-x-4 min-w-max">
+            {newspapers?.map((newspaper) => (
+              <div
+                key={newspaper.id}
+                onClick={() => setSelectedNewspaper(newspaper.pdf_url)}
+                className="cursor-pointer group"
+              >
+                <div className="w-48 h-64 bg-[#333333] rounded-lg overflow-hidden transition-transform transform group-hover:scale-105">
+                  <iframe
+                    src={`${newspaper.pdf_url}#page=1&toolbar=0`}
+                    className="w-full h-full pointer-events-none"
+                    title={newspaper.title}
+                  />
+                </div>
+                <p className="mt-2 text-white text-center text-sm truncate">
                   {newspaper.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div id="flipbook" className="aspect-[3/2] bg-[#333333] rounded-lg overflow-hidden" />
+        {selectedNewspaper && (
+          <div 
+            id="flipbook" 
+            className="mt-8 bg-[#333333] rounded-lg overflow-hidden"
+            style={{ height: selectedNewspaper ? '800px' : '0' }}
+          />
+        )}
       </div>
     </section>
   );
