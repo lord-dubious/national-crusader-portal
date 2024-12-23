@@ -59,7 +59,7 @@ export const NewspaperSection = () => {
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white">Latest Newspapers</h2>
           <div className="h-1 bg-accent flex-grow ml-4 rounded hidden sm:block" />
         </div>
-        <ScrollArea className="w-full whitespace-nowrap">
+        <ScrollArea className="w-full whitespace-nowrap cursor-grab active:cursor-grabbing">
           <div className="flex space-x-6 pb-4">
             {pdfs.map((pdf) => (
               <div key={pdf.id} className="w-[300px] flex-none">
@@ -67,7 +67,7 @@ export const NewspaperSection = () => {
               </div>
             ))}
           </div>
-          <ScrollBar orientation="horizontal" className="bg-accent/20" />
+          <ScrollBar orientation="horizontal" className="bg-accent/20 opacity-0 transition-opacity hover:opacity-100 group-hover/scroll:opacity-100" />
         </ScrollArea>
       </div>
     </section>

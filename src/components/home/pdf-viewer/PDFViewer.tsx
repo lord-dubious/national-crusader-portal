@@ -82,7 +82,7 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
               changePage(-1);
             }}
             disabled={pageNumber <= 1}
-            className="h-6 w-6 border-accent hover:bg-accent/10 hover:text-accent text-white/80"
+            className="h-6 w-6 bg-black border-accent hover:bg-accent/10 hover:text-accent text-white/80"
           >
             <ChevronLeft className="h-3 w-3" />
           </Button>
@@ -99,7 +99,7 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
               changePage(1);
             }}
             disabled={pageNumber >= numPages}
-            className="h-6 w-6 border-accent hover:bg-accent/10 hover:text-accent text-white/80"
+            className="h-6 w-6 bg-black border-accent hover:bg-accent/10 hover:text-accent text-white/80"
           >
             <ChevronRight className="h-3 w-3" />
           </Button>
@@ -140,7 +140,7 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
                   size="icon"
                   onClick={() => changePage(-1, true)}
                   disabled={expandedPageNumber <= 1}
-                  className="h-8 w-8 border-accent hover:bg-accent/10 hover:text-accent text-white/80"
+                  className="h-8 w-8 bg-black border-accent hover:bg-accent/10 hover:text-accent text-white/80"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -154,7 +154,7 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
                   size="icon"
                   onClick={() => changePage(1, true)}
                   disabled={expandedPageNumber >= numPages}
-                  className="h-8 w-8 border-accent hover:bg-accent/10 hover:text-accent text-white/80"
+                  className="h-8 w-8 bg-black border-accent hover:bg-accent/10 hover:text-accent text-white/80"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
