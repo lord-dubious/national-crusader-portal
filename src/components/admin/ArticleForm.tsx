@@ -15,7 +15,7 @@ interface ArticleFormProps {
 export const ArticleForm = ({ articleId }: ArticleFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { form, article } = useArticleForm(articleId);
+  const { form, article, isLoading } = useArticleForm(articleId);
 
   const onSubmit = async (values: ArticleFormValues) => {
     try {
@@ -34,12 +34,15 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
       const { tag_ids, ...articleDataWithoutTags } = articleData;
 
       if (article) {
+        console.log("Updating article with data:", articleDataWithoutTags); // Debug log
+        
         // Update the article
         const { error: articleError } = await supabase
           .from("articles")
           .update({
             ...articleDataWithoutTags,
             updated_at: new Date().toISOString(),
+            is_featured: values.is_featured, // Explicitly include is_featured
           })
           .eq("id", article.id);
 
@@ -69,7 +72,10 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
       } else {
         const { data: newArticle, error: articleError } = await supabase
           .from("articles")
-          .insert([articleDataWithoutTags])
+          .insert([{
+            ...articleDataWithoutTags,
+            is_featured: values.is_featured, // Explicitly include is_featured
+          }])
           .select()
           .single();
 
@@ -100,6 +106,10 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
       });
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Form {...form}>

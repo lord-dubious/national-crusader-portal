@@ -21,9 +21,11 @@ export const useArticleForm = (articleId?: string) => {
     },
   });
 
-  const { data: article } = useQuery({
+  const { data: article, isLoading } = useQuery({
     queryKey: ["article", articleId],
     queryFn: async () => {
+      if (!articleId) return null;
+      
       // First, get the article data
       const { data: articleData, error: articleError } = await supabase
         .from("articles")
@@ -66,15 +68,23 @@ export const useArticleForm = (articleId?: string) => {
     enabled: !!articleId,
   });
 
+  // Update form values when article data is loaded
   React.useEffect(() => {
     if (article) {
+      console.log("Setting form values:", article); // Debug log
       form.reset({
-        ...article,
+        title: article.title,
+        content: article.content,
         category_id: article.category_id,
+        status: article.status || "draft",
+        excerpt: article.excerpt,
+        featured_image: article.featured_image,
+        is_featured: article.is_featured || false,
+        author_id: article.author_id,
         tag_ids: article.tag_ids,
       });
     }
   }, [article, form]);
 
-  return { form, article };
+  return { form, article, isLoading };
 };
