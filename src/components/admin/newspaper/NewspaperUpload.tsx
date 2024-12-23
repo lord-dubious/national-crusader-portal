@@ -2,6 +2,8 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { Progress } from "@/components/ui/progress";
+import { Loader2 } from "lucide-react";
 
 interface NewspaperUploadProps {
   onUploadSuccess: () => void;
@@ -10,11 +12,11 @@ interface NewspaperUploadProps {
 export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [title, setTitle] = useState("");
 
   const uploadPDF = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      setUploading(true);
       const file = event.target.files?.[0];
       if (!file) return;
 
@@ -27,19 +29,41 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
         return;
       }
 
+      setUploading(true);
+      setUploadProgress(0);
+
+      // Show initial upload status
+      const uploadToast = toast({
+        title: "Upload started",
+        description: "Uploading PDF file...",
+      });
+
       const fileExt = file.name.split('.').pop();
       const filePath = `${Math.random()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      // Upload the file with progress tracking
+      const { error: uploadError, data } = await supabase.storage
         .from('newspapers')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          onUploadProgress: (progress) => {
+            const percent = (progress.loaded / progress.total) * 100;
+            setUploadProgress(percent);
+            
+            // Update toast with progress
+            uploadToast.update({
+              description: `Uploading: ${Math.round(percent)}%`
+            });
+          }
+        });
 
       if (uploadError) throw uploadError;
 
+      // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('newspapers')
         .getPublicUrl(filePath);
 
+      // Insert into database
       const { error: dbError } = await supabase
         .from('newspapers')
         .insert({
@@ -50,10 +74,14 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
 
       if (dbError) throw dbError;
 
-      onUploadSuccess();
+      // Clear form and show success
       setTitle("");
+      setUploadProgress(100);
+      onUploadSuccess();
+      
+      uploadToast.dismiss();
       toast({
-        title: "PDF uploaded",
+        title: "Upload complete",
         description: "Your newspaper has been uploaded successfully."
       });
     } catch (error) {
@@ -64,6 +92,7 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
       });
     } finally {
       setUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -74,15 +103,27 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
         placeholder="Enter newspaper title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        disabled={uploading}
         className="bg-[#333333] border-[#444444] text-white"
       />
-      <Input
-        type="file"
-        onChange={uploadPDF}
-        disabled={uploading}
-        accept="application/pdf"
-        className="bg-[#333333] border-[#444444] text-white file:bg-[#444444] file:text-white file:border-[#555555] hover:file:bg-[#DC2626] file:transition-colors"
-      />
+      <div className="space-y-2">
+        <Input
+          type="file"
+          onChange={uploadPDF}
+          disabled={uploading}
+          accept="application/pdf"
+          className="bg-[#333333] border-[#444444] text-white file:bg-[#444444] file:text-white file:border-[#555555] hover:file:bg-[#DC2626] file:transition-colors"
+        />
+        {uploading && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin text-white" />
+              <span className="text-sm text-white">Uploading...</span>
+            </div>
+            <Progress value={uploadProgress} className="h-2 bg-[#444444]" />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
