@@ -28,14 +28,16 @@ export const useArticleForm = (articleId?: string) => {
       
       console.log("Fetching article with ID:", articleId); // Debug log
       
-      // First, get the article data
+      // First, get the article data and related tags
       const { data: articleData, error: articleError } = await supabase
         .from("articles")
         .select(`
           *,
           category:categories(id, name),
           author:profiles(id, email),
-          tags:article_tags(tag_id)
+          tags:article_tags(
+            tag:tags(id, name)
+          )
         `)
         .eq("id", articleId)
         .single();
@@ -51,11 +53,21 @@ export const useArticleForm = (articleId?: string) => {
 
       console.log("Fetched article data:", articleData); // Debug log
 
-      // Extract tag IDs from the article_tags relation
-      const tagIds = articleData.tags?.map((tag: { tag_id: number }) => tag.tag_id) || [];
-      
+      // Transform the nested tags data into the expected format
+      const transformedTags = articleData.tags?.map(
+        (tagRelation: { tag: { id: number; name: string } }) => ({
+          id: tagRelation.tag.id,
+          name: tagRelation.tag.name,
+        })
+      ) || [];
+
+      // Extract tag IDs for the form
+      const tagIds = transformedTags.map((tag) => tag.id);
+
+      // Return the article data with the correct tag structure
       return {
         ...articleData,
+        tags: transformedTags,
         tag_ids: tagIds,
       } as Article & { tag_ids: number[] };
     },
