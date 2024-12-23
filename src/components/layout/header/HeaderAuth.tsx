@@ -63,7 +63,7 @@ export const HeaderAuth = () => {
           className="text-primary-foreground bg-primary border-primary-foreground hover:bg-accent hover:text-accent-foreground" 
           asChild
         >
-          <Link to="/login">Sign In</Link>
+          <Link to="/signin">Sign In</Link>
         </Button>
         <Button 
           variant="outline" 
@@ -71,7 +71,7 @@ export const HeaderAuth = () => {
           className="text-primary-foreground bg-primary border-primary-foreground hover:bg-accent hover:text-accent-foreground" 
           asChild
         >
-          <Link to="/register">Sign Up</Link>
+          <Link to="/signup">Sign Up</Link>
         </Button>
       </div>
     );

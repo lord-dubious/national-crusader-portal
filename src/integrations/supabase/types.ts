@@ -93,36 +93,6 @@ export type Database = {
         }
         Relationships: []
       }
-      newspapers: {
-        Row: {
-          created_at: string | null
-          id: number
-          pdf_url: string
-          published_at: string | null
-          status: string | null
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: number
-          pdf_url: string
-          published_at?: string | null
-          status?: string | null
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: number
-          pdf_url?: string
-          published_at?: string | null
-          status?: string | null
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string | null
