@@ -61,7 +61,7 @@ export const NewspaperSection = () => {
     jqueryScript.onload = () => {
       // After jQuery loads, add the flip-book script
       const flipBookScript = document.createElement("script");
-      flipBookScript.src = "https://cdn.jsdelivr.net/npm/flip-book-jquery";
+      flipBookScript.src = "https://cdn.jsdelivr.net/npm/flip-book";
       flipBookScript.async = true;
       document.body.appendChild(flipBookScript);
     };
