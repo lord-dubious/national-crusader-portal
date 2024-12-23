@@ -24,14 +24,10 @@ export const useArticleForm = (articleId?: string) => {
   const { data: article } = useQuery({
     queryKey: ["article", articleId],
     queryFn: async () => {
+      // First, get the article data
       const { data: articleData, error: articleError } = await supabase
         .from("articles")
-        .select(`
-          *,
-          article_tags(
-            tag_id
-          )
-        `)
+        .select("*")
         .eq("id", articleId)
         .single();
 
@@ -44,8 +40,23 @@ export const useArticleForm = (articleId?: string) => {
         throw articleError;
       }
 
+      // Then, get the article's tags
+      const { data: articleTags, error: tagsError } = await supabase
+        .from("article_tags")
+        .select("tag_id")
+        .eq("article_id", articleId);
+
+      if (tagsError) {
+        toast({
+          variant: "destructive",
+          title: "Error fetching article tags",
+          description: tagsError.message,
+        });
+        throw tagsError;
+      }
+
       // Extract tag IDs from the article_tags relation
-      const tagIds = articleData.article_tags?.map((at: any) => at.tag_id) || [];
+      const tagIds = articleTags.map((at) => at.tag_id);
       
       return {
         ...articleData,
