@@ -34,9 +34,13 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
       const { tag_ids, ...articleDataWithoutTags } = articleData;
 
       if (article) {
+        // Update the article
         const { error: articleError } = await supabase
           .from("articles")
-          .update(articleDataWithoutTags)
+          .update({
+            ...articleDataWithoutTags,
+            updated_at: new Date().toISOString(),
+          })
           .eq("id", article.id);
 
         if (articleError) throw articleError;
@@ -101,7 +105,10 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <ArticleFormFields form={form} />
-        <Button type="submit" className="w-full">
+        <Button 
+          type="submit" 
+          className="w-full bg-[#222222] text-white border-2 border-[#ea384c] hover:bg-[#333333] transition-colors"
+        >
           {article ? "Update" : "Create"} Article
         </Button>
       </form>
