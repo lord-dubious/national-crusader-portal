@@ -26,14 +26,12 @@ export const useArticleForm = (articleId?: string) => {
     queryFn: async () => {
       if (!articleId) return null;
       
-      console.log("Fetching article with ID:", articleId); // Debug log
+      console.log("Fetching article with ID:", articleId);
       
       const { data: articleData, error: articleError } = await supabase
         .from("articles")
         .select(`
           *,
-          category:categories(id, name),
-          author:profiles(id, email),
           article_tags!inner(
             tag:tags(id, name)
           )
@@ -61,7 +59,7 @@ export const useArticleForm = (articleId?: string) => {
         return null;
       }
 
-      console.log("Fetched article data:", articleData); // Debug log
+      console.log("Fetched article data:", articleData);
 
       // Transform the nested tags data into the expected format
       const transformedTags = articleData.article_tags?.map(
@@ -74,7 +72,6 @@ export const useArticleForm = (articleId?: string) => {
       // Extract tag IDs for the form
       const tagIds = transformedTags.map((tag) => tag.id);
 
-      // Return the article data with the correct tag structure
       return {
         ...articleData,
         tags: transformedTags,
@@ -87,7 +84,7 @@ export const useArticleForm = (articleId?: string) => {
   // Update form values when article data is loaded
   React.useEffect(() => {
     if (article) {
-      console.log("Setting form values:", article); // Debug log
+      console.log("Setting form values:", article);
       form.reset({
         title: article.title || "",
         content: article.content || "",

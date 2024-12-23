@@ -19,7 +19,8 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
 
   const onSubmit = async (values: ArticleFormValues) => {
     try {
-      console.log("Form values:", values); // Debug log
+      console.log("Form values:", values);
+      console.log("Article ID:", articleId);
 
       const slug = values.title
         .toLowerCase()
@@ -32,55 +33,50 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         published_at: values.status === "published" ? new Date().toISOString() : null,
       };
 
-      // Remove tag_ids from articleData as it's not a column in the articles table
       const { tag_ids, ...articleDataWithoutTags } = articleData;
 
-      if (article) {
-        console.log("Updating article with data:", articleDataWithoutTags); // Debug log
+      if (articleId) {
+        console.log("Updating article with data:", articleDataWithoutTags);
         
-        // Update the article
         const { error: articleError } = await supabase
           .from("articles")
           .update({
             ...articleDataWithoutTags,
             updated_at: new Date().toISOString(),
           })
-          .eq("id", article.id);
+          .eq("id", articleId);
 
         if (articleError) {
-          console.error("Error updating article:", articleError); // Debug log
+          console.error("Error updating article:", articleError);
           throw articleError;
         }
 
-        // Delete existing tags
         const { error: deleteError } = await supabase
           .from("article_tags")
           .delete()
-          .eq("article_id", article.id);
+          .eq("article_id", articleId);
 
         if (deleteError) {
-          console.error("Error deleting tags:", deleteError); // Debug log
+          console.error("Error deleting tags:", deleteError);
           throw deleteError;
         }
 
-        // Insert new tags if any
         if (tag_ids && tag_ids.length > 0) {
           const { error: tagError } = await supabase
             .from("article_tags")
             .insert(tag_ids.map(tagId => ({
-              article_id: article.id,
+              article_id: Number(articleId),
               tag_id: tagId
             })));
 
           if (tagError) {
-            console.error("Error inserting tags:", tagError); // Debug log
+            console.error("Error inserting tags:", tagError);
             throw tagError;
           }
         }
 
         toast({ title: "Article updated successfully" });
       } else {
-        // Create new article
         const { data: newArticle, error: articleError } = await supabase
           .from("articles")
           .insert([articleDataWithoutTags])
@@ -89,7 +85,6 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
 
         if (articleError) throw articleError;
 
-        // Insert tags if any
         if (tag_ids && tag_ids.length > 0 && newArticle) {
           const { error: tagError } = await supabase
             .from("article_tags")
@@ -104,10 +99,9 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         toast({ title: "Article created successfully" });
       }
 
-      // Important: Navigate after successful save
       navigate("/admin/articles");
     } catch (error: any) {
-      console.error("Error saving article:", error); // Debug log
+      console.error("Error saving article:", error);
       toast({
         variant: "destructive",
         title: "Error saving article",
@@ -122,21 +116,18 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
     </div>;
   }
 
-  if (articleId && !article) {
-    return <div className="flex items-center justify-center p-8">
-      <div className="text-lg text-white">Article not found</div>
-    </div>;
-  }
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <h1 className="text-2xl font-bold text-white mb-6">
+          {articleId ? "Edit Article" : "Create New Article"}
+        </h1>
         <ArticleFormFields form={form} />
         <Button 
           type="submit" 
           className="w-full bg-[#222222] text-white border-2 border-[#ea384c] hover:bg-[#333333] transition-colors"
         >
-          {article ? "Update" : "Create"} Article
+          {articleId ? "Update" : "Create"} Article
         </Button>
       </form>
     </Form>
