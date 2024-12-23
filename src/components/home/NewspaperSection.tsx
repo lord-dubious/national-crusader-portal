@@ -29,6 +29,7 @@ export const NewspaperSection = () => {
         });
         throw error;
       }
+      console.log("Fetched newspapers:", data); // Debug log
       return data;
     },
   });
@@ -55,7 +56,9 @@ export const NewspaperSection = () => {
 
   useEffect(() => {
     if (newspapers && window.DFlip) {
+      console.log("Initializing DFlip for newspapers:", newspapers); // Debug log
       newspapers.forEach((newspaper, index) => {
+        console.log(`Creating DFlip instance for newspaper ${index}:`, newspaper); // Debug log
         new window.DFlip(`#df-newspaper-${index}`, {
           webgl: true,
           height: 400,
@@ -73,7 +76,10 @@ export const NewspaperSection = () => {
     }
   }, [newspapers]);
 
-  if (!newspapers?.length) return null;
+  if (!newspapers?.length) {
+    console.log("No newspapers found"); // Debug log
+    return null;
+  }
 
   return (
     <section className="py-12 bg-muted animate-fade-up">
