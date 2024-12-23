@@ -106,6 +106,7 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
             onPageChange={(offset) => changePage(offset, true)}
             onZoom={handleZoom}
             onDocumentLoadSuccess={onDocumentLoadSuccess}
+            onClose={() => setIsOpen(false)} // Add onClose handler
           />
         </DialogContent>
       </Dialog>
