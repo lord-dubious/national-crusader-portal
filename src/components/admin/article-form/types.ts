@@ -12,6 +12,9 @@ export interface Article {
   published_at: string | null;
   slug: string;
   is_featured: boolean | null;
+  tags?: { id: number; name: string }[];
 }
 
-export type ArticleFormValues = Omit<Article, 'id' | 'created_at' | 'updated_at' | 'published_at' | 'slug'>;
+export type ArticleFormValues = Omit<Article, 'id' | 'created_at' | 'updated_at' | 'published_at' | 'slug'> & {
+  tag_ids?: number[];
+};

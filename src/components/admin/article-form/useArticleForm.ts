@@ -17,28 +17,40 @@ export const useArticleForm = (articleId?: string) => {
       featured_image: null,
       is_featured: false,
       author_id: null,
+      tag_ids: [],
     },
   });
 
-  const { data: article } = useQuery<Article>({
+  const { data: article } = useQuery({
     queryKey: ["article", articleId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: articleData, error: articleError } = await supabase
         .from("articles")
-        .select("*")
+        .select(`
+          *,
+          article_tags(
+            tag_id
+          )
+        `)
         .eq("id", articleId)
-        .maybeSingle();
+        .single();
 
-      if (error) {
+      if (articleError) {
         toast({
           variant: "destructive",
           title: "Error fetching article",
-          description: error.message,
+          description: articleError.message,
         });
-        throw error;
+        throw articleError;
       }
 
-      return data as Article;
+      // Extract tag IDs from the article_tags relation
+      const tagIds = articleData.article_tags?.map((at: any) => at.tag_id) || [];
+      
+      return {
+        ...articleData,
+        tag_ids: tagIds,
+      } as Article & { tag_ids: number[] };
     },
     enabled: !!articleId,
   });
@@ -48,6 +60,7 @@ export const useArticleForm = (articleId?: string) => {
       form.reset({
         ...article,
         category_id: article.category_id,
+        tag_ids: article.tag_ids,
       });
     }
   }, [article, form]);

@@ -30,20 +30,59 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         published_at: values.status === "published" ? new Date().toISOString() : null,
       };
 
+      // Remove tag_ids from articleData as it's not a column in the articles table
+      const { tag_ids, ...articleDataWithoutTags } = articleData;
+
       if (article) {
-        const { error } = await supabase
+        const { error: articleError } = await supabase
           .from("articles")
-          .update(articleData)
+          .update(articleDataWithoutTags)
           .eq("id", article.id);
 
-        if (error) throw error;
+        if (articleError) throw articleError;
+
+        // Delete existing tags
+        const { error: deleteError } = await supabase
+          .from("article_tags")
+          .delete()
+          .eq("article_id", article.id);
+
+        if (deleteError) throw deleteError;
+
+        // Insert new tags if any
+        if (tag_ids && tag_ids.length > 0) {
+          const { error: tagError } = await supabase
+            .from("article_tags")
+            .insert(tag_ids.map(tagId => ({
+              article_id: article.id,
+              tag_id: tagId
+            })));
+
+          if (tagError) throw tagError;
+        }
+
         toast({ title: "Article updated successfully" });
       } else {
-        const { error } = await supabase
+        const { data: newArticle, error: articleError } = await supabase
           .from("articles")
-          .insert([articleData]);
+          .insert([articleDataWithoutTags])
+          .select()
+          .single();
 
-        if (error) throw error;
+        if (articleError) throw articleError;
+
+        // Insert tags if any
+        if (tag_ids && tag_ids.length > 0) {
+          const { error: tagError } = await supabase
+            .from("article_tags")
+            .insert(tag_ids.map(tagId => ({
+              article_id: newArticle.id,
+              tag_id: tagId
+            })));
+
+          if (tagError) throw tagError;
+        }
+
         toast({ title: "Article created successfully" });
       }
 
