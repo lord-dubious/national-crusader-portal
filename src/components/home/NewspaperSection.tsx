@@ -6,7 +6,8 @@ import { useEffect } from "react";
 
 declare global {
   interface Window {
-    DFlip: any;
+    jQuery: any;
+    $: any;
   }
 }
 
@@ -51,47 +52,64 @@ export const NewspaperSection = () => {
   });
 
   useEffect(() => {
-    // Load DearFlip script
-    const script = document.createElement("script");
-    script.src = "https://cdn.dearflip.com/dearflip.js";
-    script.async = true;
-    document.body.appendChild(script);
+    // Load jQuery first
+    const jqueryScript = document.createElement("script");
+    jqueryScript.src = "https://code.jquery.com/jquery-3.7.1.min.js";
+    jqueryScript.async = true;
+    document.body.appendChild(jqueryScript);
 
-    // Load DearFlip CSS
-    const link = document.createElement("link");
-    link.href = "https://cdn.dearflip.com/dearflip.css";
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    document.head.appendChild(link);
+    jqueryScript.onload = () => {
+      // After jQuery loads, add the flip-book script
+      const flipBookScript = document.createElement("script");
+      flipBookScript.src = "https://cdn.jsdelivr.net/npm/flip-book-jquery";
+      flipBookScript.async = true;
+      document.body.appendChild(flipBookScript);
+    };
 
     return () => {
-      document.body.removeChild(script);
-      document.head.removeChild(link);
+      document.body.querySelectorAll('script').forEach(script => {
+        if (script.src.includes('jquery') || script.src.includes('flip-book')) {
+          document.body.removeChild(script);
+        }
+      });
     };
   }, []);
 
   useEffect(() => {
-    if (pdfs && window.DFlip) {
-      console.log("Initializing DFlip for PDFs:", pdfs);
+    if (pdfs && window.jQuery) {
+      console.log("Initializing flip-book for PDFs:", pdfs);
       pdfs.forEach((pdf, index) => {
         const pdfUrl = `${supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl}`;
-        console.log(`Creating DFlip instance for PDF ${index}:`, pdfUrl);
+        console.log(`Creating flip-book instance for PDF ${index}:`, pdfUrl);
         try {
-          new window.DFlip(`#df-newspaper-${index}`, {
-            webgl: true,
-            height: 400,
-            duration: 800,
-            direction: 1,
-            backgroundColor: "rgb(241, 241, 241)",
-            soundEnable: true,
-            autoEnableOutline: true,
-            enableDownload: false,
-            source: pdfUrl,
-            autoPlay: false,
-            autoPlayStart: false,
+          window.jQuery(`#flip-book-${index}`).flipBook({
+            pdfUrl: pdfUrl,
+            lightBox: true,
+            layout: 3,
+            currentPage: {
+              color: "#000000",
+              fontSize: 12
+            },
+            btnShare: {
+              enabled: false
+            },
+            btnPrint: {
+              enabled: false
+            },
+            btnDownloadPages: {
+              enabled: false
+            },
+            btnDownloadPdf: {
+              enabled: false
+            },
+            btnColor: 'rgb(255, 120, 60)',
+            sideBtnColor: 'rgb(255, 120, 60)',
+            sideBtnSize: 60,
+            sideBtnBackground: "rgba(0,0,0,0.7)",
+            sideBtnRadius: 60
           });
         } catch (err) {
-          console.error(`Error initializing DFlip for PDF ${index}:`, err);
+          console.error(`Error initializing flip-book for PDF ${index}:`, err);
           toast({
             variant: "destructive",
             title: "PDF Viewer Error",
@@ -132,8 +150,8 @@ export const NewspaperSection = () => {
               className="flex-none w-[300px]"
             >
               <div 
-                id={`df-newspaper-${index}`}
-                className="dearflip-volume"
+                id={`flip-book-${index}`}
+                className="flip-book"
                 style={{ width: "100%", height: "400px" }}
               />
               <h3 className="mt-4 font-medium text-lg">
