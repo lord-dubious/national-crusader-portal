@@ -3,7 +3,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ZoomControls } from "./ZoomControls";
 import { PageNavigation } from "./PageNavigation";
 import { useSwipeable } from "react-swipeable";
-import { X } from "lucide-react"; // Import the X icon
+import { X } from "lucide-react";
 
 interface ExpandedViewProps {
   pdfUrl: string;
@@ -13,7 +13,7 @@ interface ExpandedViewProps {
   onPageChange: (offset: number) => void;
   onZoom: (delta: number) => void;
   onDocumentLoadSuccess: ({ numPages }: { numPages: number }) => void;
-  onClose: () => void; // Add onClose prop
+  onClose: () => void;
 }
 
 export const ExpandedView = ({
@@ -24,7 +24,7 @@ export const ExpandedView = ({
   onPageChange,
   onZoom,
   onDocumentLoadSuccess,
-  onClose, // Destructure onClose
+  onClose,
 }: ExpandedViewProps) => {
   const handlers = useSwipeable({
     onSwipedLeft: () => onPageChange(1),
@@ -43,25 +43,26 @@ export const ExpandedView = ({
 
   return (
     <ScrollArea 
-      className="h-full w-full" 
+      className="h-full w-full relative" 
       onWheel={handleWheel}
     >
+      {/* Exit button moved outside the controls div */}
+      <button 
+        onClick={onClose} 
+        className="absolute right-4 top-4 z-50 p-2 bg-black/50 text-white hover:bg-white/20 rounded-full transition-colors"
+        aria-label="Close PDF Viewer"
+      >
+        <X className="h-5 w-5" />
+      </button>
+
       <div className="flex flex-col items-center justify-start p-4 min-h-full" {...handlers}>
-        <div className="flex items-center justify-between w-full mb-4 px-2 relative">
+        <div className="flex items-center justify-between w-full mb-4 px-2">
           <ZoomControls scale={scale} onZoom={onZoom} />
           <PageNavigation 
             currentPage={pageNumber} 
             totalPages={numPages} 
             onPageChange={onPageChange} 
           />
-          {/* Add exit button */}
-          <button 
-            onClick={onClose} 
-            className="absolute right-0 top-0 p-2 text-white hover:bg-white/20 rounded-full transition-colors"
-            aria-label="Close PDF Viewer"
-          >
-            <X className="h-6 w-6" />
-          </button>
         </div>
 
         <div className="w-full h-full flex items-center justify-center overflow-hidden">
