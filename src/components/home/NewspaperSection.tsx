@@ -37,8 +37,8 @@ export const NewspaperSection = () => {
 
   if (isLoadingPDFs) {
     return (
-      <section className="py-12 bg-primary/5 animate-fade-up">
-        <div className="container mx-auto text-center text-primary">
+      <section className="py-12 bg-[#222222] animate-fade-up">
+        <div className="container mx-auto text-center text-white">
           Loading PDFs...
         </div>
       </section>
@@ -51,11 +51,11 @@ export const NewspaperSection = () => {
   }
 
   return (
-    <section className="py-12 bg-primary/5 animate-fade-up">
+    <section className="py-12 bg-[#222222] animate-fade-up">
       <div className="container mx-auto px-4">
         <div className="flex items-center mb-8">
           <Newspaper className="h-6 w-6 text-accent mr-2" />
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-primary">Latest Newspapers</h2>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white">Latest Newspapers</h2>
           <div className="h-1 bg-accent flex-grow ml-4 rounded hidden sm:block" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
