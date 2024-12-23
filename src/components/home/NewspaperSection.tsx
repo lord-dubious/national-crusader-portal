@@ -11,15 +11,6 @@ declare global {
   }
 }
 
-interface StorageFile {
-  name: string;
-  id: string;
-  updated_at: string;
-  created_at: string;
-  last_accessed_at: string;
-  metadata: any;
-}
-
 export const NewspaperSection = () => {
   const { toast } = useToast();
   const { 
@@ -52,26 +43,58 @@ export const NewspaperSection = () => {
 
   useEffect(() => {
     const loadScripts = async () => {
-      // First, load jQuery
+      // Load jQuery first
       const jqueryScript = document.createElement("script");
-      jqueryScript.src = "https://code.jquery.com/jquery-3.7.1.min.js";
+      jqueryScript.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js";
+      document.body.appendChild(jqueryScript);
+
       await new Promise((resolve) => {
         jqueryScript.onload = resolve;
-        document.body.appendChild(jqueryScript);
       });
 
-      // Then load the flip-book CSS
-      const flipBookCss = document.createElement("link");
-      flipBookCss.rel = "stylesheet";
-      flipBookCss.href = "https://3dflipbook.net/css/flipbook.style.css";
-      document.head.appendChild(flipBookCss);
+      // Load jQuery UI
+      const jqueryUIScript = document.createElement("script");
+      jqueryUIScript.src = "https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js";
+      document.body.appendChild(jqueryUIScript);
 
-      // Finally load the flip-book script
+      await new Promise((resolve) => {
+        jqueryUIScript.onload = resolve;
+      });
+
+      // Load Three.js
+      const threeScript = document.createElement("script");
+      threeScript.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+      document.body.appendChild(threeScript);
+
+      await new Promise((resolve) => {
+        threeScript.onload = resolve;
+      });
+
+      // Load PDF.js
+      const pdfScript = document.createElement("script");
+      pdfScript.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js";
+      document.body.appendChild(pdfScript);
+
+      await new Promise((resolve) => {
+        pdfScript.onload = resolve;
+      });
+
+      // Load 3D FlipBook
       const flipBookScript = document.createElement("script");
-      flipBookScript.src = "https://3dflipbook.net/js/flipbook.min.js";
+      flipBookScript.src = "https://raw.githack.com/Showkiip/3d-flipbook-jquery/main/3d-flip-book/js/html2canvas.min.js";
+      document.body.appendChild(flipBookScript);
+
       await new Promise((resolve) => {
         flipBookScript.onload = resolve;
-        document.body.appendChild(flipBookScript);
+      });
+
+      // Load the main flip book script
+      const mainFlipBookScript = document.createElement("script");
+      mainFlipBookScript.src = "https://raw.githack.com/Showkiip/3d-flipbook-jquery/main/3d-flip-book/js/3d-flip-book.min.js";
+      document.body.appendChild(mainFlipBookScript);
+
+      await new Promise((resolve) => {
+        mainFlipBookScript.onload = resolve;
       });
 
       // Initialize flip-books after all scripts are loaded
@@ -81,31 +104,25 @@ export const NewspaperSection = () => {
           const pdfUrl = `${supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl}`;
           console.log(`Creating flip-book instance for PDF ${index}:`, pdfUrl);
           try {
-            window.jQuery(`#flip-book-${index}`).flipBook({
-              pdfUrl: pdfUrl,
-              lightBox: true,
-              layout: 3,
-              currentPage: {
-                color: "#000000",
-                fontSize: 12
-              },
-              btnShare: {
-                enabled: false
-              },
-              btnPrint: {
-                enabled: false
-              },
-              btnDownloadPages: {
-                enabled: false
-              },
-              btnDownloadPdf: {
-                enabled: false
-              },
-              btnColor: 'rgb(255, 120, 60)',
-              sideBtnColor: 'rgb(255, 120, 60)',
-              sideBtnSize: 60,
-              sideBtnBackground: "rgba(0,0,0,0.7)",
-              sideBtnRadius: 60
+            window.jQuery(`#flip-book-${index}`).FlipBook({
+              pdf: pdfUrl,
+              template: {
+                html: "https://raw.githack.com/Showkiip/3d-flipbook-jquery/main/3d-flip-book/templates/default-book-view.html",
+                styles: [
+                  "https://raw.githack.com/Showkiip/3d-flipbook-jquery/main/3d-flip-book/css/font-awesome.min.css",
+                  "https://raw.githack.com/Showkiip/3d-flipbook-jquery/main/3d-flip-book/css/short-black-book-view.css"
+                ],
+                links: [
+                  {
+                    rel: "stylesheet",
+                    href: "https://raw.githack.com/Showkiip/3d-flipbook-jquery/main/3d-flip-book/css/font-awesome.min.css"
+                  },
+                  {
+                    rel: "stylesheet",
+                    href: "https://raw.githack.com/Showkiip/3d-flipbook-jquery/main/3d-flip-book/css/short-black-book-view.css"
+                  }
+                ]
+              }
             });
           } catch (err) {
             console.error(`Error initializing flip-book for PDF ${index}:`, err);
@@ -129,15 +146,15 @@ export const NewspaperSection = () => {
     });
 
     return () => {
-      // Cleanup scripts and CSS
+      // Cleanup scripts
       document.querySelectorAll('script').forEach(script => {
-        if (script.src.includes('jquery') || script.src.includes('flipbook')) {
+        if (
+          script.src.includes('jquery') ||
+          script.src.includes('three') ||
+          script.src.includes('pdf') ||
+          script.src.includes('flip-book')
+        ) {
           document.body.removeChild(script);
-        }
-      });
-      document.querySelectorAll('link').forEach(link => {
-        if (link.href.includes('flipbook')) {
-          document.head.removeChild(link);
         }
       });
     };
