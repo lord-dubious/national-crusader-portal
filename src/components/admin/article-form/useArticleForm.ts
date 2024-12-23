@@ -35,7 +35,7 @@ export const useArticleForm = (articleId?: string) => {
           *,
           category:categories(id, name),
           author:profiles(id, email),
-          tags:article_tags(
+          article_tags!inner(
             tag:tags(id, name)
           )
         `)
@@ -43,15 +43,17 @@ export const useArticleForm = (articleId?: string) => {
         .maybeSingle();
 
       if (articleError) {
+        console.error("Error fetching article:", articleError);
         toast({
           variant: "destructive",
           title: "Error fetching article",
           description: articleError.message,
         });
-        throw articleError;
+        return null;
       }
 
       if (!articleData) {
+        console.log("No article found with ID:", articleId);
         toast({
           variant: "destructive",
           title: "Article not found",
@@ -63,8 +65,8 @@ export const useArticleForm = (articleId?: string) => {
       console.log("Fetched article data:", articleData); // Debug log
 
       // Transform the nested tags data into the expected format
-      const transformedTags = articleData.tags?.map(
-        (tagRelation: { tag: { id: number; name: string } }) => ({
+      const transformedTags = articleData.article_tags?.map(
+        (tagRelation: any) => ({
           id: tagRelation.tag.id,
           name: tagRelation.tag.name,
         })

@@ -108,7 +108,15 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="flex items-center justify-center p-8">
+      <div className="text-lg text-white">Loading article...</div>
+    </div>;
+  }
+
+  if (articleId && !article) {
+    return <div className="flex items-center justify-center p-8">
+      <div className="text-lg text-white">Article not found</div>
+    </div>;
   }
 
   return (
