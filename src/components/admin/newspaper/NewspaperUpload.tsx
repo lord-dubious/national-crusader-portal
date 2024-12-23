@@ -22,7 +22,6 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
 
       if (!title.trim()) {
         toast({
-          id: "title-required",
           variant: "destructive",
           title: "Title required",
           description: "Please enter a title for the newspaper."
@@ -34,8 +33,7 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
       setUploadProgress(0);
 
       // Show initial upload status
-      const uploadStartToast = toast({
-        id: "upload-start",
+      toast({
         title: "Upload started",
         description: "Uploading PDF file..."
       });
@@ -55,7 +53,6 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
           
           // Update toast with progress
           toast({
-            id: "upload-progress",
             title: "Uploading",
             description: `Progress: ${Math.round(percent)}%`
           });
@@ -91,13 +88,11 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
       onUploadSuccess();
       
       toast({
-        id: "upload-complete",
         title: "Upload complete",
         description: "Your newspaper has been uploaded successfully."
       });
     } catch (error) {
       toast({
-        id: "upload-error",
         variant: "destructive",
         title: "Upload failed",
         description: error.message
