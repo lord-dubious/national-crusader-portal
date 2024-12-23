@@ -15,36 +15,36 @@ interface ArticleFormFieldsProps {
 export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
   return (
     <div className="space-y-8">
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
+      <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
         <TitleField form={form} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
           <CategoryField form={form} />
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
           <StatusField form={form} />
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
+      <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
         <TagsField form={form} />
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
+      <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
         <ContentField form={form} />
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
+      <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
         <FormField
           control={form.control}
           name="is_featured"
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg">
               <div className="space-y-0.5">
-                <FormLabel className="text-lg font-semibold">Featured Article</FormLabel>
-                <div className="text-sm text-muted-foreground">
+                <FormLabel className="text-lg font-semibold text-white">Featured Article</FormLabel>
+                <div className="text-sm text-gray-400">
                   Display this article in the hero section
                 </div>
               </div>
@@ -52,6 +52,7 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
                 <Switch
                   checked={field.value || false}
                   onCheckedChange={field.onChange}
+                  className="data-[state=checked]:bg-[#ea384c]"
                 />
               </FormControl>
             </FormItem>

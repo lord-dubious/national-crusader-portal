@@ -14,23 +14,23 @@ export const StatusField = ({ form }: StatusFieldProps) => {
       name="status"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-lg font-semibold">Status</FormLabel>
+          <FormLabel className="text-lg font-semibold text-white">Status</FormLabel>
           <Select
             onValueChange={field.onChange}
             value={field.value || "draft"}
           >
             <FormControl>
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="h-12 bg-[#333333] border-[#444444] text-white">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="published">Published</SelectItem>
-              <SelectItem value="archived">Archived</SelectItem>
+            <SelectContent className="bg-[#333333] border-[#444444]">
+              <SelectItem value="draft" className="text-white hover:bg-[#444444] focus:bg-[#444444] focus:text-white">Draft</SelectItem>
+              <SelectItem value="published" className="text-white hover:bg-[#444444] focus:bg-[#444444] focus:text-white">Published</SelectItem>
+              <SelectItem value="archived" className="text-white hover:bg-[#444444] focus:bg-[#444444] focus:text-white">Archived</SelectItem>
             </SelectContent>
           </Select>
-          <FormMessage />
+          <FormMessage className="text-[#ea384c]" />
         </FormItem>
       )}
     />

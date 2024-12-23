@@ -38,29 +38,29 @@ export const CategoryField = ({ form }: CategoryFieldProps) => {
       name="category_id"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-lg font-semibold">Category</FormLabel>
+          <FormLabel className="text-lg font-semibold text-white">Category</FormLabel>
           <Select
             onValueChange={field.onChange}
             value={field.value?.toString() || ""}
           >
             <FormControl>
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="h-12 bg-[#333333] border-[#444444] text-white">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
+            <SelectContent className="bg-[#333333] border-[#444444]">
               {categories?.map((category) => (
                 <SelectItem 
                   key={category.id} 
                   value={category.id.toString()}
-                  className="cursor-pointer hover:bg-accent"
+                  className="text-white hover:bg-[#444444] focus:bg-[#444444] focus:text-white cursor-pointer"
                 >
                   {category.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <FormMessage />
+          <FormMessage className="text-[#ea384c]" />
         </FormItem>
       )}
     />

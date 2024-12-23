@@ -14,15 +14,15 @@ export const TitleField = ({ form }: TitleFieldProps) => {
       name="title"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-lg font-semibold">Title</FormLabel>
+          <FormLabel className="text-lg font-semibold text-white">Title</FormLabel>
           <FormControl>
             <Input 
               placeholder="Enter a compelling title for your article" 
-              className="text-lg p-3"
+              className="text-lg p-3 bg-[#333333] border-[#444444] text-white placeholder:text-gray-400"
               {...field} 
             />
           </FormControl>
-          <FormMessage />
+          <FormMessage className="text-[#ea384c]" />
         </FormItem>
       )}
     />
