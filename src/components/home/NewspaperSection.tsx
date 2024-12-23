@@ -2,19 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Newspaper } from "lucide-react";
-import { useScriptLoader } from "./pdf-viewer/useScriptLoader";
 import { PDFViewer } from "./pdf-viewer/PDFViewer";
-
-declare global {
-  interface Window {
-    jQuery: any;
-    $: any;
-  }
-}
 
 export const NewspaperSection = () => {
   const { toast } = useToast();
-  const { isLoading: isLoadingScripts, error: scriptError } = useScriptLoader();
   
   const { 
     data: pdfs, 
@@ -44,7 +35,7 @@ export const NewspaperSection = () => {
     },
   });
 
-  if (isLoadingScripts || isLoadingPDFs) {
+  if (isLoadingPDFs) {
     return (
       <section className="py-12 bg-muted animate-fade-up">
         <div className="container mx-auto text-center">
@@ -54,8 +45,8 @@ export const NewspaperSection = () => {
     );
   }
 
-  if (scriptError || pdfError || !pdfs?.length) {
-    console.log("No PDFs found or error occurred", { scriptError, pdfError, pdfs });
+  if (pdfError || !pdfs?.length) {
+    console.log("No PDFs found or error occurred", { pdfError, pdfs });
     return null;
   }
 
@@ -67,9 +58,9 @@ export const NewspaperSection = () => {
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Latest Newspapers</h2>
           <div className="h-1 bg-accent flex-grow ml-4 rounded hidden sm:block" />
         </div>
-        <div className="flex overflow-x-auto gap-8 pb-4 -mx-4 px-4">
-          {pdfs.map((pdf, index) => (
-            <PDFViewer key={pdf.id} pdf={pdf} index={index} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {pdfs.map((pdf) => (
+            <PDFViewer key={pdf.id} pdf={pdf} />
           ))}
         </div>
       </div>
