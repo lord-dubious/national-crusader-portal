@@ -43,8 +43,8 @@ export const ExpandedView = ({
       className="h-full w-full" 
       onWheel={handleWheel}
     >
-      <div className="flex flex-col items-center justify-start p-6 min-h-full" {...handlers}>
-        <div className="flex items-center justify-between w-full mb-4">
+      <div className="flex flex-col items-center justify-start p-4 min-h-full" {...handlers}>
+        <div className="flex items-center justify-between w-full mb-4 px-2">
           <ZoomControls scale={scale} onZoom={onZoom} />
           <PageNavigation 
             currentPage={pageNumber} 
@@ -53,23 +53,26 @@ export const ExpandedView = ({
           />
         </div>
 
-        <Document
-          file={pdfUrl}
-          onLoadSuccess={onDocumentLoadSuccess}
-          loading={
-            <div className="flex items-center justify-center h-full text-white/80">
-              Loading PDF...
-            </div>
-          }
-        >
-          <Page 
-            pageNumber={pageNumber} 
-            scale={scale}
-            renderTextLayer={false}
-            renderAnnotationLayer={false}
-            className="max-w-full"
-          />
-        </Document>
+        <div className="w-full h-full flex items-center justify-center overflow-hidden">
+          <Document
+            file={pdfUrl}
+            onLoadSuccess={onDocumentLoadSuccess}
+            loading={
+              <div className="flex items-center justify-center h-full text-white/80">
+                Loading PDF...
+              </div>
+            }
+          >
+            <Page 
+              pageNumber={pageNumber} 
+              scale={scale}
+              renderTextLayer={false}
+              renderAnnotationLayer={false}
+              className="max-w-full h-auto"
+              width={Math.min(window.innerWidth * 0.85, 1000)}
+            />
+          </Document>
+        </div>
       </div>
       <ScrollBar orientation="vertical" className="bg-accent/20 opacity-0 transition-opacity hover:opacity-100" />
     </ScrollArea>
