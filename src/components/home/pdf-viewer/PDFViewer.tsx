@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { ChevronLeft, ChevronRight, Maximize2, ZoomIn, ZoomOut } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -22,6 +23,7 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [expandedPageNumber, setExpandedPageNumber] = useState<number>(1);
   const [isOpen, setIsOpen] = useState(false);
+  const [scale, setScale] = useState(1);
   const pdfUrl = supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl;
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
@@ -37,6 +39,18 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
       setPageNumber(prevPageNumber => 
         Math.min(Math.max(1, prevPageNumber + offset), numPages)
       );
+    }
+  };
+
+  const handleZoom = (delta: number) => {
+    setScale(prevScale => Math.min(Math.max(0.5, prevScale + delta), 3));
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      handleZoom(delta);
     }
   };
 
@@ -114,27 +128,58 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-[95vw] h-[90vh] bg-[#0A0A0A] border-accent/20">
-          <DialogTitle className="text-white/90">
-            {pdf.name.replace(/\.[^/.]+$/, "").replace(/-/g, " ")}
-          </DialogTitle>
-          <div className="flex flex-col items-center justify-center h-full overflow-auto">
-            <Document
-              file={pdfUrl}
-              onLoadSuccess={onDocumentLoadSuccess}
-              loading={
-                <div className="flex items-center justify-center h-full text-white/80">
-                  Loading PDF...
+        <DialogContent className="max-w-[95vw] h-[95vh] p-0 bg-[#0A0A0A] border-accent/20">
+          <ScrollArea 
+            className="h-full w-full" 
+            onWheel={handleWheel}
+          >
+            <div className="flex flex-col items-center justify-start p-6 min-h-full">
+              <div className="flex items-center justify-between w-full mb-4">
+                <h2 className="text-lg font-semibold text-white/90">
+                  {pdf.name.replace(/\.[^/.]+$/, "").replace(/-/g, " ")}
+                </h2>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleZoom(-0.1)}
+                    className="h-8 w-8 bg-black border-accent hover:bg-accent/10 hover:text-accent text-white/80"
+                  >
+                    <ZoomOut className="h-4 w-4" />
+                  </Button>
+                  <span className="text-sm text-white/80 min-w-[60px] text-center">
+                    {Math.round(scale * 100)}%
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleZoom(0.1)}
+                    className="h-8 w-8 bg-black border-accent hover:bg-accent/10 hover:text-accent text-white/80"
+                  >
+                    <ZoomIn className="h-4 w-4" />
+                  </Button>
                 </div>
-              }
-            >
-              <Page 
-                pageNumber={expandedPageNumber} 
-                width={Math.min(window.innerWidth * 0.9, window.innerHeight * 0.8 * 0.7)}
-                renderTextLayer={false}
-                renderAnnotationLayer={false}
-              />
-              <div className="flex items-center justify-center gap-4 mt-4">
+              </div>
+
+              <Document
+                file={pdfUrl}
+                onLoadSuccess={onDocumentLoadSuccess}
+                loading={
+                  <div className="flex items-center justify-center h-full text-white/80">
+                    Loading PDF...
+                  </div>
+                }
+              >
+                <Page 
+                  pageNumber={expandedPageNumber} 
+                  scale={scale}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                  className="max-w-full"
+                />
+              </Document>
+
+              <div className="flex items-center justify-center gap-4 mt-4 mb-2">
                 <Button
                   variant="outline"
                   size="icon"
@@ -159,8 +204,9 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
-            </Document>
-          </div>
+            </div>
+            <ScrollBar orientation="vertical" className="bg-accent/20 opacity-0 transition-opacity hover:opacity-100" />
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>
