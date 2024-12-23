@@ -1,62 +1,29 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import Index from "@/pages/Index";
-import SignIn from "@/pages/SignIn";
-import SignUp from "@/pages/SignUp";
-import AdminDashboard from "@/pages/AdminDashboard";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Index } from "@/pages/Index";
+import { SignIn } from "@/pages/SignIn";
+import { SignUp } from "@/pages/SignUp";
+import { AdminDashboard } from "@/pages/AdminDashboard";
 import { AdminArticleForm } from "@/pages/AdminArticleForm";
-
-// Create a QueryClient instance
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // Disable automatic refetching to improve performance
-      refetchOnWindowFocus: false,
-      // Set a default stale time of 5 minutes
-      staleTime: 1000 * 60 * 5,
-    },
-  },
-});
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Index />,
-  },
-  {
-    path: "/signin",
-    element: <SignIn />,
-  },
-  {
-    path: "/signup",
-    element: <SignUp />,
-  },
-  {
-    path: "/admin",
-    element: <AdminDashboard />,
-  },
-  {
-    path: "/admin/new-article",
-    element: <AdminArticleForm />,
-  },
-  {
-    path: "/admin/edit-article/:articleId",
-    element: <AdminArticleForm />,
-  },
-]);
+import { ArticlePage } from "@/pages/ArticlePage";
+import { CategoryPage } from "@/pages/CategoryPage";
+import { Toaster } from "@/components/ui/toaster";
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <RouterProvider router={router} />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/articles" element={<AdminDashboard />} />
+        <Route path="/admin/new-article" element={<AdminArticleForm />} />
+        <Route path="/admin/edit-article/:id" element={<AdminArticleForm />} />
+        <Route path="/articles/:slug" element={<ArticlePage />} />
+        <Route path="/categories/:slug" element={<CategoryPage />} />
+      </Routes>
+      <Toaster />
+    </Router>
   );
 }
 

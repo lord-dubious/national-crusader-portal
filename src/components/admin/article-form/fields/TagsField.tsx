@@ -1,5 +1,5 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { UseFormReturn } from "react-hook-form";
 import { ArticleFormValues } from "../types";
@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tag, X } from "lucide-react";
+import { useState } from "react";
 
 interface TagsFieldProps {
   form: UseFormReturn<ArticleFormValues>;
@@ -27,6 +28,8 @@ const PREDEFINED_TAGS = [
 
 export const TagsField = ({ form }: TagsFieldProps) => {
   const { toast } = useToast();
+  const [newTagInput, setNewTagInput] = useState("");
+
   const { data: tags } = useQuery({
     queryKey: ["tags"],
     queryFn: async () => {
@@ -49,18 +52,57 @@ export const TagsField = ({ form }: TagsFieldProps) => {
 
   const selectedTags = form.watch("tag_ids") || [];
 
-  const handleTagSelect = (tagId: string) => {
+  const handleTagSelect = (tagId: number) => {
     const currentTags = form.getValues("tag_ids") || [];
-    const tagIdNum = parseInt(tagId);
-    
-    if (!currentTags.includes(tagIdNum)) {
-      form.setValue("tag_ids", [...currentTags, tagIdNum]);
+    if (!currentTags.includes(tagId)) {
+      form.setValue("tag_ids", [...currentTags, tagId]);
     }
   };
 
   const handleRemoveTag = (tagId: number) => {
     const currentTags = form.getValues("tag_ids") || [];
     form.setValue("tag_ids", currentTags.filter(id => id !== tagId));
+  };
+
+  const handleNewTagInputKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const tagNames = newTagInput.split(',').map(tag => tag.trim()).filter(Boolean);
+      
+      for (const tagName of tagNames) {
+        if (tagName) {
+          // Check if tag already exists
+          const existingTag = [...(tags || []), ...PREDEFINED_TAGS].find(
+            t => t.name.toLowerCase() === tagName.toLowerCase()
+          );
+
+          if (existingTag) {
+            handleTagSelect(existingTag.id);
+          } else {
+            // Create new tag
+            const { data: newTag, error } = await supabase
+              .from("tags")
+              .insert([{ 
+                name: tagName,
+                slug: tagName.toLowerCase().replace(/[^a-z0-9]+/g, "-")
+              }])
+              .select()
+              .single();
+
+            if (error) {
+              toast({
+                variant: "destructive",
+                title: "Error creating tag",
+                description: error.message
+              });
+            } else if (newTag) {
+              handleTagSelect(newTag.id);
+            }
+          }
+        }
+      }
+      setNewTagInput("");
+    }
   };
 
   return (
@@ -83,33 +125,22 @@ export const TagsField = ({ form }: TagsFieldProps) => {
                     ? "bg-[#ea384c] text-white hover:bg-[#ea384c]/90"
                     : "border-[#ea384c] text-white hover:bg-[#ea384c]/10"
                 }`}
-                onClick={() => handleTagSelect(tag.id.toString())}
+                onClick={() => handleTagSelect(tag.id)}
               >
                 {tag.name}
               </Badge>
             ))}
           </div>
           <div className="mt-4">
-            <Select onValueChange={handleTagSelect}>
-              <FormControl>
-                <SelectTrigger 
-                  className="h-10 bg-[#333333] border-[#ea384c] text-white"
-                >
-                  <SelectValue placeholder="Add custom tag" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent className="bg-[#333333] border-[#ea384c]">
-                {tags?.map((tag) => (
-                  <SelectItem 
-                    key={tag.id} 
-                    value={tag.id.toString()}
-                    className="text-white cursor-pointer hover:bg-[#ea384c]/10 focus:bg-[#ea384c]/10"
-                  >
-                    {tag.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FormControl>
+              <Input
+                placeholder="Add new tags (separate with comma)"
+                value={newTagInput}
+                onChange={(e) => setNewTagInput(e.target.value)}
+                onKeyDown={handleNewTagInputKeyDown}
+                className="h-10 bg-[#333333] border-[#ea384c] text-white placeholder:text-gray-400"
+              />
+            </FormControl>
           </div>
           <div className="flex flex-wrap gap-1.5 mt-2">
             {selectedTags.map((tagId) => {
