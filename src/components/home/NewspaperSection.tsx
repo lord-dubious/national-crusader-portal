@@ -30,7 +30,7 @@ export const NewspaperSection = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .storage
-        .from('newspapers')
+        .from('pdf_newspapers')
         .list();
       
       if (error) {
@@ -74,7 +74,7 @@ export const NewspaperSection = () => {
     if (pdfs && window.DFlip) {
       console.log("Initializing DFlip for PDFs:", pdfs);
       pdfs.forEach((pdf, index) => {
-        const pdfUrl = `${supabase.storage.from('newspapers').getPublicUrl(pdf.name).data.publicUrl}`;
+        const pdfUrl = `${supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl}`;
         console.log(`Creating DFlip instance for PDF ${index}:`, pdfUrl);
         try {
           new window.DFlip(`#df-newspaper-${index}`, {
