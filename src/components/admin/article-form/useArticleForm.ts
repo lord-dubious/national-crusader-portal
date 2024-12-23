@@ -26,10 +26,17 @@ export const useArticleForm = (articleId?: string) => {
     queryFn: async () => {
       if (!articleId) return null;
       
+      console.log("Fetching article with ID:", articleId); // Debug log
+      
       // First, get the article data
       const { data: articleData, error: articleError } = await supabase
         .from("articles")
-        .select("*")
+        .select(`
+          *,
+          category:categories(id, name),
+          author:profiles(id, email),
+          tags:article_tags(tag_id)
+        `)
         .eq("id", articleId)
         .single();
 
@@ -42,23 +49,10 @@ export const useArticleForm = (articleId?: string) => {
         throw articleError;
       }
 
-      // Then, get the article's tags
-      const { data: articleTags, error: tagsError } = await supabase
-        .from("article_tags")
-        .select("tag_id")
-        .eq("article_id", articleId);
-
-      if (tagsError) {
-        toast({
-          variant: "destructive",
-          title: "Error fetching article tags",
-          description: tagsError.message,
-        });
-        throw tagsError;
-      }
+      console.log("Fetched article data:", articleData); // Debug log
 
       // Extract tag IDs from the article_tags relation
-      const tagIds = articleTags.map((at) => at.tag_id);
+      const tagIds = articleData.tags?.map((tag: { tag_id: number }) => tag.tag_id) || [];
       
       return {
         ...articleData,
@@ -73,15 +67,15 @@ export const useArticleForm = (articleId?: string) => {
     if (article) {
       console.log("Setting form values:", article); // Debug log
       form.reset({
-        title: article.title,
-        content: article.content,
+        title: article.title || "",
+        content: article.content || "",
         category_id: article.category_id,
         status: article.status || "draft",
-        excerpt: article.excerpt,
-        featured_image: article.featured_image,
+        excerpt: article.excerpt || "",
+        featured_image: article.featured_image || null,
         is_featured: article.is_featured || false,
         author_id: article.author_id,
-        tag_ids: article.tag_ids,
+        tag_ids: article.tag_ids || [],
       });
     }
   }, [article, form]);
