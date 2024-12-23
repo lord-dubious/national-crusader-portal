@@ -40,7 +40,7 @@ export const useArticleForm = (articleId?: string) => {
           )
         `)
         .eq("id", articleId)
-        .single();
+        .maybeSingle();
 
       if (articleError) {
         toast({
@@ -49,6 +49,15 @@ export const useArticleForm = (articleId?: string) => {
           description: articleError.message,
         });
         throw articleError;
+      }
+
+      if (!articleData) {
+        toast({
+          variant: "destructive",
+          title: "Article not found",
+          description: "The requested article could not be found.",
+        });
+        return null;
       }
 
       console.log("Fetched article data:", articleData); // Debug log
@@ -69,7 +78,7 @@ export const useArticleForm = (articleId?: string) => {
         ...articleData,
         tags: transformedTags,
         tag_ids: tagIds,
-      } as Article & { tag_ids: number[] };
+      };
     },
     enabled: !!articleId,
   });
