@@ -28,7 +28,6 @@ export const useArticleForm = (articleId?: string) => {
       
       console.log("Fetching article with ID:", articleId); // Debug log
       
-      // First, get the article data and related tags
       const { data: articleData, error: articleError } = await supabase
         .from("articles")
         .select(`
