@@ -17,87 +17,40 @@ export const useArticleForm = (articleId?: string) => {
       featured_image: null,
       is_featured: false,
       author_id: null,
-      tag_ids: [],
     },
   });
 
-  const { data: article, isLoading } = useQuery({
+  const { data: article } = useQuery<Article>({
     queryKey: ["article", articleId],
     queryFn: async () => {
-      if (!articleId) return null;
-      
-      console.log("Fetching article with ID:", articleId);
-      
-      const { data: articleData, error: articleError } = await supabase
+      const { data, error } = await supabase
         .from("articles")
-        .select(`
-          *,
-          article_tags!inner(
-            tag:tags(id, name)
-          )
-        `)
+        .select("*")
         .eq("id", articleId)
         .maybeSingle();
 
-      if (articleError) {
-        console.error("Error fetching article:", articleError);
+      if (error) {
         toast({
           variant: "destructive",
           title: "Error fetching article",
-          description: articleError.message,
+          description: error.message,
         });
-        return null;
+        throw error;
       }
 
-      if (!articleData) {
-        console.log("No article found with ID:", articleId);
-        toast({
-          variant: "destructive",
-          title: "Article not found",
-          description: "The requested article could not be found.",
-        });
-        return null;
-      }
-
-      console.log("Fetched article data:", articleData);
-
-      // Transform the nested tags data into the expected format
-      const transformedTags = articleData.article_tags?.map(
-        (tagRelation: any) => ({
-          id: tagRelation.tag.id,
-          name: tagRelation.tag.name,
-        })
-      ) || [];
-
-      // Extract tag IDs for the form
-      const tagIds = transformedTags.map((tag) => tag.id);
-
-      return {
-        ...articleData,
-        tags: transformedTags,
-        tag_ids: tagIds,
-      };
+      return data as Article;
     },
     enabled: !!articleId,
   });
 
-  // Update form values when article data is loaded
   React.useEffect(() => {
     if (article) {
-      console.log("Setting form values:", article);
       form.reset({
-        title: article.title || "",
-        content: article.content || "",
+        ...article,
         category_id: article.category_id,
-        status: article.status || "draft",
-        excerpt: article.excerpt || "",
-        featured_image: article.featured_image || null,
-        is_featured: article.is_featured || false,
-        author_id: article.author_id,
-        tag_ids: article.tag_ids || [],
       });
     }
   }, [article, form]);
 
-  return { form, article, isLoading };
+  return { form, article };
 };

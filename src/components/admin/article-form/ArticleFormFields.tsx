@@ -1,64 +1,139 @@
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RichTextEditor } from "@/components/editor/RichTextEditor";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { UseFormReturn } from "react-hook-form";
 import { ArticleFormValues } from "./types";
-import { TitleField } from "./fields/TitleField";
-import { CategoryField } from "./fields/CategoryField";
-import { TagsField } from "./fields/TagsField";
-import { ContentField } from "./fields/ContentField";
-import { StatusField } from "./fields/StatusField";
-import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
 
 interface ArticleFormFieldsProps {
   form: UseFormReturn<ArticleFormValues>;
 }
 
 export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
+  const { toast } = useToast();
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .order("name");
+      
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error fetching categories",
+          description: error.message
+        });
+        throw error;
+      }
+      return data;
+    },
+  });
+
   return (
-    <div className="space-y-8">
-      <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
-        <TitleField form={form} />
-      </div>
+    <>
+      <FormField
+        control={form.control}
+        name="title"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Title</FormLabel>
+            <FormControl>
+              <Input placeholder="Article title" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
-          <CategoryField form={form} />
-        </div>
-        <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
-          <StatusField form={form} />
-        </div>
-      </div>
-
-      <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
-        <TagsField form={form} />
-      </div>
-
-      <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
-        <ContentField form={form} />
-      </div>
-
-      <div className="bg-[#222222] p-6 rounded-lg shadow-lg border border-[#333333]">
-        <FormField
-          control={form.control}
-          name="is_featured"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg">
-              <div className="space-y-0.5">
-                <FormLabel className="text-lg font-semibold text-white">Featured Article</FormLabel>
-                <div className="text-sm text-gray-400">
-                  Display this article in the hero section
-                </div>
-              </div>
+      <FormField
+        control={form.control}
+        name="category_id"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Category</FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value?.toString() || ""}
+            >
               <FormControl>
-                <Switch
-                  checked={field.value || false}
-                  onCheckedChange={field.onChange}
-                  className="data-[state=checked]:bg-[#ea384c]"
-                />
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
               </FormControl>
-            </FormItem>
-          )}
-        />
-      </div>
-    </div>
+              <SelectContent>
+                {categories?.map((category) => (
+                  <SelectItem key={category.id} value={category.id.toString()}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="excerpt"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Excerpt</FormLabel>
+            <FormControl>
+              <Input placeholder="Brief excerpt" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="content"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Content</FormLabel>
+            <FormControl>
+              <RichTextEditor
+                value={field.value}
+                onChange={field.onChange}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="status"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Status</FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value || "draft"}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="published">Published</SelectItem>
+                <SelectItem value="archived">Archived</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </>
   );
 };

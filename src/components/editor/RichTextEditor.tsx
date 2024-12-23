@@ -2,7 +2,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { EditorToolbar } from './toolbar/EditorToolbar';
 import { LinkDialog } from './dialogs/LinkDialog';
 import { MediaDialog } from './dialogs/MediaDialog';
@@ -38,13 +38,6 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
     },
   });
 
-  // Update editor content when value prop changes
-  useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value);
-    }
-  }, [value, editor]);
-
   if (!editor) return null;
 
   const setLink = () => {
@@ -72,7 +65,7 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
         />
         <EditorContent 
           editor={editor} 
-          className="prose prose-sm max-w-none p-4 focus:outline-none min-h-[200px] bg-white text-black"
+          className="prose prose-sm max-w-none p-4 focus:outline-none min-h-[200px]"
         />
       </div>
 
