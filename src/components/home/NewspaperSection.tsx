@@ -51,80 +51,92 @@ export const NewspaperSection = () => {
   });
 
   useEffect(() => {
-    // Load jQuery
-    const jqueryScript = document.createElement("script");
-    jqueryScript.src = "https://code.jquery.com/jquery-3.7.1.min.js";
-    jqueryScript.async = true;
-    document.body.appendChild(jqueryScript);
+    const loadScripts = async () => {
+      // First, load jQuery
+      const jqueryScript = document.createElement("script");
+      jqueryScript.src = "https://code.jquery.com/jquery-3.7.1.min.js";
+      await new Promise((resolve) => {
+        jqueryScript.onload = resolve;
+        document.body.appendChild(jqueryScript);
+      });
 
-    // Load flip-book CSS
-    const flipBookCss = document.createElement("link");
-    flipBookCss.rel = "stylesheet";
-    flipBookCss.href = "https://cdn.jsdelivr.net/npm/flip-book/css/style.css";
-    document.head.appendChild(flipBookCss);
+      // Then load the flip-book CSS
+      const flipBookCss = document.createElement("link");
+      flipBookCss.rel = "stylesheet";
+      flipBookCss.href = "https://3dflipbook.net/css/flipbook.style.css";
+      document.head.appendChild(flipBookCss);
 
-    jqueryScript.onload = () => {
-      // After jQuery loads, add the flip-book script
+      // Finally load the flip-book script
       const flipBookScript = document.createElement("script");
-      flipBookScript.src = "https://cdn.jsdelivr.net/npm/flip-book";
-      flipBookScript.async = true;
-      document.body.appendChild(flipBookScript);
+      flipBookScript.src = "https://3dflipbook.net/js/flipbook.min.js";
+      await new Promise((resolve) => {
+        flipBookScript.onload = resolve;
+        document.body.appendChild(flipBookScript);
+      });
 
-      flipBookScript.onload = () => {
-        if (pdfs && window.jQuery) {
-          console.log("Initializing flip-books for PDFs:", pdfs);
-          pdfs.forEach((pdf, index) => {
-            const pdfUrl = `${supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl}`;
-            console.log(`Creating flip-book instance for PDF ${index}:`, pdfUrl);
-            try {
-              window.jQuery(`#flip-book-${index}`).flipBook({
-                pdfUrl: pdfUrl,
-                lightBox: true,
-                layout: 3,
-                currentPage: {
-                  color: "#000000",
-                  fontSize: 12
-                },
-                btnShare: {
-                  enabled: false
-                },
-                btnPrint: {
-                  enabled: false
-                },
-                btnDownloadPages: {
-                  enabled: false
-                },
-                btnDownloadPdf: {
-                  enabled: false
-                },
-                btnColor: 'rgb(255, 120, 60)',
-                sideBtnColor: 'rgb(255, 120, 60)',
-                sideBtnSize: 60,
-                sideBtnBackground: "rgba(0,0,0,0.7)",
-                sideBtnRadius: 60
-              });
-            } catch (err) {
-              console.error(`Error initializing flip-book for PDF ${index}:`, err);
-              toast({
-                variant: "destructive",
-                title: "PDF Viewer Error",
-                description: `Could not load PDF ${pdf.name}`
-              });
-            }
-          });
-        }
-      };
+      // Initialize flip-books after all scripts are loaded
+      if (pdfs && window.jQuery) {
+        console.log("All scripts loaded, initializing flip-books for PDFs:", pdfs);
+        pdfs.forEach((pdf, index) => {
+          const pdfUrl = `${supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl}`;
+          console.log(`Creating flip-book instance for PDF ${index}:`, pdfUrl);
+          try {
+            window.jQuery(`#flip-book-${index}`).flipBook({
+              pdfUrl: pdfUrl,
+              lightBox: true,
+              layout: 3,
+              currentPage: {
+                color: "#000000",
+                fontSize: 12
+              },
+              btnShare: {
+                enabled: false
+              },
+              btnPrint: {
+                enabled: false
+              },
+              btnDownloadPages: {
+                enabled: false
+              },
+              btnDownloadPdf: {
+                enabled: false
+              },
+              btnColor: 'rgb(255, 120, 60)',
+              sideBtnColor: 'rgb(255, 120, 60)',
+              sideBtnSize: 60,
+              sideBtnBackground: "rgba(0,0,0,0.7)",
+              sideBtnRadius: 60
+            });
+          } catch (err) {
+            console.error(`Error initializing flip-book for PDF ${index}:`, err);
+            toast({
+              variant: "destructive",
+              title: "PDF Viewer Error",
+              description: `Could not load PDF ${pdf.name}`
+            });
+          }
+        });
+      }
     };
+
+    loadScripts().catch(err => {
+      console.error("Error loading scripts:", err);
+      toast({
+        variant: "destructive",
+        title: "Error Loading PDF Viewer",
+        description: "Could not initialize the PDF viewer"
+      });
+    });
 
     return () => {
       // Cleanup scripts and CSS
       document.querySelectorAll('script').forEach(script => {
-        if (script.src.includes('jquery') || script.src.includes('flip-book')) {
+        if (script.src.includes('jquery') || script.src.includes('flipbook')) {
           document.body.removeChild(script);
         }
       });
       document.querySelectorAll('link').forEach(link => {
-        if (link.href.includes('flip-book')) {
+        if (link.href.includes('flipbook')) {
           document.head.removeChild(link);
         }
       });
