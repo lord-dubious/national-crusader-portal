@@ -116,6 +116,13 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
     </div>;
   }
 
+  // Only render the form if we have article data when editing, or if we're creating a new article
+  if (articleId && !article) {
+    return <div className="flex items-center justify-center p-8">
+      <div className="text-lg text-white">Article not found</div>
+    </div>;
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
