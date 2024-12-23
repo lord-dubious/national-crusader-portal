@@ -72,7 +72,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         if (articleError) throw articleError;
 
         // Insert tags if any
-        if (tag_ids && tag_ids.length > 0) {
+        if (tag_ids && tag_ids.length > 0 && newArticle) {
           const { error: tagError } = await supabase
             .from("article_tags")
             .insert(tag_ids.map(tagId => ({
@@ -86,6 +86,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         toast({ title: "Article created successfully" });
       }
 
+      // Important: Navigate after successful save
       navigate("/admin/articles");
     } catch (error: any) {
       toast({
