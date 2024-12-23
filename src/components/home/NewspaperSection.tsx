@@ -12,7 +12,11 @@ declare global {
 
 export const NewspaperSection = () => {
   const { toast } = useToast();
-  const { data: newspapers } = useQuery({
+  const { 
+    data: newspapers, 
+    error, 
+    isLoading 
+  } = useQuery({
     queryKey: ["newspapers"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -27,9 +31,10 @@ export const NewspaperSection = () => {
           title: "Error fetching newspapers",
           description: error.message
         });
+        console.error("Newspapers fetch error:", error);
         throw error;
       }
-      console.log("Fetched newspapers:", data); // Debug log
+      console.log("Fetched newspapers:", data);
       return data;
     },
   });
@@ -56,28 +61,47 @@ export const NewspaperSection = () => {
 
   useEffect(() => {
     if (newspapers && window.DFlip) {
-      console.log("Initializing DFlip for newspapers:", newspapers); // Debug log
+      console.log("Initializing DFlip for newspapers:", newspapers);
       newspapers.forEach((newspaper, index) => {
-        console.log(`Creating DFlip instance for newspaper ${index}:`, newspaper); // Debug log
-        new window.DFlip(`#df-newspaper-${index}`, {
-          webgl: true,
-          height: 400,
-          duration: 800,
-          direction: 1,
-          backgroundColor: "rgb(241, 241, 241)",
-          soundEnable: true,
-          autoEnableOutline: true,
-          enableDownload: false,
-          source: newspaper.pdf_url,
-          autoPlay: false,
-          autoPlayStart: false,
-        });
+        console.log(`Creating DFlip instance for newspaper ${index}:`, newspaper);
+        try {
+          new window.DFlip(`#df-newspaper-${index}`, {
+            webgl: true,
+            height: 400,
+            duration: 800,
+            direction: 1,
+            backgroundColor: "rgb(241, 241, 241)",
+            soundEnable: true,
+            autoEnableOutline: true,
+            enableDownload: false,
+            source: newspaper.pdf_url,
+            autoPlay: false,
+            autoPlayStart: false,
+          });
+        } catch (err) {
+          console.error(`Error initializing DFlip for newspaper ${index}:`, err);
+          toast({
+            variant: "destructive",
+            title: "Newspaper Viewer Error",
+            description: `Could not load newspaper ${newspaper.title}`
+          });
+        }
       });
     }
-  }, [newspapers]);
+  }, [newspapers, toast]);
 
-  if (!newspapers?.length) {
-    console.log("No newspapers found"); // Debug log
+  if (isLoading) {
+    return (
+      <section className="py-12 bg-muted animate-fade-up">
+        <div className="container mx-auto text-center">
+          Loading newspapers...
+        </div>
+      </section>
+    );
+  }
+
+  if (error || !newspapers?.length) {
+    console.log("No newspapers found or error occurred", { error, newspapers });
     return null;
   }
 
