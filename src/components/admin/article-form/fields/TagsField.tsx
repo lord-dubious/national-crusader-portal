@@ -69,51 +69,62 @@ export const TagsField = ({ form }: TagsFieldProps) => {
       name="tag_ids"
       render={() => (
         <FormItem className="space-y-4">
-          <FormLabel className="text-lg font-semibold flex items-center gap-2">
+          <FormLabel className="text-lg font-semibold flex items-center gap-2 text-white">
             <Tag className="h-5 w-5" />
             Tags
           </FormLabel>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
             {PREDEFINED_TAGS.map((tag) => (
               <Badge
                 key={tag.id}
                 variant={selectedTags.includes(tag.id) ? "default" : "outline"}
-                className="cursor-pointer text-sm py-2 justify-center"
+                className={`cursor-pointer text-sm py-1.5 justify-center transition-colors ${
+                  selectedTags.includes(tag.id)
+                    ? "bg-[#ea384c] text-white hover:bg-[#ea384c]/90"
+                    : "border-[#ea384c] text-white hover:bg-[#ea384c]/10"
+                }`}
                 onClick={() => handleTagSelect(tag.id.toString())}
               >
                 {tag.name}
               </Badge>
             ))}
           </div>
-          <Select onValueChange={handleTagSelect}>
-            <FormControl>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="Add more tags" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              {tags?.map((tag) => (
-                <SelectItem 
-                  key={tag.id} 
-                  value={tag.id.toString()}
-                  className="cursor-pointer hover:bg-accent"
+          <div className="mt-4">
+            <Select onValueChange={handleTagSelect}>
+              <FormControl>
+                <SelectTrigger 
+                  className="h-10 bg-[#333333] border-[#ea384c] text-white"
                 >
-                  {tag.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <div className="flex flex-wrap gap-2 mt-2">
+                  <SelectValue placeholder="Add custom tag" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent className="bg-[#333333] border-[#ea384c]">
+                {tags?.map((tag) => (
+                  <SelectItem 
+                    key={tag.id} 
+                    value={tag.id.toString()}
+                    className="text-white cursor-pointer hover:bg-[#ea384c]/10 focus:bg-[#ea384c]/10"
+                  >
+                    {tag.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-wrap gap-1.5 mt-2">
             {selectedTags.map((tagId) => {
               const tag = [...(tags || []), ...PREDEFINED_TAGS].find(t => t.id === tagId);
               if (!tag) return null;
               return (
-                <Badge key={tag.id} variant="secondary" className="px-3 py-1.5 text-sm">
+                <Badge 
+                  key={tag.id} 
+                  className="px-2 py-1 text-sm bg-[#333333] text-white border border-[#ea384c] hover:bg-[#444444]"
+                >
                   {tag.name}
                   <button
                     type="button"
                     onClick={() => handleRemoveTag(tag.id)}
-                    className="ml-2 hover:text-destructive focus:outline-none"
+                    className="ml-1.5 hover:text-[#ea384c] focus:outline-none"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -121,7 +132,7 @@ export const TagsField = ({ form }: TagsFieldProps) => {
               );
             })}
           </div>
-          <FormMessage />
+          <FormMessage className="text-[#ea384c]" />
         </FormItem>
       )}
     />
