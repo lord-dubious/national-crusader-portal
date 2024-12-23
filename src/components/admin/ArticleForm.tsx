@@ -19,6 +19,8 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
 
   const onSubmit = async (values: ArticleFormValues) => {
     try {
+      console.log("Form values:", values); // Debug log
+
       const slug = values.title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
@@ -42,11 +44,13 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
           .update({
             ...articleDataWithoutTags,
             updated_at: new Date().toISOString(),
-            is_featured: values.is_featured, // Explicitly include is_featured
           })
           .eq("id", article.id);
 
-        if (articleError) throw articleError;
+        if (articleError) {
+          console.error("Error updating article:", articleError); // Debug log
+          throw articleError;
+        }
 
         // Delete existing tags
         const { error: deleteError } = await supabase
@@ -54,7 +58,10 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
           .delete()
           .eq("article_id", article.id);
 
-        if (deleteError) throw deleteError;
+        if (deleteError) {
+          console.error("Error deleting tags:", deleteError); // Debug log
+          throw deleteError;
+        }
 
         // Insert new tags if any
         if (tag_ids && tag_ids.length > 0) {
@@ -65,17 +72,18 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
               tag_id: tagId
             })));
 
-          if (tagError) throw tagError;
+          if (tagError) {
+            console.error("Error inserting tags:", tagError); // Debug log
+            throw tagError;
+          }
         }
 
         toast({ title: "Article updated successfully" });
       } else {
+        // Create new article
         const { data: newArticle, error: articleError } = await supabase
           .from("articles")
-          .insert([{
-            ...articleDataWithoutTags,
-            is_featured: values.is_featured, // Explicitly include is_featured
-          }])
+          .insert([articleDataWithoutTags])
           .select()
           .single();
 
@@ -99,6 +107,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
       // Important: Navigate after successful save
       navigate("/admin/articles");
     } catch (error: any) {
+      console.error("Error saving article:", error); // Debug log
       toast({
         variant: "destructive",
         title: "Error saving article",
