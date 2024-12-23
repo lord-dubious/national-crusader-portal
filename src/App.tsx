@@ -20,39 +20,41 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/article/:id" element={<Article />} />
-          <Route path="/category/:id" element={<Category />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/new-article"
-            element={
-              <ProtectedRoute>
-                <NewArticle />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/edit-article/:id"
-            element={
-              <ProtectedRoute>
-                <EditArticle />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        <div className="min-h-screen flex flex-col">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/article/:id" element={<Article />} />
+            <Route path="/category/:id" element={<Category />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/new-article"
+              element={
+                <ProtectedRoute>
+                  <NewArticle />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/edit-article/:id"
+              element={
+                <ProtectedRoute>
+                  <EditArticle />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+          <Toaster />
+        </div>
       </BrowserRouter>
-      <Toaster />
     </QueryClientProvider>
   );
 }
