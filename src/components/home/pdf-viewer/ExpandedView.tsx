@@ -26,7 +26,7 @@ export const ExpandedView = ({
   const handlers = useSwipeable({
     onSwipedLeft: () => onPageChange(1),
     onSwipedRight: () => onPageChange(-1),
-    preventDefaultTouchmoveEvent: true,
+    touchEventOptions: { passive: false },
     trackMouse: true
   });
 
