@@ -22,6 +22,7 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
 
       if (!title.trim()) {
         toast({
+          id: "title-required",
           variant: "destructive",
           title: "Title required",
           description: "Please enter a title for the newspaper."
@@ -33,7 +34,8 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
       setUploadProgress(0);
 
       // Show initial upload status
-      toast({
+      const uploadStartToast = toast({
+        id: "upload-start",
         title: "Upload started",
         description: "Uploading PDF file..."
       });
@@ -41,15 +43,11 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
       const fileExt = file.name.split('.').pop();
       const filePath = `${Math.random()}.${fileExt}`;
 
-      // Create a new XMLHttpRequest to track upload progress
-      const xhr = new XMLHttpRequest();
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('newspapers')
-        .upload(filePath, file, {
-          xhr: xhr
-        });
+      // Create FormData and XMLHttpRequest for progress tracking
+      const formData = new FormData();
+      formData.append('file', file);
 
-      // Add progress event listener
+      const xhr = new XMLHttpRequest();
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
           const percent = (event.loaded / event.total) * 100;
@@ -57,11 +55,17 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
           
           // Update toast with progress
           toast({
+            id: "upload-progress",
             title: "Uploading",
             description: `Progress: ${Math.round(percent)}%`
           });
         }
       });
+
+      // Upload file using Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('newspapers')
+        .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
@@ -87,11 +91,13 @@ export const NewspaperUpload = ({ onUploadSuccess }: NewspaperUploadProps) => {
       onUploadSuccess();
       
       toast({
+        id: "upload-complete",
         title: "Upload complete",
         description: "Your newspaper has been uploaded successfully."
       });
     } catch (error) {
       toast({
+        id: "upload-error",
         variant: "destructive",
         title: "Upload failed",
         description: error.message
