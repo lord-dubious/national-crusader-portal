@@ -10,32 +10,43 @@ declare global {
   }
 }
 
+interface StorageFile {
+  name: string;
+  id: string;
+  updated_at: string;
+  created_at: string;
+  last_accessed_at: string;
+  metadata: any;
+}
+
 export const NewspaperSection = () => {
   const { toast } = useToast();
   const { 
-    data: newspapers, 
+    data: pdfs, 
     error, 
     isLoading 
   } = useQuery({
-    queryKey: ["newspapers"],
+    queryKey: ["storage-pdfs"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("newspapers")
-        .select("*")
-        .eq("status", "published")
-        .order("published_at", { ascending: false });
+        .storage
+        .from('newspapers')
+        .list();
       
       if (error) {
         toast({
           variant: "destructive",
-          title: "Error fetching newspapers",
+          title: "Error fetching PDFs",
           description: error.message
         });
-        console.error("Newspapers fetch error:", error);
+        console.error("PDFs fetch error:", error);
         throw error;
       }
-      console.log("Fetched newspapers:", data);
-      return data;
+      
+      // Filter for PDF files only
+      const pdfFiles = data?.filter(file => file.name.toLowerCase().endsWith('.pdf')) || [];
+      console.log("Fetched PDFs:", pdfFiles);
+      return pdfFiles;
     },
   });
 
@@ -60,10 +71,11 @@ export const NewspaperSection = () => {
   }, []);
 
   useEffect(() => {
-    if (newspapers && window.DFlip) {
-      console.log("Initializing DFlip for newspapers:", newspapers);
-      newspapers.forEach((newspaper, index) => {
-        console.log(`Creating DFlip instance for newspaper ${index}:`, newspaper);
+    if (pdfs && window.DFlip) {
+      console.log("Initializing DFlip for PDFs:", pdfs);
+      pdfs.forEach((pdf, index) => {
+        const pdfUrl = `${supabase.storage.from('newspapers').getPublicUrl(pdf.name).data.publicUrl}`;
+        console.log(`Creating DFlip instance for PDF ${index}:`, pdfUrl);
         try {
           new window.DFlip(`#df-newspaper-${index}`, {
             webgl: true,
@@ -74,34 +86,34 @@ export const NewspaperSection = () => {
             soundEnable: true,
             autoEnableOutline: true,
             enableDownload: false,
-            source: newspaper.pdf_url,
+            source: pdfUrl,
             autoPlay: false,
             autoPlayStart: false,
           });
         } catch (err) {
-          console.error(`Error initializing DFlip for newspaper ${index}:`, err);
+          console.error(`Error initializing DFlip for PDF ${index}:`, err);
           toast({
             variant: "destructive",
-            title: "Newspaper Viewer Error",
-            description: `Could not load newspaper ${newspaper.title}`
+            title: "PDF Viewer Error",
+            description: `Could not load PDF ${pdf.name}`
           });
         }
       });
     }
-  }, [newspapers, toast]);
+  }, [pdfs, toast]);
 
   if (isLoading) {
     return (
       <section className="py-12 bg-muted animate-fade-up">
         <div className="container mx-auto text-center">
-          Loading newspapers...
+          Loading PDFs...
         </div>
       </section>
     );
   }
 
-  if (error || !newspapers?.length) {
-    console.log("No newspapers found or error occurred", { error, newspapers });
+  if (error || !pdfs?.length) {
+    console.log("No PDFs found or error occurred", { error, pdfs });
     return null;
   }
 
@@ -114,9 +126,9 @@ export const NewspaperSection = () => {
           <div className="h-1 bg-accent flex-grow ml-4 rounded hidden sm:block" />
         </div>
         <div className="flex overflow-x-auto gap-8 pb-4 -mx-4 px-4">
-          {newspapers.map((newspaper, index) => (
+          {pdfs.map((pdf, index) => (
             <div 
-              key={newspaper.id}
+              key={pdf.id}
               className="flex-none w-[300px]"
             >
               <div 
@@ -124,9 +136,11 @@ export const NewspaperSection = () => {
                 className="dearflip-volume"
                 style={{ width: "100%", height: "400px" }}
               />
-              <h3 className="mt-4 font-medium text-lg">{newspaper.title}</h3>
+              <h3 className="mt-4 font-medium text-lg">
+                {pdf.name.replace(/\.[^/.]+$/, "").replace(/-/g, " ")}
+              </h3>
               <p className="text-sm text-muted-foreground">
-                {new Date(newspaper.published_at).toLocaleDateString()}
+                {new Date(pdf.created_at).toLocaleDateString()}
               </p>
             </div>
           ))}
