@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ArticleFormFields } from "./article-form/ArticleFormFields";
 import { useArticleForm } from "./article-form/useArticleForm";
 import { ArticleFormValues } from "./article-form/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ArticleFormProps {
   articleId?: string;
@@ -15,7 +16,7 @@ interface ArticleFormProps {
 export const ArticleForm = ({ articleId }: ArticleFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { form, article } = useArticleForm(articleId);
+  const { form, article, isLoading } = useArticleForm(articleId);
 
   const onSubmit = async (values: ArticleFormValues) => {
     try {
@@ -30,11 +31,11 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         published_at: values.status === "published" ? new Date().toISOString() : null,
       };
 
-      if (article) {
+      if (articleId) {
         const { error } = await supabase
           .from("articles")
           .update(articleData)
-          .eq("id", article.id);
+          .eq("id", articleId);
 
         if (error) throw error;
         toast({ title: "Article updated successfully" });
@@ -49,6 +50,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
 
       navigate("/admin/articles");
     } catch (error: any) {
+      console.error("Error saving article:", error);
       toast({
         variant: "destructive",
         title: "Error saving article",
@@ -57,12 +59,30 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-1/3" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-40 w-full" />
+      </div>
+    );
+  }
+
+  if (articleId && !article) {
+    return <div>Article not found</div>;
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <h2 className="text-2xl font-bold">
+          {articleId ? "Edit Article" : "Create New Article"}
+        </h2>
         <ArticleFormFields form={form} />
         <Button type="submit" className="w-full">
-          {article ? "Update" : "Create"} Article
+          {articleId ? "Update" : "Create"} Article
         </Button>
       </form>
     </Form>
