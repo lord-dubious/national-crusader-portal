@@ -31,6 +31,8 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         published_at: values.status === "published" ? new Date().toISOString() : null,
       };
 
+      console.log("Submitting article data:", articleData);
+
       if (articleId) {
         const { error } = await supabase
           .from("articles")

@@ -23,6 +23,8 @@ export const useArticleForm = (articleId?: string) => {
   const { data: article, isLoading } = useQuery({
     queryKey: ["article", articleId],
     queryFn: async () => {
+      if (!articleId) return null;
+      
       console.log("Fetching article with ID:", articleId);
       const { data, error } = await supabase
         .from("articles")
