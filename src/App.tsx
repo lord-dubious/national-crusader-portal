@@ -23,6 +23,8 @@ const App = () => (
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/article/:slug" element={<ArticlePage />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/new-article" element={<AdminDashboard />} />
+          <Route path="/admin/edit-article/:id" element={<AdminDashboard />} />
           <Route path="/admin/*" element={<AdminDashboard />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
