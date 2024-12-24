@@ -43,10 +43,21 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const { data: session, isLoading: isLoadingSession } = useQuery({
     queryKey: ["session"],
     queryFn: async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) throw error;
-      return session;
+      try {
+        console.log("Fetching session...");
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Session error:", error);
+          throw error;
+        }
+        console.log("Session data:", session);
+        return session;
+      } catch (error) {
+        console.error("Failed to fetch session:", error);
+        throw error;
+      }
     },
+    retry: 1,
   });
 
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
@@ -54,20 +65,32 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     queryFn: async () => {
       if (!session?.user?.id) return null;
 
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .maybeSingle();
-      
-      if (error) throw error;
-      return profile;
+      try {
+        console.log("Fetching profile for user:", session.user.id);
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        
+        if (error) {
+          console.error("Profile error:", error);
+          throw error;
+        }
+        console.log("Profile data:", profile);
+        return profile;
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+        throw error;
+      }
     },
     enabled: !!session?.user?.id,
+    retry: 1,
   });
 
   useEffect(() => {
     if (!isLoadingSession && !session) {
+      console.log("No session found, redirecting to signin");
       navigate('/signin');
       toast({
         variant: "destructive",
@@ -78,6 +101,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     }
 
     if (!isLoadingProfile && !isLoadingSession && profile && profile.role !== 'admin') {
+      console.log("User is not admin, redirecting to home");
       navigate('/');
       toast({
         variant: "destructive",
