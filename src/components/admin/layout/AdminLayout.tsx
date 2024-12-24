@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
 import { ChevronRight } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const getBreadcrumbTitle = (path: string) => {
   switch (path) {
@@ -46,18 +47,16 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       try {
         console.log("Fetching session...");
         const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error("Session error:", error);
-          throw error;
-        }
+        if (error) throw error;
         console.log("Session data:", session);
         return session;
-      } catch (error) {
-        console.error("Failed to fetch session:", error);
+      } catch (error: any) {
+        console.error("Session error:", error);
         throw error;
       }
     },
-    retry: 1,
+    retry: 2,
+    retryDelay: 1000,
   });
 
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
@@ -77,15 +76,17 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
           console.error("Profile error:", error);
           throw error;
         }
+        
         console.log("Profile data:", profile);
         return profile;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch profile:", error);
         throw error;
       }
     },
     enabled: !!session?.user?.id,
-    retry: 1,
+    retry: 2,
+    retryDelay: 1000,
   });
 
   useEffect(() => {
@@ -112,7 +113,15 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   }, [session, profile, isLoadingSession, isLoadingProfile, navigate, toast]);
 
   if (isLoadingSession || isLoadingProfile) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-primary">
+        <div className="space-y-4 w-full max-w-md p-4">
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-2/3" />
+        </div>
+      </div>
+    );
   }
 
   if (!profile || !session) {
