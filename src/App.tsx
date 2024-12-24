@@ -9,29 +9,39 @@ import ArticlePage from "./pages/ArticlePage";
 import AdminDashboard from "./pages/AdminDashboard";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import { useState } from "react";
 
-const queryClient = new QueryClient();
+function App() {
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 1,
+        refetchOnWindowFocus: false,
+      },
+    },
+  }));
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/category/:slug" element={<CategoryPage />} />
-          <Route path="/article/:slug" element={<ArticlePage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/new-article" element={<AdminDashboard />} />
-          <Route path="/admin/edit-article/:id" element={<AdminDashboard />} />
-          <Route path="/admin/*" element={<AdminDashboard />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/category/:slug" element={<CategoryPage />} />
+            <Route path="/article/:slug" element={<ArticlePage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/new-article" element={<AdminDashboard />} />
+            <Route path="/admin/edit-article/:id" element={<AdminDashboard />} />
+            <Route path="/admin/*" element={<AdminDashboard />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
