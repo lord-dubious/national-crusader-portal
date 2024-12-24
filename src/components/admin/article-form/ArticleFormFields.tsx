@@ -35,17 +35,21 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
   });
 
   return (
-    <>
+    <div className="space-y-6">
       <FormField
         control={form.control}
         name="title"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Title</FormLabel>
+            <FormLabel className="text-white">Title</FormLabel>
             <FormControl>
-              <Input placeholder="Article title" {...field} />
+              <Input 
+                placeholder="Article title" 
+                {...field} 
+                className="bg-[#2A2F3E] border-gray-600 text-white placeholder:text-gray-400"
+              />
             </FormControl>
-            <FormMessage />
+            <FormMessage className="text-red-400" />
           </FormItem>
         )}
       />
@@ -55,25 +59,29 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
         name="category_id"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Category</FormLabel>
+            <FormLabel className="text-white">Category</FormLabel>
             <Select
               onValueChange={field.onChange}
               value={field.value?.toString() || ""}
             >
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="bg-[#2A2F3E] border-gray-600 text-white">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              <SelectContent className="bg-[#2A2F3E] border-gray-600">
                 {categories?.map((category) => (
-                  <SelectItem key={category.id} value={category.id.toString()}>
+                  <SelectItem 
+                    key={category.id} 
+                    value={category.id.toString()}
+                    className="text-white hover:bg-[#3A3F4E]"
+                  >
                     {category.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <FormMessage />
+            <FormMessage className="text-red-400" />
           </FormItem>
         )}
       />
@@ -83,11 +91,15 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
         name="excerpt"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Excerpt</FormLabel>
+            <FormLabel className="text-white">Excerpt</FormLabel>
             <FormControl>
-              <Input placeholder="Brief excerpt" {...field} />
+              <Input 
+                placeholder="Brief excerpt" 
+                {...field} 
+                className="bg-[#2A2F3E] border-gray-600 text-white placeholder:text-gray-400"
+              />
             </FormControl>
-            <FormMessage />
+            <FormMessage className="text-red-400" />
           </FormItem>
         )}
       />
@@ -97,14 +109,16 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
         name="content"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Content</FormLabel>
+            <FormLabel className="text-white">Content</FormLabel>
             <FormControl>
-              <RichTextEditor
-                value={field.value}
-                onChange={field.onChange}
-              />
+              <div className="bg-[#2A2F3E] rounded-lg border border-gray-600 overflow-hidden">
+                <RichTextEditor
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              </div>
             </FormControl>
-            <FormMessage />
+            <FormMessage className="text-red-400" />
           </FormItem>
         )}
       />
@@ -114,26 +128,41 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
         name="status"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Status</FormLabel>
+            <FormLabel className="text-white">Status</FormLabel>
             <Select
               onValueChange={field.onChange}
               value={field.value || "draft"}
             >
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="bg-[#2A2F3E] border-gray-600 text-white">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-                <SelectItem value="archived">Archived</SelectItem>
+              <SelectContent className="bg-[#2A2F3E] border-gray-600">
+                <SelectItem 
+                  value="draft"
+                  className="text-white hover:bg-[#3A3F4E]"
+                >
+                  Draft
+                </SelectItem>
+                <SelectItem 
+                  value="published"
+                  className="text-white hover:bg-[#3A3F4E]"
+                >
+                  Published
+                </SelectItem>
+                <SelectItem 
+                  value="archived"
+                  className="text-white hover:bg-[#3A3F4E]"
+                >
+                  Archived
+                </SelectItem>
               </SelectContent>
             </Select>
-            <FormMessage />
+            <FormMessage className="text-red-400" />
           </FormItem>
         )}
       />
-    </>
+    </div>
   );
 };

@@ -63,28 +63,33 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-1/3" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-40 w-full" />
+      <div className="space-y-6 p-6 bg-[#1A1F2C] rounded-lg">
+        <Skeleton className="h-8 w-1/3 bg-gray-700" />
+        <Skeleton className="h-10 w-full bg-gray-700" />
+        <Skeleton className="h-10 w-full bg-gray-700" />
+        <Skeleton className="h-40 w-full bg-gray-700" />
       </div>
     );
   }
 
   if (articleId && !article) {
-    return <div>Article not found</div>;
+    return <div className="text-white p-6">Article not found</div>;
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-4xl mx-auto p-6 bg-[#1A1F2C] rounded-lg shadow-xl">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <h2 className="text-2xl font-bold text-white">
+          <h2 className="text-2xl font-bold text-white mb-6">
             {articleId ? "Edit Article" : "Create New Article"}
           </h2>
-          <ArticleFormFields form={form} />
-          <Button type="submit" className="w-full bg-[#DC2626] hover:bg-[#DC2626]/90">
+          <div className="space-y-6 text-white">
+            <ArticleFormFields form={form} />
+          </div>
+          <Button 
+            type="submit" 
+            className="w-full bg-[#DC2626] hover:bg-[#DC2626]/90 text-white font-semibold"
+          >
             {articleId ? "Update" : "Create"} Article
           </Button>
         </form>
