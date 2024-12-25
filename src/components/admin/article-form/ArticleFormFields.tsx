@@ -61,7 +61,7 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
           <FormItem>
             <FormLabel className="text-white">Category</FormLabel>
             <Select
-              onValueChange={field.onChange}
+              onValueChange={(value) => field.onChange(value ? parseInt(value) : null)}
               value={field.value?.toString() || ""}
             >
               <FormControl>
