@@ -26,6 +26,8 @@ export const HeaderSearch = () => {
     queryFn: async () => {
       if (!searchQuery) return { articles: [], newspapers: [] };
 
+      console.log("Searching for:", searchQuery);
+
       const [articlesResponse, newspapersResponse] = await Promise.all([
         supabase
           .from("articles")
@@ -41,14 +43,13 @@ export const HeaderSearch = () => {
           .limit(5),
         
         supabase
-          .from("newspapers")
-          .select("*")
-          .or(`title.ilike.%${searchQuery}%`)
-          .eq('status', 'published')
-          .limit(5)
+          .storage
+          .from('pdf_newspapers')
+          .list()
       ]);
 
       if (articlesResponse.error) {
+        console.error("Articles search error:", articlesResponse.error);
         toast({
           variant: "destructive",
           title: "Error searching articles",
@@ -57,18 +58,18 @@ export const HeaderSearch = () => {
         throw articlesResponse.error;
       }
 
-      if (newspapersResponse.error) {
-        toast({
-          variant: "destructive",
-          title: "Error searching newspapers",
-          description: newspapersResponse.error.message
-        });
-        throw newspapersResponse.error;
-      }
+      const filteredNewspapers = newspapersResponse.data?.filter(file => 
+        file.name.toLowerCase().includes(searchQuery.toLowerCase())
+      ) || [];
+
+      console.log("Search results:", {
+        articles: articlesResponse.data,
+        newspapers: filteredNewspapers
+      });
 
       return {
-        articles: articlesResponse.data,
-        newspapers: newspapersResponse.data
+        articles: articlesResponse.data || [],
+        newspapers: filteredNewspapers
       };
     },
     enabled: searchQuery.length > 0,
@@ -77,10 +78,13 @@ export const HeaderSearch = () => {
   const handleSelect = (type: 'article' | 'newspaper', item: any) => {
     setOpen(false);
     if (type === 'article') {
-      navigate(`/articles/${item.slug}`);
+      navigate(`/article/${item.slug}`);
     } else {
-      // Open newspaper in new tab since it's a PDF
-      window.open(item.pdf_url, '_blank');
+      // Get the public URL for the PDF and open it in a new tab
+      const pdfUrl = supabase.storage
+        .from('pdf_newspapers')
+        .getPublicUrl(item.name).data.publicUrl;
+      window.open(pdfUrl, '_blank');
     }
   };
 
@@ -137,7 +141,7 @@ export const HeaderSearch = () => {
                   key={newspaper.id}
                   onSelect={() => handleSelect('newspaper', newspaper)}
                 >
-                  <div className="font-medium">{newspaper.title}</div>
+                  <div className="font-medium">{newspaper.name}</div>
                 </CommandItem>
               ))}
             </CommandGroup>
