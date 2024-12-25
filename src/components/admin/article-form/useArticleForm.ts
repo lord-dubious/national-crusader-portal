@@ -7,18 +7,7 @@ import { Article, ArticleFormValues } from "./types";
 
 export const useArticleForm = (articleId?: string) => {
   const { toast } = useToast();
-  const form = useForm<ArticleFormValues>({
-    defaultValues: {
-      title: "",
-      content: "",
-      category_id: null,
-      status: "draft",
-      excerpt: "",
-      featured_image: null,
-      is_featured: false,
-      author_id: null,
-    },
-  });
+  const form = useForm<ArticleFormValues>();
 
   const { data: article, isLoading } = useQuery({
     queryKey: ["article", articleId],
@@ -50,18 +39,15 @@ export const useArticleForm = (articleId?: string) => {
 
   React.useEffect(() => {
     if (article) {
-      console.log("Resetting form with article data:", article);
-      // Make sure to explicitly set all form fields
-      form.reset({
-        title: article.title || "",
-        content: article.content || "",
-        category_id: article.category_id || null,
-        status: article.status || "draft",
-        excerpt: article.excerpt || "",
-        featured_image: article.featured_image || null,
-        is_featured: article.is_featured || false,
-        author_id: article.author_id || null,
-      });
+      console.log("Setting form values with:", article);
+      form.setValue("title", article.title);
+      form.setValue("content", article.content);
+      form.setValue("category_id", article.category_id);
+      form.setValue("status", article.status || "draft");
+      form.setValue("excerpt", article.excerpt || "");
+      form.setValue("featured_image", article.featured_image);
+      form.setValue("is_featured", article.is_featured || false);
+      form.setValue("author_id", article.author_id);
     }
   }, [article, form]);
 

@@ -97,6 +97,7 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
               <Textarea 
                 placeholder="Write a brief excerpt..." 
                 {...field} 
+                value={field.value || ""}
                 className="bg-[#2A2F3E] border-gray-600 text-white placeholder:text-gray-400 min-h-[100px]"
               />
             </FormControl>
