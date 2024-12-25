@@ -111,12 +111,10 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
           <FormItem>
             <FormLabel className="text-white">Content</FormLabel>
             <FormControl>
-              <div className="bg-[#2A2F3E] rounded-lg border border-gray-600 overflow-hidden">
-                <RichTextEditor
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              </div>
+              <RichTextEditor
+                value={field.value || ""}
+                onChange={field.onChange}
+              />
             </FormControl>
             <FormMessage className="text-red-400" />
           </FormItem>
