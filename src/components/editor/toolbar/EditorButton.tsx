@@ -12,7 +12,7 @@ export const EditorButton = ({ onClick, isActive, icon: Icon }: EditorButtonProp
     variant="ghost"
     size="sm"
     onClick={onClick}
-    className={isActive ? 'bg-muted' : ''}
+    className={`text-white hover:bg-[#3A3F4E] ${isActive ? 'bg-[#DC2626] hover:bg-[#DC2626]/90' : ''}`}
   >
     <Icon className="h-4 w-4" />
   </Button>

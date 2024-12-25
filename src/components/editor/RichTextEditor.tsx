@@ -56,16 +56,16 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
   };
 
   return (
-    <>
-      <div className="border rounded-lg">
-        <EditorToolbar
-          editor={editor}
-          onOpenLinkDialog={() => setIsLinkDialogOpen(true)}
-          onOpenMediaDialog={() => setIsMediaDialogOpen(true)}
-        />
+    <div className="border border-gray-600 rounded-lg overflow-hidden bg-[#2A2F3E]">
+      <EditorToolbar
+        editor={editor}
+        onOpenLinkDialog={() => setIsLinkDialogOpen(true)}
+        onOpenMediaDialog={() => setIsMediaDialogOpen(true)}
+      />
+      <div className="bg-white">
         <EditorContent 
           editor={editor} 
-          className="prose prose-sm max-w-none p-4 focus:outline-none min-h-[200px]"
+          className="prose prose-sm max-w-none p-4 focus:outline-none min-h-[200px] text-black"
         />
       </div>
 
@@ -82,6 +82,6 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
         onOpenChange={setIsMediaDialogOpen}
         onSelect={handleImageSelect}
       />
-    </>
+    </div>
   );
 };

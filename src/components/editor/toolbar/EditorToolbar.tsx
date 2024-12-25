@@ -13,7 +13,7 @@ interface EditorToolbarProps {
 }
 
 export const EditorToolbar = ({ editor, onOpenLinkDialog, onOpenMediaDialog }: EditorToolbarProps) => (
-  <div className="border-b p-2 bg-muted/50 flex flex-wrap gap-1">
+  <div className="border-b border-gray-600 p-2 bg-[#2A2F3E] flex flex-wrap gap-1">
     <EditorButton
       onClick={() => editor.chain().focus().toggleBold().run()}
       isActive={editor.isActive('bold')}
