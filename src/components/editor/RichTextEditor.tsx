@@ -10,9 +10,10 @@ import { MediaDialog } from './dialogs/MediaDialog';
 interface RichTextEditorProps {
   value?: string;
   onChange: (content: string) => void;
+  className?: string;
 }
 
-export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) => {
+export const RichTextEditor = ({ value = "", onChange, className }: RichTextEditorProps) => {
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [isMediaDialogOpen, setIsMediaDialogOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -57,7 +58,7 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
 
   return (
     <>
-      <div className="border rounded-lg">
+      <div className={className}>
         <EditorToolbar
           editor={editor}
           onOpenLinkDialog={() => setIsLinkDialogOpen(true)}
