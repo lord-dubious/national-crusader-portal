@@ -51,15 +51,16 @@ export const useArticleForm = (articleId?: string) => {
   React.useEffect(() => {
     if (article) {
       console.log("Resetting form with article data:", article);
+      // Make sure to explicitly set all form fields
       form.reset({
-        title: article.title,
-        content: article.content,
-        category_id: article.category_id,
+        title: article.title || "",
+        content: article.content || "",
+        category_id: article.category_id || null,
         status: article.status || "draft",
         excerpt: article.excerpt || "",
-        featured_image: article.featured_image,
+        featured_image: article.featured_image || null,
         is_featured: article.is_featured || false,
-        author_id: article.author_id,
+        author_id: article.author_id || null,
       });
     }
   }, [article, form]);

@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { UseFormReturn } from "react-hook-form";
 import { ArticleFormValues } from "./types";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ArticleFormFieldsProps {
   form: UseFormReturn<ArticleFormValues>;
@@ -61,7 +62,7 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
           <FormItem>
             <FormLabel className="text-white">Category</FormLabel>
             <Select
-              onValueChange={field.onChange}
+              onValueChange={(value) => field.onChange(value ? parseInt(value) : null)}
               value={field.value?.toString() || ""}
             >
               <FormControl>
@@ -91,12 +92,12 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
         name="excerpt"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-white">Excerpt</FormLabel>
+            <FormLabel className="text-white">Brief Excerpt</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="Brief excerpt" 
+              <Textarea 
+                placeholder="Write a brief excerpt..." 
                 {...field} 
-                className="bg-[#2A2F3E] border-gray-600 text-white placeholder:text-gray-400"
+                className="bg-[#2A2F3E] border-gray-600 text-white placeholder:text-gray-400 min-h-[100px]"
               />
             </FormControl>
             <FormMessage className="text-red-400" />
@@ -111,9 +112,9 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
           <FormItem>
             <FormLabel className="text-white">Content</FormLabel>
             <FormControl>
-              <div className="bg-[#2A2F3E] rounded-lg border border-gray-600 overflow-hidden">
+              <div className="prose prose-invert max-w-none">
                 <RichTextEditor
-                  value={field.value}
+                  value={field.value || ""}
                   onChange={field.onChange}
                 />
               </div>
