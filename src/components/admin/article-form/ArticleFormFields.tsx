@@ -113,7 +113,10 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
             <FormControl>
               <RichTextEditor
                 value={field.value || ""}
-                onChange={field.onChange}
+                onChange={(value) => {
+                  console.log("Editor content updated:", value);
+                  field.onChange(value);
+                }}
               />
             </FormControl>
             <FormMessage className="text-red-400" />
