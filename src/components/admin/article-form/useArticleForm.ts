@@ -50,16 +50,16 @@ export const useArticleForm = (articleId?: string) => {
 
   React.useEffect(() => {
     if (article) {
-      console.log("Resetting form with article data:", article);
+      console.log("Setting form values with article data:", article);
       form.reset({
-        title: article.title || "",
-        content: article.content || "",
-        category_id: article.category_id || null,
+        title: article.title,
+        content: article.content,
+        category_id: article.category_id,
         status: article.status || "draft",
         excerpt: article.excerpt || "",
-        featured_image: article.featured_image || null,
+        featured_image: article.featured_image,
         is_featured: article.is_featured || false,
-        author_id: article.author_id || null,
+        author_id: article.author_id,
       });
     }
   }, [article, form]);
