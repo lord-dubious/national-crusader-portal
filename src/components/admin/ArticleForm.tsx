@@ -5,9 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArticleFormFields } from "./article-form/ArticleFormFields";
-import { articleFormSchema } from "./article-form/types";
+import { articleFormSchema, type ArticleFormValues } from "./article-form/types";
 import { useArticleForm } from "./article-form/useArticleForm";
 import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 
 interface ArticleFormProps {
   articleId?: string;
@@ -18,12 +19,12 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
   const { toast } = useToast();
   const { initialValues, isLoading } = useArticleForm(articleId);
 
-  const form = useForm({
+  const form = useForm<ArticleFormValues>({
     resolver: zodResolver(articleFormSchema),
     defaultValues: {
       title: "",
       content: "",
-      category_id: undefined,
+      category_id: null,
       status: "draft",
       excerpt: "",
       featured_image: "",
@@ -38,7 +39,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
     }
   }, [initialValues, form]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: ArticleFormValues) => {
     try {
       const { data: userData } = await supabase.auth.getUser();
       const slug = values.title
@@ -120,11 +121,13 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-      <ArticleFormFields form={form} />
-      <Button type="submit">
-        {articleId ? "Update Article" : "Create Article"}
-      </Button>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <ArticleFormFields />
+        <Button type="submit">
+          {articleId ? "Update Article" : "Create Article"}
+        </Button>
+      </form>
+    </Form>
   );
 };

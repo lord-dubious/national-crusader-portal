@@ -5,15 +5,13 @@ import { RichTextEditor } from "@/components/editor/RichTextEditor";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { ArticleFormValues } from "./types";
 
-interface ArticleFormFieldsProps {
-  form: UseFormReturn<ArticleFormValues>;
-}
-
-export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
+export const ArticleFormFields = () => {
   const { toast } = useToast();
+  const form = useFormContext<ArticleFormValues>();
+
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
