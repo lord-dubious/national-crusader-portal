@@ -51,16 +51,19 @@ export const useArticleForm = (articleId?: string) => {
   React.useEffect(() => {
     if (article) {
       console.log("Setting form values with article data:", article);
-      form.reset({
+      // Ensure content is properly initialized
+      const formValues = {
         title: article.title,
-        content: article.content,
+        content: article.content || "", // Ensure content is never null
         category_id: article.category_id,
         status: article.status || "draft",
         excerpt: article.excerpt || "",
         featured_image: article.featured_image,
         is_featured: article.is_featured || false,
         author_id: article.author_id,
-      });
+      };
+      console.log("Initializing form with values:", formValues);
+      form.reset(formValues);
     }
   }, [article, form]);
 

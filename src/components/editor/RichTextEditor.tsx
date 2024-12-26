@@ -2,7 +2,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EditorToolbar } from './toolbar/EditorToolbar';
 import { LinkDialog } from './dialogs/LinkDialog';
 import { MediaDialog } from './dialogs/MediaDialog';
@@ -37,6 +37,14 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
       onChange(editor.getHTML());
     },
   });
+
+  // Update editor content when value prop changes
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      console.log("Updating editor content with:", value);
+      editor.commands.setContent(value);
+    }
+  }, [editor, value]);
 
   if (!editor) return null;
 
