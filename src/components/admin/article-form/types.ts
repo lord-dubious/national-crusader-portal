@@ -18,6 +18,7 @@ export interface Article {
     id: number;
     name: string;
   };
+  tags?: number[];
 }
 
 export const articleFormSchema = z.object({
@@ -29,6 +30,7 @@ export const articleFormSchema = z.object({
   featured_image: z.string().nullable(),
   is_featured: z.boolean().nullable(),
   author_id: z.string().nullable(),
+  tags: z.array(z.number()).nullable(),
 });
 
 export type ArticleFormValues = z.infer<typeof articleFormSchema>;
