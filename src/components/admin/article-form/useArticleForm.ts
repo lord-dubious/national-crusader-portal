@@ -20,7 +20,7 @@ export const useArticleForm = (articleId?: string) => {
     },
   });
 
-  const { data: article, isLoading } = useQuery({
+  const { data: article, isLoading, error } = useQuery({
     queryKey: ["article", articleId],
     queryFn: async () => {
       if (!articleId) return null;
@@ -34,11 +34,6 @@ export const useArticleForm = (articleId?: string) => {
 
       if (error) {
         console.error("Error fetching article:", error);
-        toast({
-          variant: "destructive",
-          title: "Error fetching article",
-          description: error.message,
-        });
         throw error;
       }
 
@@ -69,5 +64,5 @@ export const useArticleForm = (articleId?: string) => {
     }
   }, [article, form]);
 
-  return { form, article, isLoading };
+  return { form, article, isLoading, error };
 };

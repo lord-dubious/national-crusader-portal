@@ -8,6 +8,8 @@ import { ArticleFormFields } from "./article-form/ArticleFormFields";
 import { useArticleForm } from "./article-form/useArticleForm";
 import { ArticleFormValues } from "./article-form/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 interface ArticleFormProps {
   articleId?: string;
@@ -16,7 +18,7 @@ interface ArticleFormProps {
 export const ArticleForm = ({ articleId }: ArticleFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { form, article, isLoading } = useArticleForm(articleId);
+  const { form, article, isLoading, error } = useArticleForm(articleId);
 
   const onSubmit = async (values: ArticleFormValues) => {
     try {
@@ -43,7 +45,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
           .maybeSingle();
 
         if (error) throw error;
-        if (!data) throw new Error("Article not found");
+        if (!data) throw new Error("Failed to update article. The article may have been deleted.");
         
         console.log("Updated article:", data);
         toast({ title: "Article updated successfully" });
@@ -83,8 +85,26 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
     );
   }
 
+  if (error) {
+    return (
+      <Alert variant="destructive" className="mb-6">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          {error.message}
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
   if (articleId && !article) {
-    return <div className="text-white p-6">Article not found</div>;
+    return (
+      <Alert variant="destructive" className="mb-6">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          Article not found. It may have been deleted or you don't have permission to access it.
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (
