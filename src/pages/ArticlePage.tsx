@@ -52,7 +52,7 @@ const ArticlePage = () => {
               </div>
             </div>
             <div 
-              className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
+              className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground ProseMirror"
               dangerouslySetInnerHTML={{ __html: article?.content || "" }}
             />
           </div>
