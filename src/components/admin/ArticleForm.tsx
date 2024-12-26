@@ -37,7 +37,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         excerpt: values.excerpt || "",
         featured_image: values.featured_image,
         is_featured: values.is_featured,
-        author_id: values.author_id,
+        author_id: values.author_id || (await supabase.auth.getUser()).data.user?.id,
         slug,
         updated_at: new Date().toISOString(),
         published_at: values.status === "published" ? new Date().toISOString() : null,
@@ -46,10 +46,11 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
       console.log("Saving article data:", articleData);
 
       if (articleId) {
+        console.log("Updating article with ID:", articleId);
         const { error: updateError } = await supabase
           .from("articles")
           .update(articleData)
-          .eq("id", parseInt(articleId));
+          .eq("id", parseInt(articleId, 10));
 
         if (updateError) {
           console.error("Error updating article:", updateError);

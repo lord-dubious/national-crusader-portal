@@ -27,7 +27,7 @@ export const useArticleForm = (articleId?: string) => {
       const { data, error } = await supabase
         .from("articles")
         .select("*")
-        .eq("id", parseInt(articleId))
+        .eq("id", parseInt(articleId, 10))
         .maybeSingle();
 
       if (error) {
@@ -39,7 +39,6 @@ export const useArticleForm = (articleId?: string) => {
       return data as Article;
     },
     enabled: !!articleId,
-    retry: false,
   });
 
   React.useEffect(() => {
