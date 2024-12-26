@@ -28,7 +28,14 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         .replace(/(^-|-$)/g, "");
 
       const articleData = {
-        ...values,
+        title: values.title,
+        content: values.content,
+        category_id: values.category_id,
+        status: values.status,
+        excerpt: values.excerpt,
+        featured_image: values.featured_image,
+        is_featured: values.is_featured,
+        author_id: values.author_id,
         slug,
         updated_at: new Date().toISOString(),
         published_at: values.status === "published" ? new Date().toISOString() : null,
@@ -37,23 +44,27 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
       console.log("Submitting article data:", articleData);
 
       if (articleId) {
-        const { error: updateError } = await supabase
+        const { error: updateError, data } = await supabase
           .from("articles")
           .update(articleData)
-          .eq("id", articleId);
+          .eq("id", articleId)
+          .select()
+          .single();
 
         if (updateError) throw updateError;
         
-        console.log("Updated article with ID:", articleId);
+        console.log("Updated article:", data);
         toast({ title: "Article updated successfully" });
       } else {
-        const { error: insertError } = await supabase
+        const { error: insertError, data } = await supabase
           .from("articles")
-          .insert([articleData]);
+          .insert([articleData])
+          .select()
+          .single();
 
         if (insertError) throw insertError;
         
-        console.log("Created new article");
+        console.log("Created article:", data);
         toast({ title: "Article created successfully" });
       }
 
