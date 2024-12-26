@@ -30,6 +30,7 @@ export const useArticleForm = (articleId?: string) => {
         .from("articles")
         .select("*")
         .eq("id", articleId)
+        .limit(1)
         .maybeSingle();
 
       if (error) {
@@ -46,6 +47,7 @@ export const useArticleForm = (articleId?: string) => {
       return data as Article;
     },
     enabled: !!articleId,
+    retry: false,
   });
 
   React.useEffect(() => {
