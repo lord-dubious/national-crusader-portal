@@ -30,7 +30,7 @@ export const useArticleForm = (articleId?: string) => {
         .from("articles")
         .select("*")
         .eq("id", articleId)
-        .maybeSingle();
+        .single();
 
       if (error) {
         console.error("Error fetching article:", error);
@@ -51,19 +51,16 @@ export const useArticleForm = (articleId?: string) => {
   React.useEffect(() => {
     if (article) {
       console.log("Setting form values with article data:", article);
-      // Ensure content is properly initialized
-      const formValues = {
+      form.reset({
         title: article.title,
-        content: article.content || "", // Ensure content is never null
+        content: article.content || "",
         category_id: article.category_id,
         status: article.status || "draft",
         excerpt: article.excerpt || "",
         featured_image: article.featured_image,
         is_featured: article.is_featured || false,
         author_id: article.author_id,
-      };
-      console.log("Initializing form with values:", formValues);
-      form.reset(formValues);
+      });
     }
   }, [article, form]);
 
