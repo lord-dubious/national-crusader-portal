@@ -24,29 +24,29 @@ export const HeaderSearch = () => {
   const { data: searchResults } = useQuery({
     queryKey: ["search", searchQuery],
     queryFn: async () => {
-      if (!searchQuery) return { articles: [], newspapers: [] };
+      if (!searchQuery || searchQuery.length < 2) return { articles: [], newspapers: [] };
 
       console.log("Searching for:", searchQuery);
 
-      const [articlesResponse, newspapersResponse] = await Promise.all([
-        supabase
-          .from("articles")
-          .select(`
-            id,
-            title,
-            slug,
-            status,
-            category:categories(name)
-          `)
-          .or(`title.ilike.%${searchQuery}%, content.ilike.%${searchQuery}%`)
-          .eq('status', 'published')
-          .limit(5),
-        
-        supabase
-          .storage
-          .from('pdf_newspapers')
-          .list()
-      ]);
+      // Search articles with improved content search
+      const articlesResponse = await supabase
+        .from("articles")
+        .select(`
+          id,
+          title,
+          slug,
+          status,
+          excerpt,
+          content,
+          category:categories(name)
+        `)
+        .or(`
+          title.ilike.%${searchQuery}%,
+          content.ilike.%${searchQuery}%,
+          excerpt.ilike.%${searchQuery}%
+        `)
+        .eq('status', 'published')
+        .limit(5);
 
       if (articlesResponse.error) {
         console.error("Articles search error:", articlesResponse.error);
@@ -58,21 +58,38 @@ export const HeaderSearch = () => {
         throw articlesResponse.error;
       }
 
-      const filteredNewspapers = newspapersResponse.data?.filter(file => 
-        file.name.toLowerCase().includes(searchQuery.toLowerCase())
-      ) || [];
+      // Search newspapers
+      const newspapersResponse = await supabase
+        .from("newspapers")
+        .select("*")
+        .or(`
+          title.ilike.%${searchQuery}%,
+          pdf_url.ilike.%${searchQuery}%
+        `)
+        .eq('status', 'published')
+        .limit(5);
+
+      if (newspapersResponse.error) {
+        console.error("Newspapers search error:", newspapersResponse.error);
+        toast({
+          variant: "destructive",
+          title: "Error searching newspapers",
+          description: newspapersResponse.error.message
+        });
+        throw newspapersResponse.error;
+      }
 
       console.log("Search results:", {
         articles: articlesResponse.data,
-        newspapers: filteredNewspapers
+        newspapers: newspapersResponse.data
       });
 
       return {
         articles: articlesResponse.data || [],
-        newspapers: filteredNewspapers
+        newspapers: newspapersResponse.data || []
       };
     },
-    enabled: searchQuery.length > 0,
+    enabled: searchQuery.length >= 2,
   });
 
   const handleSelect = (type: 'article' | 'newspaper', item: any) => {
@@ -80,10 +97,9 @@ export const HeaderSearch = () => {
     if (type === 'article') {
       navigate(`/article/${item.slug}`);
     } else {
-      // Get the public URL for the PDF and open it in a new tab
       const pdfUrl = supabase.storage
         .from('pdf_newspapers')
-        .getPublicUrl(item.name).data.publicUrl;
+        .getPublicUrl(item.pdf_url).data.publicUrl;
       window.open(pdfUrl, '_blank');
     }
   };
@@ -122,13 +138,16 @@ export const HeaderSearch = () => {
                 <CommandItem
                   key={article.id}
                   onSelect={() => handleSelect('article', article)}
-                  className="flex items-center justify-between"
+                  className="flex flex-col items-start gap-1"
                 >
-                  <div>
-                    <div className="font-medium">{article.title}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {article.category?.name || 'Uncategorized'}
+                  <div className="font-medium">{article.title}</div>
+                  {article.excerpt && (
+                    <div className="text-sm text-muted-foreground line-clamp-1">
+                      {article.excerpt}
                     </div>
+                  )}
+                  <div className="text-xs text-muted-foreground">
+                    {article.category?.name || 'Uncategorized'}
                   </div>
                 </CommandItem>
               ))}
@@ -140,8 +159,9 @@ export const HeaderSearch = () => {
                 <CommandItem
                   key={newspaper.id}
                   onSelect={() => handleSelect('newspaper', newspaper)}
+                  className="flex items-center justify-between"
                 >
-                  <div className="font-medium">{newspaper.name}</div>
+                  <div className="font-medium">{newspaper.title}</div>
                 </CommandItem>
               ))}
             </CommandGroup>
