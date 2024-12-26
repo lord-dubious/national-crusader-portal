@@ -37,11 +37,6 @@ export const useArticleForm = (articleId?: string) => {
         throw error;
       }
 
-      if (!data) {
-        console.log("No article found with ID:", articleId);
-        return null;
-      }
-
       console.log("Fetched article data:", data);
       return data as Article;
     },
@@ -49,18 +44,19 @@ export const useArticleForm = (articleId?: string) => {
     retry: false,
   });
 
+  // Reset form when article data is loaded
   React.useEffect(() => {
     if (article) {
       console.log("Setting form values with article data:", article);
       form.reset({
-        title: article.title,
+        title: article.title || "",
         content: article.content || "",
-        category_id: article.category_id,
+        category_id: article.category_id || null,
         status: article.status || "draft",
         excerpt: article.excerpt || "",
-        featured_image: article.featured_image,
+        featured_image: article.featured_image || null,
         is_featured: article.is_featured || false,
-        author_id: article.author_id,
+        author_id: article.author_id || null,
       });
     }
   }, [article, form]);

@@ -34,10 +34,6 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
     },
   });
 
-  // Get the current content value from the form
-  const content = form.watch("content");
-  console.log("Current content value:", content);
-
   return (
     <div className="space-y-6">
       <FormField
@@ -100,6 +96,7 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
               <Input 
                 placeholder="Brief excerpt" 
                 {...field} 
+                value={field.value || ""}
                 className="bg-[#2A2F3E] border-gray-600 text-white placeholder:text-gray-400"
               />
             </FormControl>
@@ -116,7 +113,7 @@ export const ArticleFormFields = ({ form }: ArticleFormFieldsProps) => {
             <FormLabel className="text-white">Content</FormLabel>
             <FormControl>
               <RichTextEditor
-                value={field.value || ""} // Ensure we always pass a string
+                value={field.value || ""}
                 onChange={(value) => {
                   console.log("Editor content updated:", value);
                   field.onChange(value);

@@ -19,9 +19,11 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { form, article, isLoading, error } = useArticleForm(articleId);
+  const [isSaving, setIsSaving] = React.useState(false);
 
   const onSubmit = async (values: ArticleFormValues) => {
     try {
+      setIsSaving(true);
       const slug = values.title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
@@ -41,7 +43,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         published_at: values.status === "published" ? new Date().toISOString() : null,
       };
 
-      console.log("Attempting to save article data:", articleData);
+      console.log("Saving article data:", articleData);
 
       if (articleId) {
         const { error: updateError } = await supabase
@@ -76,6 +78,8 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         title: "Error saving article",
         description: error.message,
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -94,9 +98,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
     return (
       <Alert variant="destructive" className="mb-6">
         <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          {error.message}
-        </AlertDescription>
+        <AlertDescription>{error.message}</AlertDescription>
       </Alert>
     );
   }
@@ -125,8 +127,9 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
           <Button 
             type="submit" 
             className="w-full bg-[#DC2626] hover:bg-[#DC2626]/90 text-white font-semibold"
+            disabled={isSaving}
           >
-            {articleId ? "Update" : "Create"} Article
+            {isSaving ? "Saving..." : articleId ? "Update" : "Create"} Article
           </Button>
         </form>
       </Form>
