@@ -1,41 +1,37 @@
-import * as React from "react";
-import { useForm } from "react-hook-form";
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Article, ArticleFormValues } from "./types";
+import { Article } from "./types";
+import { useToast } from "@/hooks/use-toast";
 
 export const useArticleForm = (articleId?: string) => {
-  const form = useForm<ArticleFormValues>({
-    defaultValues: {
-      title: "",
-      content: "",
-      category_id: null,
-      status: "draft",
-      excerpt: "",
-      featured_image: null,
-      is_featured: false,
-      author_id: null,
-    },
-  });
+  const { toast } = useToast();
+  const [initialValues, setInitialValues] = React.useState<Partial<Article> | null>(null);
 
-  const { data: article, isLoading, error } = useQuery({
+  const { data: article, isLoading } = useQuery({
     queryKey: ["article", articleId],
     queryFn: async () => {
       if (!articleId) return null;
-      
-      console.log("Fetching article with ID:", articleId);
+
       const { data, error } = await supabase
         .from("articles")
-        .select("*")
+        .select(`
+          *,
+          category:categories(id, name),
+          author:profiles(id, email)
+        `)
         .eq("id", parseInt(articleId, 10))
-        .maybeSingle();
+        .single();
 
       if (error) {
-        console.error("Error fetching article:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch article",
+          variant: "destructive",
+        });
         throw error;
       }
 
-      console.log("Fetched article data:", data);
       return data as Article;
     },
     enabled: !!articleId,
@@ -43,19 +39,16 @@ export const useArticleForm = (articleId?: string) => {
 
   React.useEffect(() => {
     if (article) {
-      console.log("Setting form values with article data:", article);
-      form.reset({
-        title: article.title || "",
-        content: article.content || "",
-        category_id: article.category_id || null,
-        status: article.status || "draft",
-        excerpt: article.excerpt || "",
-        featured_image: article.featured_image || null,
-        is_featured: article.is_featured || false,
-        author_id: article.author_id || null,
+      setInitialValues({
+        ...article,
+        category_id: article.category?.id,
       });
     }
-  }, [article, form]);
+  }, [article]);
 
-  return { form, article, isLoading, error };
+  return {
+    article,
+    initialValues,
+    isLoading,
+  };
 };

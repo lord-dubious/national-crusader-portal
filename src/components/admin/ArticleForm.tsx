@@ -1,29 +1,45 @@
-import * as React from "react";
-import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { ArticleFormFields } from "./article-form/ArticleFormFields";
+import { articleFormSchema } from "./article-form/types";
 import { useArticleForm } from "./article-form/useArticleForm";
-import { ArticleFormValues } from "./article-form/types";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ArticleFormProps {
   articleId?: string;
 }
 
 export const ArticleForm = ({ articleId }: ArticleFormProps) => {
-  const { toast } = useToast();
   const navigate = useNavigate();
-  const { form, article, isLoading, error } = useArticleForm(articleId);
-  const [isSaving, setIsSaving] = React.useState(false);
+  const { toast } = useToast();
+  const { initialValues, isLoading } = useArticleForm(articleId);
 
-  const onSubmit = async (values: ArticleFormValues) => {
+  const form = useForm({
+    resolver: zodResolver(articleFormSchema),
+    defaultValues: {
+      title: "",
+      content: "",
+      category_id: undefined,
+      status: "draft",
+      excerpt: "",
+      featured_image: "",
+      is_featured: false,
+      author_id: "",
+    },
+  });
+
+  React.useEffect(() => {
+    if (initialValues) {
+      form.reset(initialValues);
+    }
+  }, [initialValues, form]);
+
+  const onSubmit = async (values: any) => {
     try {
-      setIsSaving(true);
+      const { data: userData } = await supabase.auth.getUser();
       const slug = values.title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
@@ -31,13 +47,13 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
 
       const articleData = {
         title: values.title,
-        content: values.content || "",
+        content: values.content,
         category_id: values.category_id,
         status: values.status,
         excerpt: values.excerpt || "",
         featured_image: values.featured_image,
         is_featured: values.is_featured,
-        author_id: values.author_id || (await supabase.auth.getUser()).data.user?.id,
+        author_id: values.author_id || userData.user?.id,
         slug,
         updated_at: new Date().toISOString(),
         published_at: values.status === "published" ? new Date().toISOString() : null,
@@ -54,86 +70,60 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
 
         if (updateError) {
           console.error("Error updating article:", updateError);
-          throw updateError;
+          toast({
+            title: "Error",
+            description: "Failed to update article",
+            variant: "destructive",
+          });
+          return;
         }
 
-        toast({ title: "Article updated successfully" });
+        toast({
+          title: "Success",
+          description: "Article updated successfully",
+        });
       } else {
-        const { error: insertError } = await supabase
+        const { error: createError } = await supabase
           .from("articles")
           .insert([articleData]);
 
-        if (insertError) {
-          console.error("Error creating article:", insertError);
-          throw insertError;
+        if (createError) {
+          console.error("Error creating article:", createError);
+          toast({
+            title: "Error",
+            description: "Failed to create article",
+            variant: "destructive",
+          });
+          return;
         }
 
-        toast({ title: "Article created successfully" });
+        toast({
+          title: "Success",
+          description: "Article created successfully",
+        });
       }
 
       navigate("/admin/articles");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error saving article:", error);
       toast({
+        title: "Error",
+        description: "Failed to save article",
         variant: "destructive",
-        title: "Error saving article",
-        description: error.message,
       });
-    } finally {
-      setIsSaving(false);
     }
   };
 
   if (isLoading) {
-    return (
-      <div className="space-y-6 p-6 bg-[#1A1F2C] rounded-lg">
-        <Skeleton className="h-8 w-1/3 bg-gray-700" />
-        <Skeleton className="h-10 w-full bg-gray-700" />
-        <Skeleton className="h-10 w-full bg-gray-700" />
-        <Skeleton className="h-40 w-full bg-gray-700" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert variant="destructive" className="mb-6">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    );
-  }
-
-  if (articleId && !article) {
-    return (
-      <Alert variant="destructive" className="mb-6">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          Article not found. It may have been deleted or you don't have permission to access it.
-        </AlertDescription>
-      </Alert>
-    );
+    return <div>Loading...</div>;
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-[#1A1F2C] rounded-lg shadow-xl">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <h2 className="text-2xl font-bold text-white mb-6">
-            {articleId ? "Edit Article" : "Create New Article"}
-          </h2>
-          <div className="space-y-6 text-white">
-            <ArticleFormFields form={form} />
-          </div>
-          <Button 
-            type="submit" 
-            className="w-full bg-[#DC2626] hover:bg-[#DC2626]/90 text-white font-semibold"
-            disabled={isSaving}
-          >
-            {isSaving ? "Saving..." : articleId ? "Update" : "Create"} Article
-          </Button>
-        </form>
-      </Form>
-    </div>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <ArticleFormFields form={form} />
+      <Button type="submit">
+        {articleId ? "Update Article" : "Create Article"}
+      </Button>
+    </form>
   );
 };
