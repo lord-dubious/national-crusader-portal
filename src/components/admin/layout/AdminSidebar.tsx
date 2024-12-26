@@ -1,4 +1,4 @@
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarTrigger } from "@/components/ui/sidebar";
 import { LayoutDashboard, FileText, FolderTree, Tags, Image as ImageIcon, Users, LogOut } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,7 +41,8 @@ export const AdminSidebar = () => {
   };
 
   return (
-    <Sidebar className="bg-[#222222] border-r border-[#333333]">
+    <Sidebar className="bg-[#222222] border-r border-[#333333]" collapsible="icon">
+      <SidebarTrigger className="absolute right-2 top-2 text-white hover:text-accent" />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-[#8E9196]">Admin Panel</SidebarGroupLabel>
@@ -52,9 +53,10 @@ export const AdminSidebar = () => {
                   <SidebarMenuButton 
                     onClick={() => handleNavigation(item.url)}
                     className={cn(
-                      "flex items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-[#DC2626] transition-colors",
-                      location.pathname === item.url && "bg-[#DC2626]"
+                      "flex items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-accent transition-colors",
+                      location.pathname === item.url && "bg-accent"
                     )}
+                    tooltip={item.title}
                   >
                     <item.icon className="h-4 w-4" />
                     <span>{item.title}</span>
@@ -64,7 +66,8 @@ export const AdminSidebar = () => {
               <SidebarMenuItem>
                 <SidebarMenuButton 
                   onClick={handleLogout} 
-                  className="flex items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-[#DC2626] transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-accent transition-colors"
+                  tooltip="Logout"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Logout</span>

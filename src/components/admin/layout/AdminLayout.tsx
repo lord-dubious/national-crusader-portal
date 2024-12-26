@@ -63,7 +63,6 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     queryKey: ["admin-profile", session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) return null;
-
       try {
         console.log("Fetching profile for user:", session.user.id);
         const { data: profile, error } = await supabase
@@ -141,24 +140,22 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-primary text-primary-foreground">
         <AdminSidebar />
-        <main className="flex-1 p-4 md:p-8 w-full overflow-x-hidden">
-          {isMobile && (
-            <Breadcrumb className="mb-4">
-              {breadcrumbs.map((crumb, index) => (
-                <BreadcrumbItem key={crumb.path}>
-                  <BreadcrumbLink 
-                    href={crumb.path}
-                    className="text-[#8E9196] hover:text-white transition-colors"
-                  >
-                    {crumb.title}
-                  </BreadcrumbLink>
-                  {index < breadcrumbs.length - 1 && (
-                    <ChevronRight className="h-4 w-4 text-[#8E9196]" />
-                  )}
-                </BreadcrumbItem>
-              ))}
-            </Breadcrumb>
-          )}
+        <main className="flex-1 p-4 md:p-8 w-full overflow-x-hidden transition-all duration-200">
+          <Breadcrumb className="mb-4">
+            {breadcrumbs.map((crumb, index) => (
+              <BreadcrumbItem key={crumb.path}>
+                <BreadcrumbLink 
+                  href={crumb.path}
+                  className="text-[#8E9196] hover:text-white transition-colors"
+                >
+                  {crumb.title}
+                </BreadcrumbLink>
+                {index < breadcrumbs.length - 1 && (
+                  <ChevronRight className="h-4 w-4 text-[#8E9196]" />
+                )}
+              </BreadcrumbItem>
+            ))}
+          </Breadcrumb>
           <div className="max-w-[1400px] mx-auto">
             {children}
           </div>
