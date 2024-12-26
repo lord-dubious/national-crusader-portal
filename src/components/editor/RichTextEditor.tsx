@@ -33,6 +33,11 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
       }),
     ],
     content: value,
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm max-w-none focus:outline-none min-h-[200px] text-black',
+      },
+    },
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       console.log("Editor content updated:", html);
@@ -40,7 +45,6 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
     },
   });
 
-  // Update editor content when value prop changes
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
       console.log("Updating editor content with:", value);
@@ -73,10 +77,7 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
         onOpenMediaDialog={() => setIsMediaDialogOpen(true)}
       />
       <div className="bg-white">
-        <EditorContent 
-          editor={editor} 
-          className="prose prose-sm max-w-none p-4 focus:outline-none min-h-[200px] text-black"
-        />
+        <EditorContent editor={editor} />
       </div>
 
       <LinkDialog

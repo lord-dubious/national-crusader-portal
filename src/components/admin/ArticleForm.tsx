@@ -38,14 +38,16 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         const { error } = await supabase
           .from("articles")
           .update(articleData)
-          .eq("id", articleId);
+          .eq("id", articleId)
+          .select();
 
         if (error) throw error;
         toast({ title: "Article updated successfully" });
       } else {
         const { error } = await supabase
           .from("articles")
-          .insert([articleData]);
+          .insert([articleData])
+          .select();
 
         if (error) throw error;
         toast({ title: "Article created successfully" });
