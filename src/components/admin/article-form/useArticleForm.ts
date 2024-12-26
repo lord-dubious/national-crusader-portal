@@ -30,7 +30,7 @@ export const useArticleForm = (articleId?: string) => {
         .from("articles")
         .select("*")
         .eq("id", articleId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching article:", error);
@@ -40,6 +40,11 @@ export const useArticleForm = (articleId?: string) => {
           description: error.message,
         });
         throw error;
+      }
+
+      if (!data) {
+        console.log("No article found with ID:", articleId);
+        return null;
       }
 
       console.log("Fetched article data:", data);

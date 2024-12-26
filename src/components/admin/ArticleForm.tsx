@@ -40,9 +40,11 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
           .update(articleData)
           .eq("id", articleId)
           .select()
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
+        if (!data) throw new Error("Article not found");
+        
         console.log("Updated article:", data);
         toast({ title: "Article updated successfully" });
       } else {
@@ -50,9 +52,11 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
           .from("articles")
           .insert([articleData])
           .select()
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
+        if (!data) throw new Error("Failed to create article");
+        
         console.log("Created article:", data);
         toast({ title: "Article created successfully" });
       }
