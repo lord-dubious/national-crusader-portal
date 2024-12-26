@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export interface Article {
   id: number;
   title: string;
@@ -12,6 +14,21 @@ export interface Article {
   published_at: string | null;
   slug: string;
   is_featured: boolean | null;
+  category?: {
+    id: number;
+    name: string;
+  };
 }
 
-export type ArticleFormValues = Omit<Article, 'id' | 'created_at' | 'updated_at' | 'published_at' | 'slug'>;
+export const articleFormSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  content: z.string().min(1, "Content is required"),
+  category_id: z.number().nullable(),
+  status: z.string().nullable(),
+  excerpt: z.string().nullable(),
+  featured_image: z.string().nullable(),
+  is_featured: z.boolean().nullable(),
+  author_id: z.string().nullable(),
+});
+
+export type ArticleFormValues = z.infer<typeof articleFormSchema>;
