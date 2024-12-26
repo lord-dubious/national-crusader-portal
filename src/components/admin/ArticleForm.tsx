@@ -29,7 +29,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
 
       const articleData = {
         title: values.title,
-        content: values.content,
+        content: values.content || "",
         category_id: values.category_id,
         status: values.status,
         excerpt: values.excerpt,
@@ -54,7 +54,6 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
           throw updateError;
         }
 
-        console.log("Article updated successfully");
         toast({ title: "Article updated successfully" });
       } else {
         const { error: insertError } = await supabase
@@ -66,7 +65,6 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
           throw insertError;
         }
 
-        console.log("Article created successfully");
         toast({ title: "Article created successfully" });
       }
 

@@ -35,13 +35,13 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
     content: value,
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none min-h-[200px] text-black',
+        class: 'prose prose-sm max-w-none focus:outline-none min-h-[200px] text-black p-4',
       },
     },
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       console.log("Editor content updated:", html);
-      onChange(html);
+      onChange(html || "");
     },
   });
 
