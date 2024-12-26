@@ -49,7 +49,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         const { error: updateError } = await supabase
           .from("articles")
           .update(articleData)
-          .eq("id", articleId);
+          .eq("id", parseInt(articleId));
 
         if (updateError) {
           console.error("Error updating article:", updateError);

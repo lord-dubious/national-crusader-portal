@@ -2,11 +2,9 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { Article, ArticleFormValues } from "./types";
 
 export const useArticleForm = (articleId?: string) => {
-  const { toast } = useToast();
   const form = useForm<ArticleFormValues>({
     defaultValues: {
       title: "",
@@ -29,7 +27,7 @@ export const useArticleForm = (articleId?: string) => {
       const { data, error } = await supabase
         .from("articles")
         .select("*")
-        .eq("id", articleId)
+        .eq("id", parseInt(articleId))
         .maybeSingle();
 
       if (error) {
@@ -44,7 +42,6 @@ export const useArticleForm = (articleId?: string) => {
     retry: false,
   });
 
-  // Reset form when article data is loaded
   React.useEffect(() => {
     if (article) {
       console.log("Setting form values with article data:", article);
