@@ -40,11 +40,7 @@ export const HeaderSearch = () => {
           content,
           category:categories(name)
         `)
-        .or(`
-          title.ilike.%${searchQuery}%,
-          content.ilike.%${searchQuery}%,
-          excerpt.ilike.%${searchQuery}%
-        `)
+        .or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%,excerpt.ilike.%${searchQuery}%`)
         .eq('status', 'published')
         .limit(5);
 
@@ -62,10 +58,7 @@ export const HeaderSearch = () => {
       const newspapersResponse = await supabase
         .from("newspapers")
         .select("*")
-        .or(`
-          title.ilike.%${searchQuery}%,
-          pdf_url.ilike.%${searchQuery}%
-        `)
+        .or(`title.ilike.%${searchQuery}%,pdf_url.ilike.%${searchQuery}%`)
         .eq('status', 'published')
         .limit(5);
 
