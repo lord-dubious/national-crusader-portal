@@ -32,7 +32,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         content: values.content || "",
         category_id: values.category_id,
         status: values.status,
-        excerpt: values.excerpt,
+        excerpt: values.excerpt || "",
         featured_image: values.featured_image,
         is_featured: values.is_featured,
         author_id: values.author_id,

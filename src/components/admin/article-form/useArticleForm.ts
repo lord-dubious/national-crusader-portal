@@ -30,7 +30,6 @@ export const useArticleForm = (articleId?: string) => {
         .from("articles")
         .select("*")
         .eq("id", articleId)
-        .limit(1)
         .maybeSingle();
 
       if (error) {
