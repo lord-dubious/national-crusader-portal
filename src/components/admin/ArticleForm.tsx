@@ -44,29 +44,33 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
       console.log("Submitting article data:", articleData);
 
       if (articleId) {
-        const { data, error: updateError } = await supabase
+        const { error: updateError } = await supabase
           .from("articles")
           .update(articleData)
-          .eq("id", articleId);
+          .eq("id", articleId)
+          .select()
+          .maybeSingle();
 
         if (updateError) {
           console.error("Error updating article:", updateError);
           throw updateError;
         }
 
-        console.log("Article updated successfully:", data);
+        console.log("Article updated successfully");
         toast({ title: "Article updated successfully" });
       } else {
-        const { data, error: insertError } = await supabase
+        const { error: insertError } = await supabase
           .from("articles")
-          .insert([articleData]);
+          .insert([articleData])
+          .select()
+          .maybeSingle();
 
         if (insertError) {
           console.error("Error creating article:", insertError);
           throw insertError;
         }
 
-        console.log("Article created successfully:", data);
+        console.log("Article created successfully");
         toast({ title: "Article created successfully" });
       }
 
