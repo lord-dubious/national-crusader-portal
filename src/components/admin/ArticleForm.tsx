@@ -28,6 +28,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
       const articleData = {
         ...values,
         slug,
+        updated_at: new Date().toISOString(),
         published_at: values.status === "published" ? new Date().toISOString() : null,
       };
 

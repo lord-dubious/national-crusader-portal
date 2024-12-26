@@ -34,7 +34,9 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
     ],
     content: value,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      const html = editor.getHTML();
+      console.log("Editor content updated:", html);
+      onChange(html);
     },
   });
 
@@ -42,7 +44,7 @@ export const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) =>
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
       console.log("Updating editor content with:", value);
-      editor.commands.setContent(value);
+      editor.commands.setContent(value || "");
     }
   }, [editor, value]);
 
