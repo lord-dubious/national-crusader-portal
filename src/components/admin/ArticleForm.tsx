@@ -47,9 +47,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         const { error: updateError } = await supabase
           .from("articles")
           .update(articleData)
-          .eq("id", articleId)
-          .select()
-          .maybeSingle();
+          .eq("id", articleId);
 
         if (updateError) {
           console.error("Error updating article:", updateError);
@@ -61,9 +59,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
       } else {
         const { error: insertError } = await supabase
           .from("articles")
-          .insert([articleData])
-          .select()
-          .maybeSingle();
+          .insert([articleData]);
 
         if (insertError) {
           console.error("Error creating article:", insertError);
