@@ -69,14 +69,16 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         throw error;
       }
     },
-    retry: false, // Don't retry on auth errors
-    onError: (error: any) => {
-      toast({
-        variant: "destructive",
-        title: "Authentication Error",
-        description: error.message || "Please sign in to continue"
-      });
-      navigate('/signin');
+    retry: false,
+    meta: {
+      errorHandler: (error: any) => {
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: error.message || "Please sign in to continue"
+        });
+        navigate('/signin');
+      }
     }
   });
 
@@ -105,7 +107,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       }
     },
     enabled: !!session?.user?.id,
-    retry: 1,
+    retry: 1
   });
 
   useEffect(() => {
