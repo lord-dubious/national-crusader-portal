@@ -45,10 +45,12 @@ export const AdminSidebar = () => {
 
   return (
     <Sidebar className="bg-[#222222] border-r border-[#333333]" collapsible="icon">
-      <SidebarTrigger className="absolute right-2 top-2 text-white hover:text-accent" />
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[#8E9196]">Admin Panel</SidebarGroupLabel>
+          <div className="flex items-center justify-between px-4 py-2">
+            <SidebarGroupLabel className="text-[#8E9196]">Admin Panel</SidebarGroupLabel>
+            <SidebarTrigger className="text-white hover:text-accent" />
+          </div>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
