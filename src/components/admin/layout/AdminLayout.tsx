@@ -47,7 +47,21 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       try {
         console.log("Fetching session...");
         const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
+        
+        if (error) {
+          console.error("Session error:", error);
+          // If there's a refresh token error, sign out the user
+          if (error.message.includes("refresh_token_not_found")) {
+            await supabase.auth.signOut();
+            throw new Error("Session expired. Please sign in again.");
+          }
+          throw error;
+        }
+        
+        if (!session) {
+          throw new Error("No active session");
+        }
+        
         console.log("Session data:", session);
         return session;
       } catch (error: any) {
@@ -55,8 +69,15 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         throw error;
       }
     },
-    retry: 2,
-    retryDelay: 1000,
+    retry: false, // Don't retry on auth errors
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: error.message || "Please sign in to continue"
+      });
+      navigate('/signin');
+    }
   });
 
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
@@ -84,19 +105,13 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       }
     },
     enabled: !!session?.user?.id,
-    retry: 2,
-    retryDelay: 1000,
+    retry: 1,
   });
 
   useEffect(() => {
     if (!isLoadingSession && !session) {
       console.log("No session found, redirecting to signin");
       navigate('/signin');
-      toast({
-        variant: "destructive",
-        title: "Access Denied",
-        description: "Please sign in to access the admin panel."
-      });
       return;
     }
 
