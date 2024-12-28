@@ -11,18 +11,26 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
   const { data: articles, error } = useQuery({
     queryKey: ["category-articles", categorySlug],
     queryFn: async () => {
+      const { data: categoryData } = await supabase
+        .from("categories")
+        .select("id")
+        .eq("slug", categorySlug)
+        .single();
+
+      if (!categoryData) return [];
+
       const { data, error } = await supabase
         .from("articles")
         .select(`
-          *,
+          id,
+          title,
+          excerpt,
+          featured_image,
+          slug,
           category:categories(name, slug)
         `)
         .eq("status", "published")
-        .eq("category_id", (await supabase
-          .from("categories")
-          .select("id")
-          .eq("slug", categorySlug)
-          .single()).data?.id)
+        .eq("category_id", categoryData.id)
         .order("published_at", { ascending: false })
         .limit(3);
       
@@ -36,6 +44,7 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
       }
       return data;
     },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   if (error) return null;

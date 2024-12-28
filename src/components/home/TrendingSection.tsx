@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { TrendingUp } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const TrendingSection = () => {
   const { toast } = useToast();
@@ -11,7 +12,9 @@ export const TrendingSection = () => {
       const { data, error } = await supabase
         .from("articles")
         .select(`
-          *,
+          id,
+          title,
+          slug,
           category:categories(name)
         `)
         .eq("status", "published")
@@ -28,6 +31,7 @@ export const TrendingSection = () => {
       }
       return data;
     },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   if (error) return null;
@@ -43,9 +47,9 @@ export const TrendingSection = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {trendingArticles.map((article, i) => (
-            <a 
+            <Link 
               key={article.id}
-              href={`/article/${article.slug}`}
+              to={`/article/${article.slug}`}
               className="group cursor-pointer hover:bg-background/50 p-4 rounded-lg transition-colors"
             >
               <span className="text-4xl font-bold text-accent mb-2 block">0{i + 1}</span>
@@ -57,7 +61,7 @@ export const TrendingSection = () => {
                   {article.title}
                 </h3>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

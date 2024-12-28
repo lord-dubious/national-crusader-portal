@@ -6,9 +6,11 @@ import { TrendingSection } from "@/components/home/TrendingSection";
 import { NewspaperSection } from "@/components/home/NewspaperSection";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
-  const { data: categories } = useQuery({
+  const { data: categories, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -19,6 +21,7 @@ const Index = () => {
       if (error) throw error;
       return data;
     },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   return (
@@ -27,16 +30,30 @@ const Index = () => {
       <main className="flex-1">
         <div className="container mx-auto px-4">
           <div className="py-8">
-            <FeaturedArticle />
+            <Suspense fallback={<Skeleton className="h-[70vh] w-full rounded-lg" />}>
+              <FeaturedArticle />
+            </Suspense>
           </div>
           <div className="py-12">
-            <TrendingSection />
+            <Suspense fallback={<Skeleton className="h-96 w-full rounded-lg" />}>
+              <TrendingSection />
+            </Suspense>
           </div>
-          <NewspaperSection />
+          <Suspense fallback={<Skeleton className="h-96 w-full rounded-lg" />}>
+            <NewspaperSection />
+          </Suspense>
           <div className="space-y-16 py-8">
-            {categories?.map((category) => (
-              <CategorySection key={category.id} categorySlug={category.slug} />
-            ))}
+            {isLoading ? (
+              Array(3).fill(0).map((_, i) => (
+                <Skeleton key={i} className="h-96 w-full rounded-lg" />
+              ))
+            ) : (
+              categories?.map((category) => (
+                <Suspense key={category.id} fallback={<Skeleton className="h-96 w-full rounded-lg" />}>
+                  <CategorySection categorySlug={category.slug} />
+                </Suspense>
+              ))
+            )}
           </div>
         </div>
       </main>

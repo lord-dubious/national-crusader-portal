@@ -3,19 +3,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const FeaturedArticle = () => {
   const { toast } = useToast();
-  const { data: featuredArticle, error: featuredError } = useQuery({
+  const { data: featuredArticle, error } = useQuery({
     queryKey: ["featured-article"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("articles")
         .select(`
-          *,
+          id,
+          title,
+          excerpt,
+          featured_image,
+          slug,
+          published_at,
           category:categories(name)
         `)
         .eq("status", "published")
+        .eq("is_featured", true)
         .order("published_at", { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -30,17 +37,18 @@ export const FeaturedArticle = () => {
       }
       return data;
     },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  if (featuredError) return null;
-  if (!featuredArticle) return null;
+  if (error || !featuredArticle) return null;
 
   return (
     <article className="relative h-[70vh] min-h-[600px] w-full overflow-hidden rounded-lg animate-fade-up">
       <img
-        src={featuredArticle.featured_image || "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80"}
+        src={featuredArticle.featured_image || "/placeholder.svg"}
         alt={featuredArticle.title}
         className="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-8">
@@ -51,7 +59,7 @@ export const FeaturedArticle = () => {
             </span>
             <span className="text-white/80 text-sm flex items-center">
               <Clock className="h-4 w-4 mr-1" />
-              {new Date(featuredArticle.published_at).toLocaleDateString()}
+              {new Date(featuredArticle.published_at || "").toLocaleDateString()}
             </span>
           </div>
         )}
@@ -65,10 +73,10 @@ export const FeaturedArticle = () => {
           className="group bg-accent hover:bg-accent/90"
           asChild
         >
-          <a href={`/article/${featuredArticle.slug}`}>
+          <Link to={`/article/${featuredArticle.slug}`}>
             Read More
             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </a>
+          </Link>
         </Button>
       </div>
     </article>
