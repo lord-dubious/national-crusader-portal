@@ -85,6 +85,7 @@ export const ArticleTags = () => {
                     type="button" 
                     onClick={handleAddTag}
                     variant="secondary"
+                    className="hover:bg-accent hover:text-accent-foreground"
                   >
                     Add
                   </Button>
