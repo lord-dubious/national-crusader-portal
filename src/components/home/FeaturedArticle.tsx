@@ -20,14 +20,26 @@ export const FeaturedArticle = memo(() => {
         .eq("is_featured", true)
         .order("published_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
       
       if (error) {
         console.error("Error fetching featured article:", error);
+        toast({
+          variant: "destructive",
+          title: "Error fetching featured article",
+          description: error.message
+        });
         return null;
       }
+
+      if (!data) {
+        console.log("No featured article found");
+        return null;
+      }
+
       return data;
     },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     meta: {
       errorHandler: (error: any) => {
         console.error("Query error:", error);
@@ -42,7 +54,6 @@ export const FeaturedArticle = memo(() => {
 
   // Return null only if we don't have an article
   if (!featuredArticle) {
-    console.log("No featured article found");
     return null;
   }
 
