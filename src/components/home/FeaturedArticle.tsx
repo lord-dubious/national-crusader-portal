@@ -7,7 +7,7 @@ import { memo } from "react";
 
 export const FeaturedArticle = memo(() => {
   const { toast } = useToast();
-  const { data: featuredArticle, error: featuredError } = useQuery({
+  const { data: featuredArticle } = useQuery({
     queryKey: ["featured-article"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -20,21 +20,17 @@ export const FeaturedArticle = memo(() => {
         .eq("is_featured", true)
         .order("published_at", { ascending: false })
         .limit(1)
-        .maybeSingle();
+        .single();
       
       if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error fetching featured article",
-          description: error.message
-        });
-        throw error;
+        console.error("Error fetching featured article:", error);
+        return null;
       }
       return data;
     },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     meta: {
       errorHandler: (error: any) => {
+        console.error("Query error:", error);
         toast({
           variant: "destructive",
           title: "Error fetching featured article",
@@ -44,7 +40,11 @@ export const FeaturedArticle = memo(() => {
     }
   });
 
-  if (featuredError || !featuredArticle) return null;
+  // Return null only if we don't have an article
+  if (!featuredArticle) {
+    console.log("No featured article found");
+    return null;
+  }
 
   return (
     <article className="relative h-[50vh] md:h-[70vh] min-h-[400px] w-full overflow-hidden rounded-lg animate-fade-up">
@@ -64,7 +64,7 @@ export const FeaturedArticle = memo(() => {
             </span>
             <span className="text-white/80 text-sm flex items-center">
               <Clock className="h-4 w-4 mr-1" />
-              {new Date(featuredArticle.published_at).toLocaleDateString()}
+              {new Date(featuredArticle.published_at || '').toLocaleDateString()}
             </span>
           </div>
         )}
