@@ -34,6 +34,7 @@ export const ArticleFormFields = () => {
               <Switch
                 checked={field.value}
                 onCheckedChange={field.onChange}
+                className="data-[state=checked]:bg-accent"
               />
             </FormControl>
           </FormItem>

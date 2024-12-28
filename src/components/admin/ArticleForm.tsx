@@ -124,7 +124,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <ArticleFormFields />
-        <Button type="submit">
+        <Button type="submit" variant="active">
           {articleId ? "Update Article" : "Create Article"}
         </Button>
       </form>
