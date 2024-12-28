@@ -136,26 +136,32 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     };
   });
 
+  const handleBreadcrumbClick = (path: string) => {
+    navigate(path);
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-primary text-primary-foreground">
         <AdminSidebar />
         <main className="flex-1 p-4 md:p-8 w-full overflow-x-hidden transition-all duration-200">
-          <Breadcrumb className="mb-4 flex items-center">
-            {breadcrumbs.map((crumb, index) => (
-              <BreadcrumbItem key={crumb.path} className="flex items-center">
-                <BreadcrumbLink 
-                  href={crumb.path}
-                  className="text-[#8E9196] hover:text-white transition-colors flex items-center"
-                >
-                  {crumb.title}
-                </BreadcrumbLink>
-                {index < breadcrumbs.length - 1 && (
-                  <ChevronRight className="h-4 w-4 text-[#8E9196] mx-2" />
-                )}
-              </BreadcrumbItem>
-            ))}
-          </Breadcrumb>
+          <div className="mb-6 overflow-x-auto">
+            <Breadcrumb className="flex items-center min-h-[40px]">
+              {breadcrumbs.map((crumb, index) => (
+                <BreadcrumbItem key={crumb.path} className="flex items-center whitespace-nowrap">
+                  <button
+                    onClick={() => handleBreadcrumbClick(crumb.path)}
+                    className="text-[#8E9196] hover:text-white transition-colors flex items-center px-2 py-1 rounded-md hover:bg-[#333333]"
+                  >
+                    {crumb.title}
+                  </button>
+                  {index < breadcrumbs.length - 1 && (
+                    <ChevronRight className="h-4 w-4 text-[#8E9196] mx-2 flex-shrink-0" />
+                  )}
+                </BreadcrumbItem>
+              ))}
+            </Breadcrumb>
+          </div>
           <div className="max-w-[1400px] mx-auto">
             {children}
           </div>
