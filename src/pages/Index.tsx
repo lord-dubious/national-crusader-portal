@@ -6,8 +6,6 @@ import { TrendingSection } from "@/components/home/TrendingSection";
 import { NewspaperSection } from "@/components/home/NewspaperSection";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Suspense, lazy } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
   const { data: categories } = useQuery({
@@ -15,13 +13,12 @@ const Index = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("categories")
-        .select("id,name,slug")
+        .select("*")
         .order("name");
       
       if (error) throw error;
       return data;
     },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
   return (
@@ -29,24 +26,16 @@ const Index = () => {
       <Header />
       <main className="flex-1">
         <div className="container mx-auto px-4">
-          <div className="py-4 md:py-8">
-            <Suspense fallback={<Skeleton className="h-[50vh] md:h-[70vh] w-full rounded-lg" />}>
-              <FeaturedArticle />
-            </Suspense>
+          <div className="py-8">
+            <FeaturedArticle />
           </div>
-          <div className="py-8 md:py-12">
-            <Suspense fallback={<Skeleton className="h-48 w-full rounded-lg" />}>
-              <TrendingSection />
-            </Suspense>
+          <div className="py-12">
+            <TrendingSection />
           </div>
-          <Suspense fallback={<Skeleton className="h-96 w-full rounded-lg" />}>
-            <NewspaperSection />
-          </Suspense>
-          <div className="space-y-8 md:space-y-16 py-4 md:py-8">
+          <NewspaperSection />
+          <div className="space-y-16 py-8">
             {categories?.map((category) => (
-              <Suspense key={category.id} fallback={<Skeleton className="h-96 w-full rounded-lg" />}>
-                <CategorySection categorySlug={category.slug} />
-              </Suspense>
+              <CategorySection key={category.id} categorySlug={category.slug} />
             ))}
           </div>
         </div>
