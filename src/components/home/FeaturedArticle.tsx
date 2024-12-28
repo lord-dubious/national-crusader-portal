@@ -33,10 +33,18 @@ export const FeaturedArticle = memo(() => {
       return data;
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    meta: {
+      errorHandler: (error: any) => {
+        toast({
+          variant: "destructive",
+          title: "Error fetching featured article",
+          description: error.message
+        });
+      }
+    }
   });
 
-  if (featuredError) return null;
-  if (!featuredArticle) return null;
+  if (featuredError || !featuredArticle) return null;
 
   return (
     <article className="relative h-[50vh] md:h-[70vh] min-h-[400px] w-full overflow-hidden rounded-lg animate-fade-up">
