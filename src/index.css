@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 225 20% 14%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 98%;
-    --card: 225 18% 20%;
+    --card: 0 0% 7%;
     --card-foreground: 0 0% 98%;
-    --popover: 225 18% 20%;
+    --popover: 0 0% 7%;
     --popover-foreground: 0 0% 98%;
-    --primary: 225 24% 14%;
+    --primary: 0 0% 0%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 225 18% 20%;
+    --secondary: 0 0% 7%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 225 16% 24%;
+    --muted: 0 0% 13%;
     --muted-foreground: 0 0% 78%;
     --accent: 0 80% 57%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 225 16% 24%;
-    --input: 225 16% 24%;
-    --ring: 225 24% 14%;
+    --border: 0 0% 13%;
+    --input: 0 0% 13%;
+    --ring: 0 0% 0%;
     --radius: 0.75rem;
   }
 }
@@ -76,7 +76,7 @@
 }
 
 .ProseMirror blockquote {
-  border-left: 3px solid #333945;
+  border-left: 3px solid #222222;
   margin-left: 0;
   margin-right: 0;
   padding-left: 1em;
