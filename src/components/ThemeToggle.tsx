@@ -10,8 +10,9 @@ export function ThemeToggle() {
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     
-    setIsDark(savedTheme === "dark" || (!savedTheme && prefersDark));
-    document.documentElement.classList.toggle("dark", isDark);
+    const initialTheme = savedTheme === "light" ? false : savedTheme === "dark" ? true : prefersDark;
+    setIsDark(initialTheme);
+    document.documentElement.classList.toggle("dark", initialTheme);
   }, []);
 
   const toggleTheme = () => {

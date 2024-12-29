@@ -11,7 +11,7 @@ interface ArticleCardProps {
 
 export const ArticleCard = ({ category, title, excerpt, imageUrl, slug }: ArticleCardProps) => (
   <Link to={slug ? `/article/${slug}` : "#"} className="block h-full">
-    <Card className="group h-full cursor-pointer animate-fade-up hover:shadow-lg transition-all duration-300">
+    <Card className="group h-full cursor-pointer animate-fade-up hover:shadow-xl transition-all duration-300 bg-card">
       <CardContent className="p-0 h-full">
         <div className="aspect-[16/10] w-full overflow-hidden">
           <img
@@ -20,7 +20,7 @@ export const ArticleCard = ({ category, title, excerpt, imageUrl, slug }: Articl
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>
-        <div className="p-6 flex flex-col h-[calc(100%-40%)]">
+        <div className="p-6 flex flex-col h-[calc(100%-40%)] bg-card">
           <span className="inline-block rounded bg-accent/10 text-accent px-2.5 py-0.5 text-xs font-medium mb-3">
             {category}
           </span>

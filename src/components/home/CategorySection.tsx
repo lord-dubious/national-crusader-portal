@@ -52,7 +52,7 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
 
   return (
     <section className="py-12 first:pt-0 last:pb-0 animate-fade-up">
-      <div className="relative">
+      <div className="relative bg-card shadow-lg rounded-xl p-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">{articles[0]?.category?.name}</h2>
