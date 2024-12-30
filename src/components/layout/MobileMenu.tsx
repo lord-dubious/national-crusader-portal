@@ -62,15 +62,15 @@ export const MobileMenu = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="lg:hidden text-primary-foreground">
+        <Button variant="ghost" size="icon" className="lg:hidden text-white">
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[280px] bg-primary p-0">
+      <SheetContent side="left" className="w-[280px] bg-black border-r border-white/10 p-0">
         <nav className="h-full flex flex-col py-6">
           <Link
             to="/"
-            className="px-6 py-2 text-lg font-semibold text-primary-foreground hover:text-accent transition-colors"
+            className="px-6 py-2 text-lg font-semibold text-white hover:text-accent transition-colors"
             onClick={() => setOpen(false)}
           >
             Home
@@ -80,7 +80,7 @@ export const MobileMenu = () => {
               <Link
                 key={category.id}
                 to={`/category/${category.slug}`}
-                className="block px-6 py-2 text-base text-primary-foreground hover:text-accent transition-colors"
+                className="block px-6 py-2 text-base text-white hover:text-accent transition-colors"
                 onClick={() => setOpen(false)}
               >
                 {category.name}
@@ -93,7 +93,7 @@ export const MobileMenu = () => {
                 {profile.role === 'admin' && (
                   <Link
                     to="/admin"
-                    className="text-base text-primary-foreground hover:text-accent transition-colors"
+                    className="text-base text-white hover:text-accent transition-colors"
                     onClick={() => setOpen(false)}
                   >
                     Admin Dashboard
@@ -101,7 +101,7 @@ export const MobileMenu = () => {
                 )}
                 <Link
                   to="/profile"
-                  className="text-base text-primary-foreground hover:text-accent transition-colors"
+                  className="text-base text-white hover:text-accent transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   Profile
@@ -109,7 +109,7 @@ export const MobileMenu = () => {
                 <Button
                   variant="ghost"
                   onClick={handleSignOut}
-                  className="text-primary-foreground hover:text-accent justify-start px-0"
+                  className="text-white hover:text-accent justify-start px-0"
                 >
                   Sign Out
                 </Button>
@@ -118,14 +118,14 @@ export const MobileMenu = () => {
               <div className="flex flex-col gap-2">
                 <Link
                   to="/signin"
-                  className="text-base text-primary-foreground hover:text-accent transition-colors"
+                  className="text-base text-white hover:text-accent transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/signup"
-                  className="text-base text-primary-foreground hover:text-accent transition-colors"
+                  className="text-base text-white hover:text-accent transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   Sign Up
