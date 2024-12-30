@@ -10,7 +10,7 @@ export const Header = () => {
         <div className="h-16 flex items-center justify-between gap-2">
           <HeaderLogo />
           <HeaderNavigation />
-          <div className="flex items-center gap-2 text-white">
+          <div className="flex items-center gap-2">
             <HeaderSearch />
             <HeaderAuth />
           </div>

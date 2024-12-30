@@ -8,14 +8,13 @@ export const HeaderAuth = () => {
       <ThemeToggle />
       <Button 
         variant="outline" 
-        className="border-accent text-white bg-black hover:bg-accent hover:text-white" 
+        className="border-accent text-white hover:bg-accent hover:text-white transition-colors" 
         asChild
       >
         <Link to="/signin">Sign In</Link>
       </Button>
       <Button 
-        variant="active" 
-        className="bg-accent text-white hover:bg-accent/90" 
+        className="bg-accent text-white hover:bg-accent/90 transition-colors" 
         asChild
       >
         <Link to="/signup">Sign Up</Link>

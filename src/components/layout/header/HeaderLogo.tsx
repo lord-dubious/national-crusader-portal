@@ -7,7 +7,7 @@ export const HeaderLogo = () => {
       <MobileMenu />
       <Link
         to="/"
-        className="text-xl font-bold text-primary-foreground hover:text-accent transition-colors whitespace-nowrap"
+        className="text-xl font-bold text-white hover:text-accent transition-colors whitespace-nowrap"
       >
         National Crusader
       </Link>

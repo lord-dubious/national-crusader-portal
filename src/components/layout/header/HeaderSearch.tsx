@@ -103,15 +103,15 @@ export const HeaderSearch = () => {
         <Input
           type="search"
           placeholder="Search..."
-          className="w-full bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 text-sm"
+          className="w-full bg-white/10 border-white/20 text-white placeholder:text-white/50 text-sm"
           onClick={() => setOpen(true)}
         />
-        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary-foreground/50" />
+        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
       </div>
       <Button 
         variant="ghost" 
         size="icon" 
-        className="md:hidden text-primary-foreground"
+        className="md:hidden text-white hover:text-accent"
         onClick={() => setOpen(true)}
       >
         <Search className="h-5 w-5" />
