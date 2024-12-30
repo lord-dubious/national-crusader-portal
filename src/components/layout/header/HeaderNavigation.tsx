@@ -23,7 +23,7 @@ export const HeaderNavigation = () => {
           <li key={category.id}>
             <Link
               to={`/category/${category.slug}`}
-              className="text-[clamp(0.75rem,1.2vw,0.875rem)] text-primary-foreground hover:text-accent transition-colors whitespace-nowrap px-2 py-1"
+              className="text-[clamp(0.75rem,1.2vw,0.875rem)] text-white hover:text-accent transition-colors whitespace-nowrap px-2 py-1"
             >
               {category.name}
             </Link>
