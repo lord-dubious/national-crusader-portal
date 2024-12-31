@@ -39,23 +39,26 @@ const SignIn = () => {
       }
     });
 
+    // Set up error handling
+    const {
+      data: { subscription: errorSubscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'USER_ERROR') {
+        setError('Authentication error occurred. Please try again.');
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: "An error occurred during authentication. Please try again.",
+        });
+      }
+    });
+
     return () => {
       subscription.unsubscribe();
       authListener.data.subscription.unsubscribe();
+      errorSubscription.unsubscribe();
     };
   }, [navigate, toast]);
-
-  // Handle auth state changes and errors through the event listener
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'AUTH_ERROR') {
-      setError('Authentication error occurred. Please try again.');
-      toast({
-        variant: "destructive",
-        title: "Authentication Error",
-        description: "An error occurred during authentication. Please try again.",
-      });
-    }
-  });
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
