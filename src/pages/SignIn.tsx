@@ -49,21 +49,19 @@ const SignIn = () => {
       }
     });
 
-    // Handle authentication errors
-    const handleError = (message: string) => {
-      setError(message);
-      toast({
-        variant: "destructive",
-        title: "Authentication Error",
-        description: message || "An error occurred during authentication. Please try again.",
-      });
-    };
-
-    // Set up the error handler
+    // Handle authentication errors through auth state change
     const {
       data: { subscription: authErrorSubscription },
-    } = supabase.auth.onError((error) => {
-      handleError(error.message);
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && !session) {
+        const message = "Authentication failed. Please try again.";
+        setError(message);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: message,
+        });
+      }
     });
 
     return () => {
