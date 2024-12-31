@@ -61,15 +61,30 @@ const SignIn = () => {
             variables: {
               default: {
                 colors: {
-                  brand: 'rgb(var(--primary))',
-                  brandAccent: 'rgb(var(--primary))',
+                  brand: '#ea384c',
+                  brandAccent: '#ea384c',
+                  brandButtonText: 'white',
+                  defaultButtonBackground: '#ea384c',
+                  defaultButtonBackgroundHover: '#d1293c',
                 },
               },
             },
             style: {
-              button: { background: 'rgb(var(--primary))', color: 'white' },
-              anchor: { color: 'rgb(var(--primary))' },
-              message: { color: 'rgb(var(--destructive))' },
+              button: { 
+                background: '#ea384c', 
+                color: 'white',
+                borderRadius: '0.375rem',
+                padding: '0.5rem 1rem',
+              },
+              anchor: { color: '#ea384c' },
+              message: { color: '#ea384c' },
+              container: { color: 'inherit' },
+              label: { color: 'inherit' },
+              input: { 
+                backgroundColor: 'transparent',
+                borderColor: 'hsl(var(--border))',
+                color: 'inherit',
+              },
             },
           }}
           providers={[]}
@@ -85,6 +100,15 @@ const SignIn = () => {
                 link_text: "Don't have an account? Sign up",
               },
             },
+          }}
+          onError={(error) => {
+            console.error('Auth error:', error);
+            setError(error.message);
+            toast({
+              variant: "destructive",
+              title: "Authentication Error",
+              description: error.message,
+            });
           }}
         />
       </div>
