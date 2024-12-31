@@ -113,11 +113,11 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (isLoadingSession || isLoadingProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-primary">
+      <div className="min-h-screen flex items-center justify-center bg-[#222222]">
         <div className="space-y-4 w-full max-w-md p-4">
-          <Skeleton className="h-8 w-3/4" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-2/3" />
+          <Skeleton className="h-8 w-3/4 bg-[#333333]" />
+          <Skeleton className="h-4 w-full bg-[#333333]" />
+          <Skeleton className="h-4 w-2/3 bg-[#333333]" />
         </div>
       </div>
     );
@@ -142,7 +142,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-primary text-primary-foreground">
+      <div className="min-h-screen flex w-full bg-[#222222] text-white">
         <AdminSidebar />
         <main className="flex-1 p-4 md:p-8 w-full overflow-x-hidden transition-all duration-200">
           <div className="mb-6 overflow-x-auto">

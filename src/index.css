@@ -23,16 +23,16 @@
   .dark {
     --background: 0 0% 0%;
     --foreground: 0 0% 98%;
-    --primary: #000000;
+    --primary: #222222;
     --primary-foreground: #FFFFFF;
-    --secondary: #111111;
+    --secondary: #333333;
     --secondary-foreground: #F1F1F1;
-    --muted: #222222;
+    --muted: #444444;
     --muted-foreground: #A1A1A1;
-    --card: #111111;
+    --card: #333333;
     --card-foreground: #FFFFFF;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
     --ring: 0 0% 83.1%;
   }
 }
@@ -86,7 +86,7 @@
 }
 
 .ProseMirror blockquote {
-  border-left: 3px solid #222222;
+  border-left: 3px solid #666666;
   margin-left: 0;
   margin-right: 0;
   padding-left: 1em;

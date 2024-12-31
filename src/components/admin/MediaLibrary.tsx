@@ -88,7 +88,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
   };
 
   return (
-    <Card className="bg-[#222222] border-[#333333]">
+    <Card className="bg-[#333333] border-[#444444]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
           <Image className="h-5 w-5 text-white" />
@@ -102,7 +102,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
             onChange={uploadFile}
             disabled={uploading}
             accept="image/*"
-            className="bg-[#333333] border-[#444444] text-white file:bg-[#444444] file:text-white file:border-[#555555] hover:file:bg-[#DC2626] file:transition-colors"
+            className="bg-[#444444] border-[#555555] text-white file:bg-[#555555] file:text-white file:border-[#666666] hover:file:bg-[#DC2626] file:transition-colors"
           />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -111,7 +111,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
               <img
                 src={`${supabase.storage.from('media').getPublicUrl(file.name).data.publicUrl}`}
                 alt={file.name}
-                className="w-full aspect-square object-cover rounded-lg cursor-pointer border border-[#333333] hover:border-[#DC2626] transition-colors"
+                className="w-full aspect-square object-cover rounded-lg cursor-pointer border border-[#444444] hover:border-[#DC2626] transition-colors"
                 onClick={() => handleSelect(file)}
               />
               <Button
