@@ -42,30 +42,26 @@ const SignIn = () => {
     // Set up error handling through the auth state listener
     const {
       data: { subscription: errorSubscription },
-    } = supabase.auth.onAuthStateChange((event) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY' || event === 'TOKEN_REFRESHED') {
         // Clear any existing errors when these events occur
         setError(null);
       }
-    });
-
-    // Handle general auth errors through the error handler
-    const {
-      data: { subscription: authErrorSubscription },
-    } = supabase.auth.onError((error) => {
-      setError(error.message);
-      toast({
-        variant: "destructive",
-        title: "Authentication Error",
-        description: error.message || "An error occurred during authentication. Please try again.",
-      });
+      // Handle any auth errors
+      if (session?.error) {
+        setError(session.error.message);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: session.error.message || "An error occurred during authentication. Please try again.",
+        });
+      }
     });
 
     return () => {
       subscription.unsubscribe();
       authListener.data.subscription.unsubscribe();
       errorSubscription.unsubscribe();
-      authErrorSubscription.unsubscribe();
     };
   }, [navigate, toast]);
 
