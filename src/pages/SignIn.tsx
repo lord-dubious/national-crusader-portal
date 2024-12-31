@@ -45,6 +45,18 @@ const SignIn = () => {
     };
   }, [navigate, toast]);
 
+  // Handle auth state changes and errors through the event listener
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'AUTH_ERROR') {
+      setError('Authentication error occurred. Please try again.');
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: "An error occurred during authentication. Please try again.",
+      });
+    }
+  });
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 bg-card rounded-lg shadow-lg border border-border">
@@ -100,15 +112,6 @@ const SignIn = () => {
                 link_text: "Don't have an account? Sign up",
               },
             },
-          }}
-          onError={(error) => {
-            console.error('Auth error:', error);
-            setError(error.message);
-            toast({
-              variant: "destructive",
-              title: "Authentication Error",
-              description: error.message,
-            });
           }}
         />
       </div>
