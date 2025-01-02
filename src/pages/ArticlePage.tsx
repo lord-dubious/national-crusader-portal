@@ -15,7 +15,8 @@ const ArticlePage = () => {
         .from("articles")
         .select(`
           *,
-          category:categories(name)
+          category:categories(name),
+          author:profiles(username, email)
         `)
         .eq("slug", slug)
         .single();
@@ -42,9 +43,11 @@ const ArticlePage = () => {
           <div className="max-w-3xl mx-auto">
             <div className="mb-8">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">{article?.title}</h1>
-              <div className="flex items-center text-muted-foreground">
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <span>{article?.category?.name}</span>
-                <span className="mx-2">•</span>
+                <span>•</span>
+                <span>By {article?.author?.username || 'Anonymous'}</span>
+                <span>•</span>
                 <time>
                   {article?.published_at &&
                     format(new Date(article.published_at), "MMMM d, yyyy")}
