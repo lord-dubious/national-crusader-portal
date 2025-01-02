@@ -21,80 +21,35 @@ export const HeaderSearch = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const { data: searchResults } = useQuery({
+  const { data: searchResults, isLoading } = useQuery({
     queryKey: ["search", searchQuery],
     queryFn: async () => {
-      if (!searchQuery || searchQuery.length < 2) return { articles: [], newspapers: [] };
+      if (!searchQuery || searchQuery.length < 2) return [];
 
       console.log("Searching for:", searchQuery);
+      
+      const { data, error } = await supabase
+        .rpc('search_articles', { search_query: searchQuery });
 
-      // Search articles with improved content search
-      const articlesResponse = await supabase
-        .from("articles")
-        .select(`
-          id,
-          title,
-          slug,
-          status,
-          excerpt,
-          content,
-          category:categories(name)
-        `)
-        .or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%,excerpt.ilike.%${searchQuery}%`)
-        .eq('status', 'published')
-        .limit(5);
-
-      if (articlesResponse.error) {
-        console.error("Articles search error:", articlesResponse.error);
+      if (error) {
+        console.error("Search error:", error);
         toast({
           variant: "destructive",
-          title: "Error searching articles",
-          description: articlesResponse.error.message
+          title: "Error performing search",
+          description: error.message
         });
-        throw articlesResponse.error;
+        throw error;
       }
 
-      // Search newspapers
-      const newspapersResponse = await supabase
-        .from("newspapers")
-        .select("*")
-        .or(`title.ilike.%${searchQuery}%,pdf_url.ilike.%${searchQuery}%`)
-        .eq('status', 'published')
-        .limit(5);
-
-      if (newspapersResponse.error) {
-        console.error("Newspapers search error:", newspapersResponse.error);
-        toast({
-          variant: "destructive",
-          title: "Error searching newspapers",
-          description: newspapersResponse.error.message
-        });
-        throw newspapersResponse.error;
-      }
-
-      console.log("Search results:", {
-        articles: articlesResponse.data,
-        newspapers: newspapersResponse.data
-      });
-
-      return {
-        articles: articlesResponse.data || [],
-        newspapers: newspapersResponse.data || []
-      };
+      console.log("Search results:", data);
+      return data || [];
     },
     enabled: searchQuery.length >= 2,
   });
 
-  const handleSelect = (type: 'article' | 'newspaper', item: any) => {
+  const handleSelect = (item: any) => {
     setOpen(false);
-    if (type === 'article') {
-      navigate(`/article/${item.slug}`);
-    } else {
-      const pdfUrl = supabase.storage
-        .from('pdf_newspapers')
-        .getPublicUrl(item.pdf_url).data.publicUrl;
-      window.open(pdfUrl, '_blank');
-    }
+    navigate(`/article/${item.slug}`);
   };
 
   return (
@@ -119,18 +74,20 @@ export const HeaderSearch = () => {
 
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput 
-          placeholder="Search articles and newspapers..." 
+          placeholder="Search articles..." 
           value={searchQuery}
           onValueChange={setSearchQuery}
         />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          {searchResults?.articles && searchResults.articles.length > 0 && (
+          <CommandEmpty>
+            {isLoading ? "Searching..." : "No results found."}
+          </CommandEmpty>
+          {searchResults && searchResults.length > 0 && (
             <CommandGroup heading="Articles">
-              {searchResults.articles.map((article) => (
+              {searchResults.map((article: any) => (
                 <CommandItem
                   key={article.id}
-                  onSelect={() => handleSelect('article', article)}
+                  onSelect={() => handleSelect(article)}
                   className="flex flex-col items-start gap-1"
                 >
                   <div className="font-medium">{article.title}</div>
@@ -139,22 +96,15 @@ export const HeaderSearch = () => {
                       {article.excerpt}
                     </div>
                   )}
-                  <div className="text-xs text-muted-foreground">
-                    {article.category?.name || 'Uncategorized'}
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>{article.category_name || 'Uncategorized'}</span>
+                    {article.author_username && (
+                      <>
+                        <span>•</span>
+                        <span>By {article.author_username}</span>
+                      </>
+                    )}
                   </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
-          {searchResults?.newspapers && searchResults.newspapers.length > 0 && (
-            <CommandGroup heading="Newspapers">
-              {searchResults.newspapers.map((newspaper) => (
-                <CommandItem
-                  key={newspaper.id}
-                  onSelect={() => handleSelect('newspaper', newspaper)}
-                  className="flex items-center justify-between"
-                >
-                  <div className="font-medium">{newspaper.title}</div>
                 </CommandItem>
               ))}
             </CommandGroup>
