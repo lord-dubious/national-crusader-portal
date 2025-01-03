@@ -2,13 +2,22 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import elasticlunr from "elasticlunr";
+// Import as a default import
+import elasticlunr from "elasticlunr/elasticlunr.js";
+
+interface SearchResult {
+  slug: string;
+  title: string;
+  excerpt?: string;
+  category?: { name: string };
+  author?: { username: string };
+}
 
 export const useSearch = () => {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchIndex, setSearchIndex] = useState<any>(null);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const { toast } = useToast();
 
   const { data: articles } = useQuery({
@@ -43,19 +52,19 @@ export const useSearch = () => {
 
   useEffect(() => {
     if (articles) {
-      const index = elasticlunr(function() {
+      // Create a new search index
+      const index = elasticlunr(function(this: any) {
         this.addField('title');
         this.addField('excerpt');
         this.setRef('slug');
       });
 
+      // Add documents to the index
       articles.forEach((article) => {
         index.addDoc({
           slug: article.slug,
           title: article.title,
-          excerpt: article.excerpt,
-          category_name: article.category?.name,
-          author_username: article.author?.username,
+          excerpt: article.excerpt || '',
         });
       });
 
@@ -67,19 +76,19 @@ export const useSearch = () => {
     if (searchIndex && searchQuery.length >= 2) {
       const results = searchIndex.search(searchQuery, {
         fields: {
-          title: {boost: 2},
-          excerpt: {boost: 1}
+          title: { boost: 2 },
+          excerpt: { boost: 1 }
         },
         expand: true
       });
 
       const fullResults = results.map((result: any) => {
         const article = articles?.find(a => a.slug === result.ref);
-        return {
+        return article ? {
           ...article,
           score: result.score
-        };
-      });
+        } : null;
+      }).filter(Boolean) as SearchResult[];
 
       setSearchResults(fullResults);
     } else {
