@@ -26,8 +26,6 @@ export const HeaderSearch = () => {
     queryFn: async () => {
       if (!searchQuery || searchQuery.length < 2) return [];
 
-      console.log("Searching for:", searchQuery);
-      
       const { data, error } = await supabase
         .rpc('search_articles', { search_query: searchQuery });
 
@@ -38,10 +36,9 @@ export const HeaderSearch = () => {
           title: "Error performing search",
           description: error.message
         });
-        throw error;
+        return [];
       }
 
-      console.log("Search results:", data);
       return data || [];
     },
     enabled: searchQuery.length >= 2,
@@ -51,14 +48,13 @@ export const HeaderSearch = () => {
 
   const handleSelect = (item: any) => {
     setOpen(false);
-    setSearchQuery(""); // Reset search query when selecting an item
     navigate(`/article/${item.slug}`);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (!newOpen) {
-      // Only reset search when closing the dialog
+      // Reset search when closing with a slight delay for animation
       setTimeout(() => setSearchQuery(""), 100);
     }
   };
