@@ -51,7 +51,16 @@ export const HeaderSearch = () => {
 
   const handleSelect = (item: any) => {
     setOpen(false);
+    setSearchQuery(""); // Reset search query when selecting an item
     navigate(`/article/${item.slug}`);
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (!newOpen) {
+      // Only reset search when closing the dialog
+      setTimeout(() => setSearchQuery(""), 100);
+    }
   };
 
   return (
@@ -74,7 +83,7 @@ export const HeaderSearch = () => {
         <Search className="h-5 w-5" />
       </Button>
 
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog open={open} onOpenChange={handleOpenChange}>
         <CommandInput 
           placeholder="Search articles..." 
           value={searchQuery}
