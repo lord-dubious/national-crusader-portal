@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-// Import as a default import
-import elasticlunr from "elasticlunr/elasticlunr.js";
+// Import the entire module using require syntax
+const elasticlunr = require('elasticlunr');
 
 interface SearchResult {
   slug: string;
@@ -52,49 +52,69 @@ export const useSearch = () => {
 
   useEffect(() => {
     if (articles) {
-      // Create a new search index
-      const index = elasticlunr(function(this: any) {
-        this.addField('title');
-        this.addField('excerpt');
-        this.setRef('slug');
-      });
-
-      // Add documents to the index
-      articles.forEach((article) => {
-        index.addDoc({
-          slug: article.slug,
-          title: article.title,
-          excerpt: article.excerpt || '',
+      try {
+        // Create a new search index
+        const index = elasticlunr(function(this: any) {
+          this.addField('title');
+          this.addField('excerpt');
+          this.setRef('slug');
         });
-      });
 
-      setSearchIndex(index);
+        // Add documents to the index
+        articles.forEach((article) => {
+          index.addDoc({
+            slug: article.slug,
+            title: article.title,
+            excerpt: article.excerpt || '',
+          });
+        });
+
+        setSearchIndex(index);
+      } catch (error) {
+        console.error("Error creating search index:", error);
+        toast({
+          variant: "destructive",
+          title: "Error creating search index",
+          description: "Please try again later"
+        });
+      }
     }
-  }, [articles]);
+  }, [articles, toast]);
 
   useEffect(() => {
     if (searchIndex && searchQuery.length >= 2) {
-      const results = searchIndex.search(searchQuery, {
-        fields: {
-          title: { boost: 2 },
-          excerpt: { boost: 1 }
-        },
-        expand: true
-      });
+      try {
+        const results = searchIndex.search(searchQuery, {
+          fields: {
+            title: { boost: 2 },
+            excerpt: { boost: 1 }
+          },
+          expand: true
+        });
 
-      const fullResults = results.map((result: any) => {
-        const article = articles?.find(a => a.slug === result.ref);
-        return article ? {
-          ...article,
-          score: result.score
-        } : null;
-      }).filter(Boolean) as SearchResult[];
+        const fullResults = results
+          .map((result: any) => {
+            const article = articles?.find(a => a.slug === result.ref);
+            return article ? {
+              ...article,
+              score: result.score
+            } : null;
+          })
+          .filter(Boolean) as SearchResult[];
 
-      setSearchResults(fullResults);
+        setSearchResults(fullResults);
+      } catch (error) {
+        console.error("Error performing search:", error);
+        toast({
+          variant: "destructive",
+          title: "Error performing search",
+          description: "Please try again"
+        });
+      }
     } else {
       setSearchResults([]);
     }
-  }, [searchQuery, searchIndex, articles]);
+  }, [searchQuery, searchIndex, articles, toast]);
 
   return {
     open,
