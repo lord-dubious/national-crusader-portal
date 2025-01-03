@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,26 +14,37 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useToast } from "@/hooks/use-toast";
+import elasticlunr from "elasticlunr";
 
 export const HeaderSearch = () => {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchIndex, setSearchIndex] = useState<any>(null);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const { data: searchResults, isLoading } = useQuery({
-    queryKey: ["search", searchQuery],
+  // Fetch articles to build search index
+  const { data: articles } = useQuery({
+    queryKey: ["articles-for-search"],
     queryFn: async () => {
-      if (!searchQuery || searchQuery.length < 2) return [];
-
       const { data, error } = await supabase
-        .rpc('search_articles', { search_query: searchQuery });
+        .from("articles")
+        .select(`
+          id,
+          title,
+          slug,
+          excerpt,
+          category:categories(name),
+          author:profiles(username)
+        `)
+        .eq('status', 'published');
 
       if (error) {
-        console.error("Search error:", error);
+        console.error("Error fetching articles:", error);
         toast({
           variant: "destructive",
-          title: "Error performing search",
+          title: "Error fetching articles",
           description: error.message
         });
         return [];
@@ -41,10 +52,57 @@ export const HeaderSearch = () => {
 
       return data || [];
     },
-    enabled: searchQuery.length >= 2,
-    staleTime: 1000 * 60, // Cache for 1 minute
-    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
+
+  // Build search index when articles are fetched
+  useEffect(() => {
+    if (articles) {
+      const index = elasticlunr(function() {
+        this.addField('title');
+        this.addField('excerpt');
+        this.setRef('slug');
+      });
+
+      articles.forEach((article) => {
+        index.addDoc({
+          slug: article.slug,
+          title: article.title,
+          excerpt: article.excerpt,
+          category_name: article.category?.name,
+          author_username: article.author?.username,
+        });
+      });
+
+      setSearchIndex(index);
+    }
+  }, [articles]);
+
+  // Perform search when query changes
+  useEffect(() => {
+    if (searchIndex && searchQuery.length >= 2) {
+      const results = searchIndex.search(searchQuery, {
+        fields: {
+          title: {boost: 2},
+          excerpt: {boost: 1}
+        },
+        expand: true
+      });
+
+      // Map results back to full article data
+      const fullResults = results.map((result: any) => {
+        const article = articles?.find(a => a.slug === result.ref);
+        return {
+          ...article,
+          score: result.score
+        };
+      });
+
+      setSearchResults(fullResults);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery, searchIndex, articles]);
 
   const handleSelect = (item: any) => {
     setOpen(false);
@@ -54,7 +112,6 @@ export const HeaderSearch = () => {
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (!newOpen) {
-      // Reset search when closing with a slight delay for animation
       setTimeout(() => setSearchQuery(""), 100);
     }
   };
@@ -87,13 +144,13 @@ export const HeaderSearch = () => {
         />
         <CommandList>
           <CommandEmpty>
-            {isLoading ? "Searching..." : "No results found."}
+            {searchQuery.length < 2 ? "Type at least 2 characters to search..." : "No results found."}
           </CommandEmpty>
           {searchResults && searchResults.length > 0 && (
             <CommandGroup heading="Articles">
               {searchResults.map((article: any) => (
                 <CommandItem
-                  key={article.id}
+                  key={article.slug}
                   onSelect={() => handleSelect(article)}
                   className="flex flex-col items-start gap-1"
                 >
@@ -104,11 +161,11 @@ export const HeaderSearch = () => {
                     </div>
                   )}
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{article.category_name || 'Uncategorized'}</span>
-                    {article.author_username && (
+                    <span>{article.category?.name || 'Uncategorized'}</span>
+                    {article.author?.username && (
                       <>
                         <span>•</span>
-                        <span>By {article.author_username}</span>
+                        <span>By {article.author.username}</span>
                       </>
                     )}
                   </div>
