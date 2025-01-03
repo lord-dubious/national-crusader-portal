@@ -6,8 +6,11 @@ import { TrendingSection } from "@/components/home/TrendingSection";
 import { NewspaperSection } from "@/components/home/NewspaperSection";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load less important sections
+const LazyNewspaperSection = lazy(() => import("@/components/home/NewspaperSection").then(mod => ({ default: mod.NewspaperSection })));
 
 const Index = () => {
   const { data: categories, isLoading } = useQuery({
@@ -39,8 +42,10 @@ const Index = () => {
               <TrendingSection />
             </Suspense>
           </div>
-          <Suspense fallback={<Skeleton className="h-96 w-full rounded-lg" />}>
-            <NewspaperSection />
+          <Suspense 
+            fallback={<Skeleton className="h-96 w-full rounded-lg" />}
+          >
+            <LazyNewspaperSection />
           </Suspense>
           <div className="space-y-16 py-8">
             {isLoading ? (

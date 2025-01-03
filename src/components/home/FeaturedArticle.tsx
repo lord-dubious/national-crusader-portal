@@ -10,6 +10,7 @@ export const FeaturedArticle = () => {
   const { data: featuredArticle, error } = useQuery({
     queryKey: ["featured-article"],
     queryFn: async () => {
+      console.log("Fetching featured article");
       const { data, error } = await supabase
         .from("articles")
         .select(`
@@ -37,7 +38,8 @@ export const FeaturedArticle = () => {
       }
       return data;
     },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 60 * 1000, // Cache for 1 minute
+    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
   if (error || !featuredArticle) return null;
@@ -49,6 +51,7 @@ export const FeaturedArticle = () => {
         alt={featuredArticle.title}
         className="absolute inset-0 h-full w-full object-cover"
         loading="eager"
+        fetchPriority="high"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-8">

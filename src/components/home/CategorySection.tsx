@@ -67,8 +67,8 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
       console.log("Fetched articles:", articlesData);
       return { articles: articlesData, category: categoryData };
     },
-    retry: 1,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 60 * 1000, // Cache for 1 minute
+    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
   if (isLoading) {

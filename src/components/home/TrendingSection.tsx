@@ -9,6 +9,7 @@ export const TrendingSection = () => {
   const { data: trendingArticles, error } = useQuery({
     queryKey: ["trending-articles"],
     queryFn: async () => {
+      console.log("Fetching trending articles");
       const { data, error } = await supabase
         .from("articles")
         .select(`
@@ -31,7 +32,8 @@ export const TrendingSection = () => {
       }
       return data;
     },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 60 * 1000, // Cache for 1 minute
+    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
   if (error) return null;
