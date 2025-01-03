@@ -29,19 +29,7 @@ export const HeaderSearch = () => {
       console.log("Searching for:", searchQuery);
       
       const { data, error } = await supabase
-        .from('articles')
-        .select(`
-          id,
-          title,
-          slug,
-          excerpt,
-          category:categories(name),
-          author:profiles(username)
-        `)
-        .or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%,excerpt.ilike.%${searchQuery}%`)
-        .eq('status', 'published')
-        .order('published_at', { ascending: false })
-        .limit(10);
+        .rpc('search_articles', { search_query: searchQuery });
 
       if (error) {
         console.error("Search error:", error);
@@ -111,11 +99,11 @@ export const HeaderSearch = () => {
                     </div>
                   )}
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{article.category?.name || 'Uncategorized'}</span>
-                    {article.author?.username && (
+                    <span>{article.category_name || 'Uncategorized'}</span>
+                    {article.author_username && (
                       <>
                         <span>•</span>
-                        <span>By {article.author.username}</span>
+                        <span>By {article.author_username}</span>
                       </>
                     )}
                   </div>
