@@ -74,7 +74,7 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
   if (isLoading) {
     return (
       <section className="py-12 first:pt-0 last:pb-0">
-        <div className="relative bg-card shadow-lg rounded-xl p-8 overflow-hidden animate-pulse">
+        <div className="relative bg-secondary/50 dark:bg-secondary/20 shadow-lg rounded-xl p-8 overflow-hidden animate-pulse">
           <div className="flex items-center justify-between mb-8">
             <div className="h-8 bg-muted rounded w-1/4" />
           </div>
@@ -92,7 +92,7 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
 
   return (
     <section className="py-12 first:pt-0 last:pb-0 animate-fade-up">
-      <div className="relative bg-card shadow-lg rounded-xl p-8 overflow-hidden">
+      <div className="relative bg-white dark:bg-gray-800 shadow-lg rounded-xl p-8 overflow-hidden border border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
