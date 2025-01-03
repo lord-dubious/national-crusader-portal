@@ -68,7 +68,7 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
       return { articles: articlesData, category: categoryData };
     },
     staleTime: 60 * 1000, // Cache for 1 minute
-    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
   if (isLoading) {
