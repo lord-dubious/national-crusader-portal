@@ -25,7 +25,6 @@ export const useSearch = () => {
       const { data, error } = await supabase
         .from("articles")
         .select(`
-          id,
           title,
           slug,
           excerpt,
@@ -45,66 +44,40 @@ export const useSearch = () => {
         return [];
       }
 
-      console.log("Fetched articles for search:", data);
       return data || [];
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
   useEffect(() => {
-    if (articles) {
-      try {
-        // Configure Fuse instance with search options
-        const fuseInstance = new Fuse(articles, {
-          keys: [
-            { name: 'title', weight: 2 },
-            { name: 'excerpt', weight: 1.5 },
-            { name: 'content', weight: 1 },
-            { name: 'category.name', weight: 0.8 }
-          ],
-          threshold: 0.4, // Increased threshold for more lenient matching
-          distance: 100, // Increased distance for better partial matches
-          includeScore: true,
-          minMatchCharLength: 2,
-          shouldSort: true,
-          findAllMatches: true
-        });
-        setFuse(fuseInstance);
-        console.log("Search index created with articles:", articles.length);
-      } catch (error) {
-        console.error("Error creating search instance:", error);
-        toast({
-          variant: "destructive",
-          title: "Error creating search index",
-          description: "Please try again later"
-        });
-      }
+    if (articles && articles.length > 0) {
+      const fuseInstance = new Fuse(articles, {
+        keys: [
+          { name: 'title', weight: 2 },
+          { name: 'excerpt', weight: 1.5 },
+          { name: 'content', weight: 1 },
+          { name: 'category.name', weight: 0.8 }
+        ],
+        threshold: 0.3,
+        distance: 100,
+        minMatchCharLength: 2
+      });
+      setFuse(fuseInstance);
     }
-  }, [articles, toast]);
+  }, [articles]);
 
   useEffect(() => {
     if (fuse && searchQuery.length >= 2) {
-      try {
-        console.log("Performing search with query:", searchQuery);
-        const results = fuse.search(searchQuery);
-        console.log("Search results:", results);
-        const formattedResults = results.map(result => ({
-          ...result.item,
-          score: result.score
-        })) as SearchResult[];
-        setSearchResults(formattedResults);
-      } catch (error) {
-        console.error("Error performing search:", error);
-        toast({
-          variant: "destructive",
-          title: "Error performing search",
-          description: "Please try again"
-        });
-      }
+      const results = fuse.search(searchQuery);
+      const formattedResults = results.map(result => ({
+        ...result.item,
+        score: result.score
+      }));
+      setSearchResults(formattedResults);
     } else {
       setSearchResults([]);
     }
-  }, [searchQuery, fuse, toast]);
+  }, [searchQuery, fuse]);
 
   return {
     open,
