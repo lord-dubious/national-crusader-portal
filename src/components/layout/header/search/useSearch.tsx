@@ -24,7 +24,7 @@ export const useSearch = () => {
       console.log("Searching for:", searchQuery);
       const { data, error } = await supabase
         .rpc('search_articles', {
-          search_query: searchQuery
+          search_query: searchQuery.toLowerCase()
         });
 
       if (error) {
