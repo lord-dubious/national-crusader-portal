@@ -35,19 +35,24 @@ export const HeaderSearch = () => {
       <SearchInput onOpenSearch={() => setOpen(true)} />
 
       <CommandDialog open={open} onOpenChange={handleOpenChange}>
-        <CommandInput 
-          placeholder="Search articles..." 
-          value={searchQuery}
-          onValueChange={setSearchQuery}
-        />
-        <CommandList>
-          <SearchResults 
-            results={searchResults}
-            isLoading={isLoading}
-            searchQuery={searchQuery}
-            onSelect={() => setOpen(false)}
-          />
-        </CommandList>
+        <div className="fixed inset-0 z-50">
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" />
+          <div className="fixed inset-0 w-full max-w-2xl mx-auto mt-[20vh] bg-background rounded-lg shadow-lg overflow-hidden">
+            <CommandInput 
+              placeholder="Search articles..." 
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+            />
+            <CommandList className="max-h-[300px] overflow-y-auto">
+              <SearchResults 
+                results={searchResults}
+                isLoading={isLoading}
+                searchQuery={searchQuery}
+                onSelect={() => setOpen(false)}
+              />
+            </CommandList>
+          </div>
+        </div>
       </CommandDialog>
     </>
   );
