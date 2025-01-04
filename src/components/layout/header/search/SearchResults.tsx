@@ -53,14 +53,20 @@ export const SearchResults = ({ results, isLoading, searchQuery, onSelect }: Sea
           onClick={onSelect}
         >
           <CommandItem className="cursor-pointer">
-            <div className="flex flex-col gap-1">
-              <span className="font-medium">{result.title}</span>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{result.category_name || "Uncategorized"}</span>
+            <div className="flex flex-col gap-1 w-full">
+              <span className="font-medium text-foreground dark:text-white">
+                {result.title}
+              </span>
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-muted-foreground">
+                  {result.category_name || "Uncategorized"}
+                </span>
                 {result.author_username && (
                   <>
-                    <span>•</span>
-                    <span>By {result.author_username}</span>
+                    <span className="text-muted-foreground">•</span>
+                    <span className="text-muted-foreground">
+                      By {result.author_username}
+                    </span>
                   </>
                 )}
               </div>
