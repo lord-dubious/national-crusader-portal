@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 
 interface ArticleCardProps {
   category: string;
@@ -13,25 +12,17 @@ interface ArticleCardProps {
 
 export const ArticleCard = ({ category, title, excerpt, imageUrl, slug }: ArticleCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const { toast } = useToast();
-
-  const handleImageError = () => {
-    setImageError(true);
-    setImageLoaded(true);
-    console.error("Failed to load image:", imageUrl);
-  };
 
   return (
     <Link 
       to={slug ? `/article/${slug}` : "#"} 
       className="block h-full"
     >
-      <Card className="group h-full cursor-pointer animate-fade-up bg-primary dark:bg-[#333333] shadow-md hover:shadow-xl transition-all duration-300 hover:translate-y-[-2px] will-change-transform">
+      <Card className="group h-full cursor-pointer animate-fade-up bg-primary dark:bg-[#333333] shadow-md hover:shadow-xl transition-all duration-300 hover:translate-y-[-2px]">
         <CardContent className="p-0 h-full">
           <div className="aspect-[16/10] w-full overflow-hidden bg-muted">
             <img
-              src={imageError ? "/placeholder.svg" : imageUrl}
+              src={imageUrl || "/placeholder.svg"}
               alt={title}
               className={`h-full w-full object-cover transition-all duration-500 ${
                 imageLoaded 
@@ -40,7 +31,6 @@ export const ArticleCard = ({ category, title, excerpt, imageUrl, slug }: Articl
               }`}
               loading="lazy"
               onLoad={() => setImageLoaded(true)}
-              onError={handleImageError}
             />
           </div>
           <div className="p-8 flex flex-col h-[calc(100%-40%)] bg-primary dark:bg-[#333333] group-hover:bg-[#F5F5F5] dark:group-hover:bg-[#444444] transition-colors duration-300">
