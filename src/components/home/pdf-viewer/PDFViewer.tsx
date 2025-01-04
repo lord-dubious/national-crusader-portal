@@ -32,6 +32,10 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
     setNumPages(numPages);
   };
 
+  const handleZoom = (delta: number) => {
+    setScale(prevScale => Math.min(Math.max(0.5, prevScale + delta), 2.5));
+  };
+
   useEffect(() => {
     // Initialize turn.js after the document is loaded
     if (flipbookRef.current && typeof window !== 'undefined') {
