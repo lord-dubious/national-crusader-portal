@@ -14,7 +14,6 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
     queryFn: async () => {
       console.log("Fetching articles for category:", categorySlug);
       
-      // First fetch the category
       const { data: categoryData, error: categoryError } = await supabase
         .from("categories")
         .select("id, name")
@@ -23,12 +22,7 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
 
       if (categoryError) {
         console.error("Category fetch error:", categoryError);
-        toast({
-          variant: "destructive",
-          title: "Error fetching category",
-          description: categoryError.message
-        });
-        return null;
+        throw categoryError;
       }
 
       if (!categoryData) {
@@ -38,7 +32,6 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
 
       console.log("Found category:", categoryData);
 
-      // Then fetch the articles
       const { data: articlesData, error: articlesError } = await supabase
         .from("articles")
         .select(`
@@ -56,20 +49,25 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
       
       if (articlesError) {
         console.error("Articles fetch error:", articlesError);
-        toast({
-          variant: "destructive",
-          title: "Error fetching articles",
-          description: articlesError.message
-        });
-        return null;
+        throw articlesError;
       }
 
       console.log("Fetched articles:", articlesData);
       return { articles: articlesData, category: categoryData };
     },
-    staleTime: 60 * 1000, // Cache for 1 minute
-    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    retry: 1,
   });
+
+  if (error) {
+    toast({
+      variant: "destructive",
+      title: "Error loading articles",
+      description: "Please try again later."
+    });
+    return null;
+  }
 
   if (isLoading) {
     return (
@@ -88,7 +86,7 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
     );
   }
 
-  if (error || !articles?.articles?.length) return null;
+  if (!articles?.articles?.length) return null;
 
   return (
     <section className="py-16 first:pt-0 last:pb-0 animate-fade-up">
