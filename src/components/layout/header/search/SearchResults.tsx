@@ -36,6 +36,8 @@ export const SearchResults = ({ results, isLoading, searchQuery, onSelect }: Sea
     );
   }
 
+  console.log("Search results:", results); // Add this to debug
+
   if (results.length === 0) {
     return (
       <CommandEmpty>
@@ -53,7 +55,7 @@ export const SearchResults = ({ results, isLoading, searchQuery, onSelect }: Sea
           onClick={onSelect}
           className="block"
         >
-          <CommandItem className="cursor-pointer hover:bg-accent hover:text-accent-foreground">
+          <CommandItem className="cursor-pointer">
             <div className="flex flex-col gap-1">
               <span className="font-medium">
                 {result.title}
