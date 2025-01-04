@@ -40,7 +40,7 @@ export const HeaderSearch = () => {
           value={searchQuery}
           onValueChange={setSearchQuery}
         />
-        <CommandList>
+        <CommandList className="max-h-[400px]">
           <SearchResults 
             results={searchResults}
             isLoading={isLoading}
