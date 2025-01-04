@@ -29,6 +29,7 @@ export const useSearch = () => {
           title,
           slug,
           excerpt,
+          content,
           category:categories(name),
           author:profiles(username)
         `)
@@ -44,6 +45,7 @@ export const useSearch = () => {
         return [];
       }
 
+      console.log("Fetched articles for search:", data);
       return data || [];
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
@@ -56,12 +58,19 @@ export const useSearch = () => {
         const fuseInstance = new Fuse(articles, {
           keys: [
             { name: 'title', weight: 2 },
-            { name: 'excerpt', weight: 1 }
+            { name: 'excerpt', weight: 1.5 },
+            { name: 'content', weight: 1 },
+            { name: 'category.name', weight: 0.8 }
           ],
-          threshold: 0.3,
-          includeScore: true
+          threshold: 0.4, // Increased threshold for more lenient matching
+          distance: 100, // Increased distance for better partial matches
+          includeScore: true,
+          minMatchCharLength: 2,
+          shouldSort: true,
+          findAllMatches: true
         });
         setFuse(fuseInstance);
+        console.log("Search index created with articles:", articles.length);
       } catch (error) {
         console.error("Error creating search instance:", error);
         toast({
@@ -76,8 +85,13 @@ export const useSearch = () => {
   useEffect(() => {
     if (fuse && searchQuery.length >= 2) {
       try {
+        console.log("Performing search with query:", searchQuery);
         const results = fuse.search(searchQuery);
-        const formattedResults = results.map(result => result.item) as SearchResult[];
+        console.log("Search results:", results);
+        const formattedResults = results.map(result => ({
+          ...result.item,
+          score: result.score
+        })) as SearchResult[];
         setSearchResults(formattedResults);
       } catch (error) {
         console.error("Error performing search:", error);
