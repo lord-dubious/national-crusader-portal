@@ -35,7 +35,7 @@ export const useSearch = () => {
       console.log("Search results:", data);
       return data as SearchResult[];
     },
-    enabled: searchQuery.length > 2,
+    enabled: searchQuery.length > 0, // Changed from > 2 to > 0 to allow shorter searches
   });
 
   return {
