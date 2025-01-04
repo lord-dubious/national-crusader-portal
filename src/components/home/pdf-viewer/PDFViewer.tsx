@@ -24,6 +24,7 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
   const [expandedPageNumber, setExpandedPageNumber] = useState<number>(1);
   const [isOpen, setIsOpen] = useState(false);
   const [scale, setScale] = useState(1);
+  const [scriptsLoaded, setScriptsLoaded] = useState(false);
   const flipbookRef = useRef<HTMLDivElement>(null);
   const pdfUrl = supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl;
 
@@ -35,59 +36,87 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
     setScale(prevScale => Math.min(Math.max(0.5, prevScale + delta), 2.5));
   };
 
-  // Load scripts
+  // Load and initialize scripts
   useEffect(() => {
-    const loadScript = (src: string): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.async = true;
-        script.onload = () => resolve();
-        script.onerror = () => reject();
-        document.body.appendChild(script);
-      });
-    };
+    let jQueryScript: HTMLScriptElement | null = null;
+    let turnScript: HTMLScriptElement | null = null;
 
-    const initializeTurnJs = async () => {
+    const loadScripts = async () => {
       try {
-        // First load jQuery
-        await loadScript('https://code.jquery.com/jquery-3.7.1.min.js');
-        // Then load turn.js
-        await loadScript('https://raw.githubusercontent.com/blasten/turn.js/master/turn.min.js');
-        
-        // Initialize turn.js after both scripts are loaded
-        if (flipbookRef.current && numPages > 0) {
-          const $ = (window as any).$;
-          if ($) {
-            $(flipbookRef.current).turn({
-              width: 280,
-              height: 400,
-              autoCenter: true,
-              acceleration: true,
-              gradients: true,
-              elevation: 50,
-              when: {
-                turning: function(event: any, page: number) {
-                  setPageNumber(page);
-                }
-              }
-            });
+        // Load jQuery first
+        jQueryScript = document.createElement('script');
+        jQueryScript.src = 'https://code.jquery.com/jquery-3.7.1.min.js';
+        await new Promise<void>((resolve, reject) => {
+          if (jQueryScript) {
+            jQueryScript.onload = () => resolve();
+            jQueryScript.onerror = () => reject();
+            document.body.appendChild(jQueryScript);
           }
-        }
+        });
+
+        // Then load turn.js
+        turnScript = document.createElement('script');
+        turnScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/turn.js/3.0.0/turn.min.js';
+        await new Promise<void>((resolve, reject) => {
+          if (turnScript) {
+            turnScript.onload = () => resolve();
+            turnScript.onerror = () => reject();
+            document.body.appendChild(turnScript);
+          }
+        });
+
+        setScriptsLoaded(true);
       } catch (error) {
         console.error('Error loading scripts:', error);
       }
     };
 
-    initializeTurnJs();
+    loadScripts();
 
     return () => {
+      if (jQueryScript) document.body.removeChild(jQueryScript);
+      if (turnScript) document.body.removeChild(turnScript);
+    };
+  }, []);
+
+  // Initialize turn.js after scripts and document are loaded
+  useEffect(() => {
+    if (scriptsLoaded && flipbookRef.current && numPages > 0) {
       const $ = (window as any).$;
-      if ($ && flipbookRef.current) {
-        $(flipbookRef.current).turn('destroy');
+      if ($) {
+        try {
+          $(flipbookRef.current).turn({
+            width: 280,
+            height: 400,
+            autoCenter: true,
+            acceleration: true,
+            gradients: true,
+            elevation: 50,
+            when: {
+              turning: function(event: any, page: number) {
+                setPageNumber(page);
+              }
+            }
+          });
+        } catch (error) {
+          console.error('Error initializing turn.js:', error);
+        }
+      }
+    }
+
+    return () => {
+      if (scriptsLoaded) {
+        const $ = (window as any).$;
+        if ($ && flipbookRef.current) {
+          try {
+            $(flipbookRef.current).turn('destroy');
+          } catch (error) {
+            console.error('Error destroying turn.js instance:', error);
+          }
+        }
       }
     };
-  }, [numPages]);
+  }, [scriptsLoaded, numPages]);
 
   const changePage = (offset: number, isExpanded: boolean = false) => {
     if (isExpanded) {
