@@ -17,10 +17,31 @@ interface PDFViewerProps {
 export const PDFViewer = ({ pdf }: PDFViewerProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [numPages, setNumPages] = useState(1);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [scale, setScale] = useState(1.0);
 
   const pdfUrl = supabase.storage
     .from('pdf_newspapers')
     .getPublicUrl(pdf.name).data.publicUrl;
+
+  const handlePageChange = (offset: number) => {
+    setPageNumber(prev => {
+      const newPage = prev + offset;
+      return newPage >= 1 && newPage <= numPages ? newPage : prev;
+    });
+  };
+
+  const handleZoom = (delta: number) => {
+    setScale(prev => {
+      const newScale = prev + delta;
+      return newScale >= 0.5 && newScale <= 2 ? newScale : prev;
+    });
+  };
+
+  const handleDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+  };
 
   if (error) {
     console.error("PDF loading error:", error);
@@ -62,6 +83,12 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
       {isExpanded && (
         <ExpandedView
           pdfUrl={pdfUrl}
+          pageNumber={pageNumber}
+          numPages={numPages}
+          scale={scale}
+          onPageChange={handlePageChange}
+          onZoom={handleZoom}
+          onDocumentLoadSuccess={handleDocumentLoadSuccess}
           onClose={() => setIsExpanded(false)}
         />
       )}

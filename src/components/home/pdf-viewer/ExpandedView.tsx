@@ -46,7 +46,6 @@ export const ExpandedView = ({
       className="h-full w-full relative" 
       onWheel={handleWheel}
     >
-      {/* Exit button moved outside the controls div */}
       <button 
         onClick={onClose} 
         className="absolute right-4 top-4 z-50 p-2 bg-black/50 text-white hover:bg-white/20 rounded-full transition-colors"
