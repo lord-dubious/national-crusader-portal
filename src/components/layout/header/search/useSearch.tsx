@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-// Import the entire module using require syntax
-const elasticlunr = require('elasticlunr');
+// Import elasticlunr as a module
+import * as elasticlunr from "elasticlunr";
 
 interface SearchResult {
   slug: string;
