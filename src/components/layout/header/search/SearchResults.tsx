@@ -36,6 +36,8 @@ export const SearchResults = ({ results, isLoading, searchQuery, onSelect }: Sea
     );
   }
 
+  console.log("Search results:", results); // Add this to debug
+
   if (results.length === 0) {
     return (
       <CommandEmpty>
@@ -45,31 +47,33 @@ export const SearchResults = ({ results, isLoading, searchQuery, onSelect }: Sea
   }
 
   return (
-    <CommandGroup heading="Articles" className="bg-background">
+    <CommandGroup heading="Articles">
       {results.map((result) => (
         <Link 
           key={result.id} 
           to={`/article/${result.slug}`}
           onClick={onSelect}
+          className="block"
         >
-          <CommandItem className="cursor-pointer bg-background hover:bg-secondary">
-            <div className="flex flex-col gap-1 w-full">
-              <span className="font-medium text-foreground dark:text-white">
+          <CommandItem className="cursor-pointer">
+            <div className="flex flex-col gap-1">
+              <span className="font-medium">
                 {result.title}
               </span>
-              <div className="flex items-center gap-2 text-xs">
-                <span className="text-muted-foreground">
-                  {result.category_name || "Uncategorized"}
-                </span>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span>{result.category_name || "Uncategorized"}</span>
                 {result.author_username && (
                   <>
-                    <span className="text-muted-foreground">•</span>
-                    <span className="text-muted-foreground">
-                      By {result.author_username}
-                    </span>
+                    <span>•</span>
+                    <span>By {result.author_username}</span>
                   </>
                 )}
               </div>
+              {result.excerpt && (
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {result.excerpt}
+                </p>
+              )}
             </div>
           </CommandItem>
         </Link>
