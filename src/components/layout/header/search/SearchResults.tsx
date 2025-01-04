@@ -36,9 +36,9 @@ export const SearchResults = ({ results, isLoading, searchQuery, onSelect }: Sea
     );
   }
 
-  if (results.length === 0) {
+  if (!results || results.length === 0) {
     return (
-      <CommandEmpty>
+      <CommandEmpty className="py-6 text-center">
         No articles found for "{searchQuery}"
       </CommandEmpty>
     );
@@ -47,15 +47,14 @@ export const SearchResults = ({ results, isLoading, searchQuery, onSelect }: Sea
   return (
     <CommandGroup heading="Articles">
       {results.map((result) => (
-        <Link 
-          key={result.id} 
-          to={`/article/${result.slug}`}
-          onClick={onSelect}
-          className="block"
-        >
-          <CommandItem className="cursor-pointer">
+        <CommandItem key={result.id} className="px-4 py-2">
+          <Link 
+            to={`/article/${result.slug}`}
+            onClick={onSelect}
+            className="block w-full"
+          >
             <div className="flex flex-col gap-1">
-              <span className="font-medium">
+              <span className="font-medium text-foreground">
                 {result.title}
               </span>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -73,8 +72,8 @@ export const SearchResults = ({ results, isLoading, searchQuery, onSelect }: Sea
                 </p>
               )}
             </div>
-          </CommandItem>
-        </Link>
+          </Link>
+        </CommandItem>
       ))}
     </CommandGroup>
   );
