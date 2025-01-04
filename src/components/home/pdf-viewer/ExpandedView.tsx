@@ -1,9 +1,12 @@
-import { Document, Page } from 'react-pdf';
+import { Document, Page, pdfjs } from 'react-pdf';
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ZoomControls } from "./ZoomControls";
 import { PageNavigation } from "./PageNavigation";
 import { useSwipeable } from "react-swipeable";
 import { X } from "lucide-react";
+
+// Configure PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface ExpandedViewProps {
   pdfUrl: string;

@@ -5,8 +5,12 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PageNavigation } from "./PageNavigation";
 import { ExpandedView } from "./ExpandedView";
 import { Flipbook } from "./Flipbook";
+import { pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
+
+// Configure PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface PDFViewerProps {
   pdf: {
