@@ -1,11 +1,19 @@
 import { CommandDialog, CommandInput, CommandList } from "@/components/ui/command";
 import { SearchInput } from "./search/SearchInput";
-import { useState } from "react";
-import { DialogTitle } from "@/components/ui/dialog";
+import { SearchResults } from "./search/SearchResults";
+import { useSearch } from "./search/useSearch";
+import { useToast } from "@/hooks/use-toast";
 
 export const HeaderSearch = () => {
-  const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
+  const {
+    open,
+    setOpen,
+    searchQuery,
+    setSearchQuery,
+    searchResults,
+    isLoading
+  } = useSearch();
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -14,21 +22,31 @@ export const HeaderSearch = () => {
     }
   };
 
+  const handleError = () => {
+    toast({
+      variant: "destructive",
+      title: "Search Error",
+      description: "An error occurred while searching. Please try again."
+    });
+  };
+
   return (
     <>
       <SearchInput onOpenSearch={() => setOpen(true)} />
 
       <CommandDialog open={open} onOpenChange={handleOpenChange}>
-        <DialogTitle className="sr-only">Search articles</DialogTitle>
         <CommandInput 
           placeholder="Search articles..." 
           value={searchQuery}
           onValueChange={setSearchQuery}
         />
         <CommandList>
-          <div className="py-6 text-center text-sm text-muted-foreground">
-            Search functionality is currently disabled
-          </div>
+          <SearchResults 
+            results={searchResults}
+            isLoading={isLoading}
+            searchQuery={searchQuery}
+            onSelect={() => setOpen(false)}
+          />
         </CommandList>
       </CommandDialog>
     </>
