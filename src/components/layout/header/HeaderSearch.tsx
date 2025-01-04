@@ -1,25 +1,11 @@
 import { CommandDialog, CommandInput, CommandList } from "@/components/ui/command";
-import { useNavigate } from "react-router-dom";
 import { SearchInput } from "./search/SearchInput";
-import { SearchResults } from "./search/SearchResults";
-import { useSearch } from "./search/useSearch";
+import { useState } from "react";
 import { DialogTitle } from "@/components/ui/dialog";
 
 export const HeaderSearch = () => {
-  const navigate = useNavigate();
-  const { 
-    open, 
-    setOpen, 
-    searchQuery, 
-    setSearchQuery, 
-    searchResults,
-    isLoading 
-  } = useSearch();
-
-  const handleSelect = (item: any) => {
-    setOpen(false);
-    navigate(`/article/${item.slug}`);
-  };
+  const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -40,12 +26,9 @@ export const HeaderSearch = () => {
           onValueChange={setSearchQuery}
         />
         <CommandList>
-          <SearchResults 
-            results={searchResults}
-            searchQuery={searchQuery}
-            onSelect={handleSelect}
-            isLoading={isLoading}
-          />
+          <div className="py-6 text-center text-sm text-muted-foreground">
+            Search functionality is currently disabled
+          </div>
         </CommandList>
       </CommandDialog>
     </>
