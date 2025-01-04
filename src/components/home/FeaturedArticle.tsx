@@ -56,7 +56,6 @@ export const FeaturedArticle = () => {
           imageLoaded ? 'opacity-100' : 'opacity-0'
         }`}
         loading="eager"
-        fetchpriority="high"
         onLoad={() => setImageLoaded(true)}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
