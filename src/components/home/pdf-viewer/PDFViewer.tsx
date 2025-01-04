@@ -5,9 +5,9 @@ import { Maximize2 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PageNavigation } from "./PageNavigation";
 import { ExpandedView } from "./ExpandedView";
+import Script from '@/components/Script';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-import Script from '@/components/Script';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
@@ -25,6 +25,7 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
   const [expandedPageNumber, setExpandedPageNumber] = useState<number>(1);
   const [isOpen, setIsOpen] = useState(false);
   const [scale, setScale] = useState(1);
+  const [scriptsLoaded, setScriptsLoaded] = useState(false);
   const flipbookRef = useRef<HTMLDivElement>(null);
   const pdfUrl = supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl;
 
@@ -36,9 +37,43 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
     setScale(prevScale => Math.min(Math.max(0.5, prevScale + delta), 2.5));
   };
 
+  // Handle script loading
   useEffect(() => {
-    // Initialize turn.js after the document is loaded
-    if (flipbookRef.current && typeof window !== 'undefined') {
+    let jQueryLoaded = false;
+    let turnJsLoaded = false;
+
+    const checkScriptsLoaded = () => {
+      if (jQueryLoaded && turnJsLoaded) {
+        setScriptsLoaded(true);
+      }
+    };
+
+    const jQueryScript = document.createElement('script');
+    jQueryScript.src = 'https://code.jquery.com/jquery-3.7.1.min.js';
+    jQueryScript.onload = () => {
+      jQueryLoaded = true;
+      checkScriptsLoaded();
+    };
+
+    const turnScript = document.createElement('script');
+    turnScript.src = 'https://cdn.jsdelivr.net/npm/turn.js@1.0.5/turn.min.js';
+    turnScript.onload = () => {
+      turnJsLoaded = true;
+      checkScriptsLoaded();
+    };
+
+    document.body.appendChild(jQueryScript);
+    document.body.appendChild(turnScript);
+
+    return () => {
+      document.body.removeChild(jQueryScript);
+      document.body.removeChild(turnScript);
+    };
+  }, []);
+
+  // Initialize turn.js after scripts and document are loaded
+  useEffect(() => {
+    if (scriptsLoaded && flipbookRef.current && numPages > 0) {
       const $ = (window as any).$;
       if ($) {
         $(flipbookRef.current).turn({
@@ -63,7 +98,7 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
         $(flipbookRef.current).turn('destroy');
       }
     };
-  }, [numPages]);
+  }, [scriptsLoaded, numPages]);
 
   const changePage = (offset: number, isExpanded: boolean = false) => {
     if (isExpanded) {
@@ -148,9 +183,6 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
           />
         </DialogContent>
       </Dialog>
-
-      <Script src="https://code.jquery.com/jquery-3.7.1.min.js" />
-      <Script src="https://cdn.jsdelivr.net/npm/turn.js@1.0.5/turn.min.js" />
     </div>
   );
 };
