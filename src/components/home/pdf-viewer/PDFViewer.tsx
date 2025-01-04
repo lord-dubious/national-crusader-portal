@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from "@/integrations/supabase/client";
 import { Maximize2 } from "lucide-react";
@@ -7,6 +7,7 @@ import { PageNavigation } from "./PageNavigation";
 import { ExpandedView } from "./ExpandedView";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
+import Script from '@/components/Script';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
@@ -24,11 +25,41 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
   const [expandedPageNumber, setExpandedPageNumber] = useState<number>(1);
   const [isOpen, setIsOpen] = useState(false);
   const [scale, setScale] = useState(1);
+  const flipbookRef = useRef<HTMLDivElement>(null);
   const pdfUrl = supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl;
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
   };
+
+  useEffect(() => {
+    // Initialize turn.js after the document is loaded
+    if (flipbookRef.current && typeof window !== 'undefined') {
+      const $ = (window as any).$;
+      if ($) {
+        $(flipbookRef.current).turn({
+          width: 280,
+          height: 400,
+          autoCenter: true,
+          acceleration: true,
+          gradients: true,
+          elevation: 50,
+          when: {
+            turning: function(event: any, page: number) {
+              setPageNumber(page);
+            }
+          }
+        });
+      }
+    }
+
+    return () => {
+      const $ = (window as any).$;
+      if ($ && flipbookRef.current) {
+        $(flipbookRef.current).turn('destroy');
+      }
+    };
+  }, [numPages]);
 
   const changePage = (offset: number, isExpanded: boolean = false) => {
     if (isExpanded) {
@@ -36,14 +67,15 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
         Math.min(Math.max(1, prevPageNumber + offset), numPages)
       );
     } else {
-      setPageNumber(prevPageNumber => 
-        Math.min(Math.max(1, prevPageNumber + offset), numPages)
-      );
+      const $ = (window as any).$;
+      if ($ && flipbookRef.current) {
+        if (offset > 0) {
+          $(flipbookRef.current).turn('next');
+        } else {
+          $(flipbookRef.current).turn('previous');
+        }
+      }
     }
-  };
-
-  const handleZoom = (delta: number) => {
-    setScale(prevScale => Math.min(Math.max(0.5, prevScale + delta), 3));
   };
 
   return (
@@ -53,27 +85,29 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
           className="relative group cursor-pointer" 
           onClick={() => setIsOpen(true)}
         >
-          <Document
-            file={pdfUrl}
-            onLoadSuccess={onDocumentLoadSuccess}
-            loading={
-              <div className="flex items-center justify-center h-[400px] text-white/80">
-                Loading PDF...
-              </div>
-            }
-            error={
-              <div className="flex items-center justify-center h-[400px] text-accent">
-                Error loading PDF!
-              </div>
-            }
-          >
-            <Page 
-              pageNumber={pageNumber} 
-              width={280}
-              renderTextLayer={false}
-              renderAnnotationLayer={false}
-            />
-          </Document>
+          <div ref={flipbookRef} className="flipbook">
+            <Document
+              file={pdfUrl}
+              onLoadSuccess={onDocumentLoadSuccess}
+              loading={
+                <div className="flex items-center justify-center h-[400px] text-white/80">
+                  Loading PDF...
+                </div>
+              }
+              error={
+                <div className="flex items-center justify-center h-[400px] text-accent">
+                  Error loading PDF!
+                </div>
+              }
+            >
+              <Page 
+                pageNumber={pageNumber} 
+                width={280}
+                renderTextLayer={false}
+                renderAnnotationLayer={false}
+              />
+            </Document>
+          </div>
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
             <Maximize2 className="text-white/0 group-hover:text-white/90 transition-all transform scale-75 group-hover:scale-100" />
           </div>
@@ -106,10 +140,13 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
             onPageChange={(offset) => changePage(offset, true)}
             onZoom={handleZoom}
             onDocumentLoadSuccess={onDocumentLoadSuccess}
-            onClose={() => setIsOpen(false)} // Add onClose handler
+            onClose={() => setIsOpen(false)}
           />
         </DialogContent>
       </Dialog>
+
+      <Script src="https://code.jquery.com/jquery-3.7.1.min.js" />
+      <Script src="https://cdn.jsdelivr.net/npm/turn.js@1.0.5/turn.min.js" />
     </div>
   );
 };
