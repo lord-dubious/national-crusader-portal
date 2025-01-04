@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -21,6 +21,9 @@ export const LinkDialog = ({
     <DialogContent>
       <DialogHeader>
         <DialogTitle>Insert Link</DialogTitle>
+        <DialogDescription>
+          Enter the URL for your link below.
+        </DialogDescription>
       </DialogHeader>
       <div className="flex gap-2">
         <Input

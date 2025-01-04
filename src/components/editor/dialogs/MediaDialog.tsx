@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { MediaLibrary } from "@/components/admin/MediaLibrary";
 
 interface MediaDialogProps {
@@ -12,6 +12,9 @@ export const MediaDialog = ({ isOpen, onOpenChange, onSelect }: MediaDialogProps
     <DialogContent className="max-w-3xl">
       <DialogHeader>
         <DialogTitle>Media Library</DialogTitle>
+        <DialogDescription>
+          Select or upload media files to include in your content.
+        </DialogDescription>
       </DialogHeader>
       <MediaLibrary onSelect={onSelect} />
     </DialogContent>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { SearchInput } from "./search/SearchInput";
 import { SearchResults } from "./search/SearchResults";
 import { useSearch } from "./search/useSearch";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { DialogTitle } from "@/components/ui/dialog";
 
 export const HeaderSearch = () => {
   const navigate = useNavigate();
@@ -33,9 +33,7 @@ export const HeaderSearch = () => {
       <SearchInput onOpenSearch={() => setOpen(true)} />
 
       <CommandDialog open={open} onOpenChange={handleOpenChange}>
-        <VisuallyHidden>
-          <h2>Search articles</h2>
-        </VisuallyHidden>
+        <DialogTitle className="sr-only">Search articles</DialogTitle>
         <CommandInput 
           placeholder="Search articles..." 
           value={searchQuery}
