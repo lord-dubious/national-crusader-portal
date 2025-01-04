@@ -11,9 +11,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -33,10 +35,29 @@
   }
 }
 
+/* Add will-change for elements that will animate */
+.animate-fade-up,
+.animate-fade-down,
+.animate-scale {
+  will-change: transform, opacity;
+}
+
+/* Use transform instead of opacity/visibility for better performance */
 .card {
   padding: 2em;
+  transform: translateZ(0); /* Hardware acceleration */
 }
 
 .read-the-docs {
   color: #888;
+}
+
+/* Optimize animations */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

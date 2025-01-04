@@ -1,21 +1,21 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { FeaturedArticle } from "@/components/home/FeaturedArticle";
-import { CategorySection } from "@/components/home/CategorySection";
-import { TrendingSection } from "@/components/home/TrendingSection";
-import { NewspaperSection } from "@/components/home/NewspaperSection";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Suspense, lazy } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
-// Lazy load less important sections
-const LazyNewspaperSection = lazy(() => import("@/components/home/NewspaperSection").then(mod => ({ default: mod.NewspaperSection })));
+// Lazy load components for better initial load performance
+const FeaturedArticle = lazy(() => import("@/components/home/FeaturedArticle").then(mod => ({ default: mod.FeaturedArticle })));
+const TrendingSection = lazy(() => import("@/components/home/TrendingSection").then(mod => ({ default: mod.TrendingSection })));
+const NewspaperSection = lazy(() => import("@/components/home/NewspaperSection").then(mod => ({ default: mod.NewspaperSection })));
+const CategorySection = lazy(() => import("@/components/home/CategorySection").then(mod => ({ default: mod.CategorySection })));
 
 const Index = () => {
   const { data: categories, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
+      console.log("Fetching categories");
       const { data, error } = await supabase
         .from("categories")
         .select("*")
@@ -33,28 +33,49 @@ const Index = () => {
       <main className="flex-1">
         <div className="container mx-auto px-4">
           <div className="py-8">
-            <Suspense fallback={<Skeleton className="h-[70vh] w-full rounded-lg" />}>
+            <Suspense 
+              fallback={
+                <Skeleton className="h-[70vh] w-full rounded-lg animate-pulse" />
+              }
+            >
               <FeaturedArticle />
             </Suspense>
           </div>
+          
           <div className="py-12">
-            <Suspense fallback={<Skeleton className="h-96 w-full rounded-lg" />}>
+            <Suspense 
+              fallback={
+                <Skeleton className="h-96 w-full rounded-lg animate-pulse" />
+              }
+            >
               <TrendingSection />
             </Suspense>
           </div>
+
           <Suspense 
-            fallback={<Skeleton className="h-96 w-full rounded-lg" />}
+            fallback={
+              <Skeleton className="h-96 w-full rounded-lg animate-pulse" />
+            }
           >
-            <LazyNewspaperSection />
+            <NewspaperSection />
           </Suspense>
+
           <div className="space-y-16 py-8">
             {isLoading ? (
               Array(3).fill(0).map((_, i) => (
-                <Skeleton key={i} className="h-96 w-full rounded-lg" />
+                <Skeleton 
+                  key={i} 
+                  className="h-96 w-full rounded-lg animate-pulse" 
+                />
               ))
             ) : (
               categories?.map((category) => (
-                <Suspense key={category.id} fallback={<Skeleton className="h-96 w-full rounded-lg" />}>
+                <Suspense 
+                  key={category.id} 
+                  fallback={
+                    <Skeleton className="h-96 w-full rounded-lg animate-pulse" />
+                  }
+                >
                   <CategorySection categorySlug={category.slug} />
                 </Suspense>
               ))

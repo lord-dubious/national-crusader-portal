@@ -4,9 +4,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 export const FeaturedArticle = () => {
   const { toast } = useToast();
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
   const { data: featuredArticle, error } = useQuery({
     queryKey: ["featured-article"],
     queryFn: async () => {
@@ -49,14 +52,17 @@ export const FeaturedArticle = () => {
       <img
         src={featuredArticle.featured_image || "/placeholder.svg"}
         alt={featuredArticle.title}
-        className="absolute inset-0 h-full w-full object-cover"
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+          imageLoaded ? 'opacity-100' : 'opacity-0'
+        }`}
         loading="eager"
         fetchPriority="high"
+        onLoad={() => setImageLoaded(true)}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-8">
         {featuredArticle.category && (
-          <div className="flex items-center space-x-4 mb-4">
+          <div className="flex items-center space-x-4 mb-4 animate-fade-up">
             <span className="inline-block rounded bg-accent px-3 py-1 text-sm font-medium text-white">
               {featuredArticle.category.name}
             </span>
@@ -66,14 +72,14 @@ export const FeaturedArticle = () => {
             </span>
           </div>
         )}
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 max-w-2xl">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 max-w-2xl animate-fade-up [animation-delay:200ms]">
           {featuredArticle.title}
         </h1>
-        <p className="text-lg text-gray-200 mb-6 max-w-2xl">
+        <p className="text-lg text-gray-200 mb-6 max-w-2xl animate-fade-up [animation-delay:400ms]">
           {featuredArticle.excerpt}
         </p>
         <Button 
-          className="group bg-accent hover:bg-accent/90"
+          className="group bg-accent hover:bg-accent/90 animate-fade-up [animation-delay:600ms]"
           asChild
         >
           <Link to={`/article/${featuredArticle.slug}`}>
