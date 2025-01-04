@@ -1,83 +1,49 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import Fuse from 'fuse.js';
 
 interface SearchResult {
   slug: string;
   title: string;
   excerpt?: string;
-  category?: { name: string };
-  author?: { username: string };
+  category_name?: string;
+  author_username?: string;
 }
 
 export const useSearch = () => {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [fuse, setFuse] = useState<Fuse<any> | null>(null);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const { toast } = useToast();
 
-  const { data: articles } = useQuery({
-    queryKey: ["articles-for-search"],
+  // Only fetch search results when we have a query
+  const { isLoading } = useQuery({
+    queryKey: ["search", searchQuery],
     queryFn: async () => {
+      if (searchQuery.length < 2) {
+        setSearchResults([]);
+        return [];
+      }
+
       const { data, error } = await supabase
-        .from("articles")
-        .select(`
-          title,
-          slug,
-          excerpt,
-          content,
-          category:categories(name),
-          author:profiles(username)
-        `)
-        .eq('status', 'published');
+        .rpc('search_articles', { search_query: searchQuery });
 
       if (error) {
-        console.error("Error fetching articles:", error);
+        console.error("Error searching articles:", error);
         toast({
           variant: "destructive",
-          title: "Error fetching articles",
+          title: "Error searching articles",
           description: error.message
         });
         return [];
       }
 
-      return data || [];
+      setSearchResults(data || []);
+      return data;
     },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    enabled: searchQuery.length >= 2,
   });
-
-  useEffect(() => {
-    if (articles && articles.length > 0) {
-      const fuseInstance = new Fuse(articles, {
-        keys: [
-          { name: 'title', weight: 2 },
-          { name: 'excerpt', weight: 1.5 },
-          { name: 'content', weight: 1 },
-          { name: 'category.name', weight: 0.8 }
-        ],
-        threshold: 0.3,
-        distance: 100,
-        minMatchCharLength: 2
-      });
-      setFuse(fuseInstance);
-    }
-  }, [articles]);
-
-  useEffect(() => {
-    if (fuse && searchQuery.length >= 2) {
-      const results = fuse.search(searchQuery);
-      const formattedResults = results.map(result => ({
-        ...result.item,
-        score: result.score
-      }));
-      setSearchResults(formattedResults);
-    } else {
-      setSearchResults([]);
-    }
-  }, [searchQuery, fuse]);
 
   return {
     open,
@@ -85,5 +51,6 @@ export const useSearch = () => {
     searchQuery,
     setSearchQuery,
     searchResults,
+    isLoading
   };
 };

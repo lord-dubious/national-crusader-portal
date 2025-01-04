@@ -305,6 +305,20 @@ export type Database = {
         }
         Returns: unknown
       }
+      search_articles: {
+        Args: {
+          search_query: string
+        }
+        Returns: {
+          id: number
+          title: string
+          slug: string
+          excerpt: string
+          category_name: string
+          author_username: string
+          similarity: number
+        }[]
+      }
       set_limit: {
         Args: {
           "": number

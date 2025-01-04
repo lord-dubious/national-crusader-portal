@@ -12,7 +12,8 @@ export const HeaderSearch = () => {
     setOpen, 
     searchQuery, 
     setSearchQuery, 
-    searchResults 
+    searchResults,
+    isLoading 
   } = useSearch();
 
   const handleSelect = (item: any) => {
@@ -45,6 +46,7 @@ export const HeaderSearch = () => {
             results={searchResults}
             searchQuery={searchQuery}
             onSelect={handleSelect}
+            isLoading={isLoading}
           />
         </CommandList>
       </CommandDialog>
