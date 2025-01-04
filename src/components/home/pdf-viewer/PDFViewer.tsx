@@ -5,7 +5,6 @@ import { Maximize2 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PageNavigation } from "./PageNavigation";
 import { ExpandedView } from "./ExpandedView";
-import Script from '@/components/Script';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -25,7 +24,6 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
   const [expandedPageNumber, setExpandedPageNumber] = useState<number>(1);
   const [isOpen, setIsOpen] = useState(false);
   const [scale, setScale] = useState(1);
-  const [scriptsLoaded, setScriptsLoaded] = useState(false);
   const flipbookRef = useRef<HTMLDivElement>(null);
   const pdfUrl = supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl;
 
@@ -37,60 +35,51 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
     setScale(prevScale => Math.min(Math.max(0.5, prevScale + delta), 2.5));
   };
 
-  // Handle script loading
+  // Load scripts
   useEffect(() => {
-    let jQueryLoaded = false;
-    let turnJsLoaded = false;
-
-    const checkScriptsLoaded = () => {
-      if (jQueryLoaded && turnJsLoaded) {
-        setScriptsLoaded(true);
-      }
+    const loadScript = (src: string): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject();
+        document.body.appendChild(script);
+      });
     };
 
-    const jQueryScript = document.createElement('script');
-    jQueryScript.src = 'https://code.jquery.com/jquery-3.7.1.min.js';
-    jQueryScript.onload = () => {
-      jQueryLoaded = true;
-      checkScriptsLoaded();
-    };
-
-    const turnScript = document.createElement('script');
-    turnScript.src = 'https://cdn.jsdelivr.net/npm/turn.js@1.0.5/turn.min.js';
-    turnScript.onload = () => {
-      turnJsLoaded = true;
-      checkScriptsLoaded();
-    };
-
-    document.body.appendChild(jQueryScript);
-    document.body.appendChild(turnScript);
-
-    return () => {
-      document.body.removeChild(jQueryScript);
-      document.body.removeChild(turnScript);
-    };
-  }, []);
-
-  // Initialize turn.js after scripts and document are loaded
-  useEffect(() => {
-    if (scriptsLoaded && flipbookRef.current && numPages > 0) {
-      const $ = (window as any).$;
-      if ($) {
-        $(flipbookRef.current).turn({
-          width: 280,
-          height: 400,
-          autoCenter: true,
-          acceleration: true,
-          gradients: true,
-          elevation: 50,
-          when: {
-            turning: function(event: any, page: number) {
-              setPageNumber(page);
-            }
+    const initializeTurnJs = async () => {
+      try {
+        // First load jQuery
+        await loadScript('https://code.jquery.com/jquery-3.7.1.min.js');
+        // Then load turn.js
+        await loadScript('https://raw.githubusercontent.com/blasten/turn.js/master/turn.min.js');
+        
+        // Initialize turn.js after both scripts are loaded
+        if (flipbookRef.current && numPages > 0) {
+          const $ = (window as any).$;
+          if ($) {
+            $(flipbookRef.current).turn({
+              width: 280,
+              height: 400,
+              autoCenter: true,
+              acceleration: true,
+              gradients: true,
+              elevation: 50,
+              when: {
+                turning: function(event: any, page: number) {
+                  setPageNumber(page);
+                }
+              }
+            });
           }
-        });
+        }
+      } catch (error) {
+        console.error('Error loading scripts:', error);
       }
-    }
+    };
+
+    initializeTurnJs();
 
     return () => {
       const $ = (window as any).$;
@@ -98,7 +87,7 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
         $(flipbookRef.current).turn('destroy');
       }
     };
-  }, [scriptsLoaded, numPages]);
+  }, [numPages]);
 
   const changePage = (offset: number, isExpanded: boolean = false) => {
     if (isExpanded) {
