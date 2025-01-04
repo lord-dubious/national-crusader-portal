@@ -45,14 +45,14 @@ export const SearchResults = ({ results, isLoading, searchQuery, onSelect }: Sea
   }
 
   return (
-    <CommandGroup heading="Articles">
+    <CommandGroup heading="Articles" className="bg-background">
       {results.map((result) => (
         <Link 
           key={result.id} 
           to={`/article/${result.slug}`}
           onClick={onSelect}
         >
-          <CommandItem className="cursor-pointer">
+          <CommandItem className="cursor-pointer bg-background hover:bg-secondary">
             <div className="flex flex-col gap-1 w-full">
               <span className="font-medium text-foreground dark:text-white">
                 {result.title}
