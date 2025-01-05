@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const HeaderAuth = () => {
   const [session, setSession] = useState<any>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Get initial session
@@ -51,44 +53,46 @@ export const HeaderAuth = () => {
     await supabase.auth.signOut();
   };
 
-  return (
+  const authButtons = !session ? (
+    <>
+      <Button 
+        variant="outline" 
+        className="border-accent bg-black text-white hover:bg-accent hover:text-white transition-colors" 
+        asChild
+      >
+        <Link to="/signin">Sign In</Link>
+      </Button>
+      <Button 
+        className="bg-black border border-accent text-white hover:bg-accent hover:text-white transition-colors" 
+        asChild
+      >
+        <Link to="/signup">Sign Up</Link>
+      </Button>
+    </>
+  ) : (
     <div className="flex items-center gap-4">
-      <ThemeToggle />
-      {!session ? (
-        <>
-          <Button 
-            variant="outline" 
-            className="border-accent bg-black text-white hover:bg-accent hover:text-white transition-colors" 
-            asChild
-          >
-            <Link to="/signin">Sign In</Link>
-          </Button>
-          <Button 
-            className="bg-black border border-accent text-white hover:bg-accent hover:text-white transition-colors" 
-            asChild
-          >
-            <Link to="/signup">Sign Up</Link>
-          </Button>
-        </>
-      ) : (
-        <div className="flex items-center gap-4">
-          {userRole === 'admin' && (
-            <Button 
-              variant="outline"
-              className="border-accent bg-black text-white hover:bg-accent hover:text-white transition-colors"
-              asChild
-            >
-              <Link to="/admin">Admin Dashboard</Link>
-            </Button>
-          )}
-          <Button 
-            className="bg-black border border-accent text-white hover:bg-accent hover:text-white transition-colors"
-            onClick={handleSignOut}
-          >
-            Sign Out
-          </Button>
-        </div>
+      {userRole === 'admin' && (
+        <Button 
+          variant="outline"
+          className="border-accent bg-black text-white hover:bg-accent hover:text-white transition-colors"
+          asChild
+        >
+          <Link to="/admin">Admin Dashboard</Link>
+        </Button>
       )}
+      <Button 
+        className="bg-black border border-accent text-white hover:bg-accent hover:text-white transition-colors"
+        onClick={handleSignOut}
+      >
+        Sign Out
+      </Button>
+    </div>
+  );
+
+  return (
+    <div className={`flex items-center gap-4 ${isMobile ? 'hidden lg:flex' : ''}`}>
+      <ThemeToggle />
+      {authButtons}
     </div>
   );
 };
