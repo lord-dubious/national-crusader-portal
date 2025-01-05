@@ -69,7 +69,7 @@ export const DatabaseSettings = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-4">
-        <div className="flex items-center justify-between p-4 bg-secondary/80 backdrop-blur-sm rounded-lg border border-border">
+        <div className="flex items-center justify-between p-4 glass rounded-lg">
           <div className="flex items-center space-x-4">
             <Database className="h-6 w-6 text-accent" />
             <div>
@@ -89,13 +89,13 @@ export const DatabaseSettings = () => {
           </div>
         </div>
 
-        <div className="space-y-4 p-4 bg-secondary/80 backdrop-blur-sm rounded-lg border border-border">
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertTitle>Local Database Setup</AlertTitle>
-            <AlertDescription className="text-muted-foreground">
-              <p className="mb-2">This will set up your local Supabase instance with:</p>
-              <ul className="list-disc list-inside space-y-1 ml-2">
+        <div className="space-y-4 p-4 glass rounded-lg">
+          <Alert className="bg-secondary/50 border-accent/20">
+            <Info className="h-4 w-4 text-accent" />
+            <AlertTitle className="text-foreground">Local Database Setup</AlertTitle>
+            <AlertDescription>
+              <p className="mb-2 text-muted-foreground">This will set up your local Supabase instance with:</p>
+              <ul className="list-disc list-inside space-y-1 ml-2 text-muted-foreground">
                 <li>Database tables and relations</li>
                 <li>Row Level Security (RLS) policies</li>
                 <li>Search functionality</li>
@@ -111,7 +111,7 @@ export const DatabaseSettings = () => {
               placeholder="postgresql://postgres:your-password@localhost:54322/postgres"
               value={dbUrl}
               onChange={(e) => setDbUrl(e.target.value)}
-              className="bg-background border-border"
+              className="bg-background text-foreground border-border"
             />
             <p className="text-sm text-muted-foreground">
               The connection URL for your local Supabase instance's PostgreSQL database
