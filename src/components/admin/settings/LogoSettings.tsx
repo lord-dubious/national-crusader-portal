@@ -42,8 +42,11 @@ export const LogoSettings = () => {
 
   useEffect(() => {
     if (settings) {
+      // Validate logo_type before setting it
+      const logo_type = settings.logo_type === 'image' ? 'image' : 'text';
+      
       form.reset({
-        logo_type: settings.logo_type,
+        logo_type,
         logo_text: settings.logo_text || '',
         logo_text_color: settings.logo_text_color || '#000000',
         logo_image_url: settings.logo_image_url || '',

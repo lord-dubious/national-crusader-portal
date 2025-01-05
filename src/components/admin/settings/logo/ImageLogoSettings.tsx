@@ -2,7 +2,6 @@ import { FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { LogoSettingsFormValues } from "./types";
-import Image from "next/image";
 
 interface ImageLogoSettingsProps {
   form: UseFormReturn<LogoSettingsFormValues>;
