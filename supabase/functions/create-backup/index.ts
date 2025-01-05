@@ -41,9 +41,11 @@ serve(async (req) => {
       // For each table, get its data using pg_dump_table_data function
       for (const table of tables) {
         const tableName = table.table_name;
-        const { rows } = await connection.queryObject`
-          SELECT pg_dump_table_data(${tableName}::text) as table_data;
-        `;
+        console.log('Processing table:', tableName);
+        
+        // Use the format method to properly escape the table name
+        const query = `SELECT pg_dump_table_data($1) as table_data`;
+        const { rows } = await connection.queryObject(query, [tableName]);
         
         if (rows[0]?.table_data) {
           dumpContent += `-- Table: ${tableName}\n`;
