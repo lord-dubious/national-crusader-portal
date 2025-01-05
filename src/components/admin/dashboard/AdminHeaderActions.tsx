@@ -10,20 +10,16 @@ export const AdminHeaderActions = () => {
 
   const handleBackup = async () => {
     try {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const backupName = `backup-${timestamp}.sql`;
-      
-      const { data, error } = await supabase.storage
-        .from('db_backups')
-        .upload(backupName, '', {
-          contentType: 'application/sql'
-        });
+      // Call the Edge Function to create and store the backup
+      const { data, error } = await supabase.functions.invoke('create-backup', {
+        method: 'POST',
+      });
 
       if (error) throw error;
 
       toast({
-        title: "Backup initiated",
-        description: "Database backup has been initiated successfully.",
+        title: "Backup created successfully",
+        description: `Database backup has been created and stored as ${data.fileName}`,
       });
     } catch (error) {
       console.error('Backup error:', error);
