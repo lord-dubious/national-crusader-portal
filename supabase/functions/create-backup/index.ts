@@ -38,19 +38,53 @@ serve(async (req) => {
       // Initialize backup content
       let dumpContent = '-- Database backup\n\n';
 
-      // For each table, get its data using pg_dump_table_data function
+      // For each table, get its schema and data
       for (const table of tables) {
         const tableName = table.table_name;
         console.log('Processing table:', tableName);
+
+        // Get table schema
+        const { rows: columns } = await connection.queryObject`
+          SELECT column_name, data_type, is_nullable, column_default
+          FROM information_schema.columns
+          WHERE table_schema = 'public' AND table_name = ${tableName}
+          ORDER BY ordinal_position;
+        `;
+
+        // Get table data
+        const { rows: data } = await connection.queryObject`
+          SELECT * FROM ${tableName};
+        `;
+
+        dumpContent += `-- Table: ${tableName}\n`;
         
-        // Use the format method to properly escape the table name
-        const query = `SELECT pg_dump_table_data($1) as table_data`;
-        const { rows } = await connection.queryObject(query, [tableName]);
-        
-        if (rows[0]?.table_data) {
-          dumpContent += `-- Table: ${tableName}\n`;
-          dumpContent += rows[0].table_data;
-          dumpContent += '\n\n';
+        // Create table schema
+        let createTable = `CREATE TABLE IF NOT EXISTS ${tableName} (\n`;
+        columns.forEach((col: any, index: number) => {
+          createTable += `  ${col.column_name} ${col.data_type}`;
+          if (col.column_default) {
+            createTable += ` DEFAULT ${col.column_default}`;
+          }
+          if (col.is_nullable === 'NO') {
+            createTable += ' NOT NULL';
+          }
+          createTable += index < columns.length - 1 ? ',\n' : '\n';
+        });
+        createTable += ');\n\n';
+        dumpContent += createTable;
+
+        // Insert data
+        if (data.length > 0) {
+          const columnNames = Object.keys(data[0]).join(', ');
+          data.forEach((row: any) => {
+            const values = Object.values(row).map(value => 
+              value === null ? 'NULL' : 
+              typeof value === 'string' ? `'${value.replace(/'/g, "''")}'` : 
+              value
+            ).join(', ');
+            dumpContent += `INSERT INTO ${tableName} (${columnNames}) VALUES (${values});\n`;
+          });
+          dumpContent += '\n';
         }
       }
 
