@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
 const corsHeaders = {
@@ -47,6 +47,7 @@ serve(async (req) => {
       },
     );
   } catch (error) {
+    console.error('Backup error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
