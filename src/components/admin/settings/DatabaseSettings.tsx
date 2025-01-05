@@ -1,96 +1,84 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Info, Database } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
+import { Database, Info } from "lucide-react";
 
 export const DatabaseSettings = () => {
+  const [useLocalDb, setUseLocalDb] = useState(false);
   const [dbUrl, setDbUrl] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [useLocalDb, setUseLocalDb] = useState(
-    localStorage.getItem('supabaseUrl') === 'http://localhost:54321'
-  );
   const { toast } = useToast();
 
-  const handleInitializeDatabase = async () => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('initialize-local-db', {
-        body: { dbUrl }
-      });
+  useEffect(() => {
+    const savedUseLocalDb = localStorage.getItem("useLocalDb") === "true";
+    const savedDbUrl = localStorage.getItem("dbUrl") || "";
+    setUseLocalDb(savedUseLocalDb);
+    setDbUrl(savedDbUrl);
+  }, []);
 
-      if (error) throw error;
+  const handleToggleLocalDb = (checked: boolean) => {
+    setUseLocalDb(checked);
+    localStorage.setItem("useLocalDb", String(checked));
 
-      // Store the local database URL in localStorage
-      if (useLocalDb) {
-        localStorage.setItem('supabaseUrl', 'http://localhost:54321');
-        localStorage.setItem('supabaseAnonKey', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0');
-        
-        toast({
-          title: "Success",
-          description: "Local database settings saved. The page will reload to apply changes.",
-        });
+    toast({
+      title: checked ? "Using Local Database" : "Using Production Database",
+      description: checked
+        ? "Switched to local Supabase instance"
+        : "Switched to production Supabase instance",
+    });
 
-        // Reload the page to apply new database settings
-        setTimeout(() => window.location.reload(), 2000);
-      }
-    } catch (error: any) {
-      console.error('Error initializing database:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to initialize local database",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // Add a slight delay before reloading to ensure the toast is visible
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   };
 
-  const handleDatabaseToggle = (checked: boolean) => {
-    setUseLocalDb(checked);
-    if (!checked) {
-      // Reset to remote database
-      localStorage.removeItem('supabaseUrl');
-      localStorage.removeItem('supabaseAnonKey');
-      
+  const handleSaveDbUrl = () => {
+    if (!dbUrl) {
       toast({
-        title: "Success",
-        description: "Switched to remote database. The page will reload to apply changes.",
+        variant: "destructive",
+        title: "Error",
+        description: "Please enter a database URL",
       });
-
-      setTimeout(() => window.location.reload(), 2000);
+      return;
     }
+
+    localStorage.setItem("dbUrl", dbUrl);
+    toast({
+      title: "Database URL Saved",
+      description: "The database connection URL has been updated",
+    });
+
+    // Add a slight delay before reloading to ensure the toast is visible
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-4">
-        <div className="flex items-center justify-between p-4 glass rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-secondary/20 backdrop-blur-md rounded-lg border border-secondary/30">
           <div className="flex items-center space-x-4">
             <Database className="h-6 w-6 text-accent" />
             <div>
-              <h3 className="font-medium text-foreground">Database Connection</h3>
+              <h3 className="text-lg font-semibold text-foreground">Database Configuration</h3>
               <p className="text-sm text-muted-foreground">
-                {useLocalDb ? "Using local database" : "Using remote database"}
+                Toggle between local and production database
               </p>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="db-toggle" className="text-foreground">Use Local Database</Label>
-            <Switch
-              id="db-toggle"
-              checked={useLocalDb}
-              onCheckedChange={handleDatabaseToggle}
-            />
-          </div>
+          <Switch
+            checked={useLocalDb}
+            onCheckedChange={handleToggleLocalDb}
+            className="data-[state=checked]:bg-accent"
+          />
         </div>
 
-        <div className="space-y-4 p-4 glass rounded-lg">
-          <Alert className="bg-secondary/50 border-accent/20">
+        <div className="space-y-4 p-4 bg-secondary/20 backdrop-blur-md rounded-lg border border-secondary/30">
+          <Alert className="border-accent/20 bg-secondary/30">
             <Info className="h-4 w-4 text-accent" />
             <AlertTitle className="text-foreground">Local Database Setup</AlertTitle>
             <AlertDescription>
@@ -99,31 +87,33 @@ export const DatabaseSettings = () => {
                 <li>Database tables and relations</li>
                 <li>Row Level Security (RLS) policies</li>
                 <li>Search functionality</li>
-                <li>Required storage buckets</li>
+                <li>Initial seed data</li>
               </ul>
             </AlertDescription>
           </Alert>
 
           <div className="space-y-2">
-            <Label htmlFor="dbUrl" className="text-foreground">PostgreSQL Connection URL</Label>
+            <label htmlFor="dbUrl" className="text-sm font-medium text-foreground">
+              PostgreSQL Connection URL
+            </label>
             <Input
               id="dbUrl"
+              type="text"
               placeholder="postgresql://postgres:your-password@localhost:54322/postgres"
               value={dbUrl}
               onChange={(e) => setDbUrl(e.target.value)}
-              className="bg-background text-foreground border-border"
+              className="bg-background/50 text-foreground border-secondary/30"
             />
             <p className="text-sm text-muted-foreground">
               The connection URL for your local Supabase instance's PostgreSQL database
             </p>
           </div>
 
-          <Button 
-            onClick={handleInitializeDatabase} 
-            disabled={!dbUrl || isLoading}
+          <Button
+            onClick={handleSaveDbUrl}
             className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
           >
-            {isLoading ? "Initializing..." : "Initialize Local Database"}
+            Save Database URL
           </Button>
         </div>
       </div>
