@@ -27,23 +27,30 @@ serve(async (req) => {
     const connection = await pool.connect();
 
     try {
-      // Execute pg_dump using the raw query
-      const { rows } = await connection.queryObject`
-        SELECT 
-          table_schema || '.' || table_name as table_full_name,
-          pg_dump_table_data(table_schema || '.' || table_name) as table_data
+      // Get list of tables
+      const { rows: tables } = await connection.queryObject`
+        SELECT table_name 
         FROM information_schema.tables 
         WHERE table_schema = 'public'
         AND table_type = 'BASE TABLE';
       `;
 
-      // Combine all table data into a single SQL dump
-      const dumpContent = rows
-        .map((row) => {
-          const { table_full_name, table_data } = row;
-          return `-- Table: ${table_full_name}\n${table_data}\n\n`;
-        })
-        .join('\n');
+      // Initialize backup content
+      let dumpContent = '-- Database backup\n\n';
+
+      // For each table, get its data using pg_dump_table_data function
+      for (const table of tables) {
+        const tableName = table.table_name;
+        const { rows } = await connection.queryObject`
+          SELECT pg_dump_table_data(${tableName}::text) as table_data;
+        `;
+        
+        if (rows[0]?.table_data) {
+          dumpContent += `-- Table: ${tableName}\n`;
+          dumpContent += rows[0].table_data;
+          dumpContent += '\n\n';
+        }
+      }
 
       // Upload the backup to the storage bucket
       const { error: uploadError } = await supabaseClient.storage

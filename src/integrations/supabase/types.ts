@@ -305,6 +305,12 @@ export type Database = {
         }
         Returns: unknown
       }
+      pg_dump_table_data: {
+        Args: {
+          table_name: string
+        }
+        Returns: string
+      }
       search_articles: {
         Args: {
           search_query: string
