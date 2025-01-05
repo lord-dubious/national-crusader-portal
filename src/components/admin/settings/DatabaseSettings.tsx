@@ -69,18 +69,18 @@ export const DatabaseSettings = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-4">
-        <div className="flex items-center justify-between p-4 bg-card rounded-lg border">
+        <div className="flex items-center justify-between p-4 bg-secondary/80 backdrop-blur-sm rounded-lg border border-border">
           <div className="flex items-center space-x-4">
-            <Database className="h-6 w-6 text-primary" />
+            <Database className="h-6 w-6 text-accent" />
             <div>
-              <h3 className="font-medium">Database Connection</h3>
+              <h3 className="font-medium text-foreground">Database Connection</h3>
               <p className="text-sm text-muted-foreground">
                 {useLocalDb ? "Using local database" : "Using remote database"}
               </p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Label htmlFor="db-toggle">Use Local Database</Label>
+            <Label htmlFor="db-toggle" className="text-foreground">Use Local Database</Label>
             <Switch
               id="db-toggle"
               checked={useLocalDb}
@@ -89,44 +89,43 @@ export const DatabaseSettings = () => {
           </div>
         </div>
 
-        {useLocalDb && (
-          <div className="space-y-4 p-4 bg-card rounded-lg border">
-            <Alert variant="info" className="mb-4">
-              <Info className="h-4 w-4" />
-              <AlertTitle>Local Database Setup</AlertTitle>
-              <AlertDescription>
-                <p className="mb-2">This will set up your local Supabase instance with:</p>
-                <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>Database tables and relations</li>
-                  <li>Row Level Security (RLS) policies</li>
-                  <li>Search functionality</li>
-                  <li>Required storage buckets</li>
-                </ul>
-              </AlertDescription>
-            </Alert>
+        <div className="space-y-4 p-4 bg-secondary/80 backdrop-blur-sm rounded-lg border border-border">
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertTitle>Local Database Setup</AlertTitle>
+            <AlertDescription className="text-muted-foreground">
+              <p className="mb-2">This will set up your local Supabase instance with:</p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li>Database tables and relations</li>
+                <li>Row Level Security (RLS) policies</li>
+                <li>Search functionality</li>
+                <li>Required storage buckets</li>
+              </ul>
+            </AlertDescription>
+          </Alert>
 
-            <div className="space-y-2">
-              <Label htmlFor="dbUrl">PostgreSQL Connection URL</Label>
-              <Input
-                id="dbUrl"
-                placeholder="postgresql://postgres:your-password@localhost:54322/postgres"
-                value={dbUrl}
-                onChange={(e) => setDbUrl(e.target.value)}
-              />
-              <p className="text-sm text-muted-foreground">
-                The connection URL for your local Supabase instance's PostgreSQL database
-              </p>
-            </div>
-
-            <Button 
-              onClick={handleInitializeDatabase} 
-              disabled={!dbUrl || isLoading}
-              className="w-full"
-            >
-              {isLoading ? "Initializing..." : "Initialize Local Database"}
-            </Button>
+          <div className="space-y-2">
+            <Label htmlFor="dbUrl" className="text-foreground">PostgreSQL Connection URL</Label>
+            <Input
+              id="dbUrl"
+              placeholder="postgresql://postgres:your-password@localhost:54322/postgres"
+              value={dbUrl}
+              onChange={(e) => setDbUrl(e.target.value)}
+              className="bg-background border-border"
+            />
+            <p className="text-sm text-muted-foreground">
+              The connection URL for your local Supabase instance's PostgreSQL database
+            </p>
           </div>
-        )}
+
+          <Button 
+            onClick={handleInitializeDatabase} 
+            disabled={!dbUrl || isLoading}
+            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+          >
+            {isLoading ? "Initializing..." : "Initialize Local Database"}
+          </Button>
+        </div>
       </div>
     </div>
   );
