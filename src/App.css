@@ -61,3 +61,42 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* iOS Safari specific fixes */
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Fix for iOS Safari momentum scrolling */
+body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fix for iOS Safari tap highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fix for iOS Safari button styling */
+button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Fix for iOS Safari input styling */
+input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+
+/* Fix for iOS Safari select styling */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
