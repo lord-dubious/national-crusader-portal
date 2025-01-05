@@ -1,5 +1,6 @@
 import { LogoSettings } from "./settings/LogoSettings";
 import { SocialLinksSettings } from "./settings/SocialLinksSettings";
+import { DatabaseSettings } from "./settings/DatabaseSettings";
 
 export const SiteSettings = () => {
   return (
@@ -9,6 +10,7 @@ export const SiteSettings = () => {
         <div className="space-y-6">
           <LogoSettings />
           <SocialLinksSettings />
+          <DatabaseSettings />
         </div>
       </div>
     </div>
