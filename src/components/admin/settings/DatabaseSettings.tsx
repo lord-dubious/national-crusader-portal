@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 export const DatabaseSettings = () => {
   const [dbUrl, setDbUrl] = useState("");
@@ -23,6 +25,12 @@ export const DatabaseSettings = () => {
         title: "Success",
         description: "Local database initialized successfully",
       });
+
+      // Show a second toast for the storage buckets reminder
+      toast({
+        title: "Action Required",
+        description: "Don't forget to create the required storage buckets in your local Supabase instance",
+      });
     } catch (error) {
       console.error('Error initializing database:', error);
       toast({
@@ -41,9 +49,30 @@ export const DatabaseSettings = () => {
         <h3 className="text-lg font-medium text-white mb-4">Local Database Setup</h3>
         <p className="text-sm text-muted-foreground mb-4">
           Configure a local PostgreSQL database for development. This will create all necessary tables, 
-          storage buckets, and initial data.
+          functions, triggers, and RLS policies.
         </p>
       </div>
+
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          This will set up:
+          <ul className="list-disc list-inside mt-2 space-y-1">
+            <li>All database tables with proper relations</li>
+            <li>Search functionality and triggers</li>
+            <li>Row Level Security (RLS) policies</li>
+            <li>Required database functions</li>
+          </ul>
+          <p className="mt-2 font-medium">
+            Note: You'll need to manually create these storage buckets in your local Supabase instance:
+          </p>
+          <ul className="list-disc list-inside mt-1">
+            <li>media (public)</li>
+            <li>pdf_newspapers (public)</li>
+            <li>db_backups (private)</li>
+          </ul>
+        </AlertDescription>
+      </Alert>
 
       <div className="space-y-4">
         <div className="space-y-2">
