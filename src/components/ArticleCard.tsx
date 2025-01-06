@@ -8,9 +8,10 @@ interface ArticleCardProps {
   excerpt: string;
   imageUrl: string;
   slug?: string;
+  tags?: { id: number; name: string; slug: string }[];
 }
 
-export const ArticleCard = ({ category, title, excerpt, imageUrl, slug }: ArticleCardProps) => {
+export const ArticleCard = ({ category, title, excerpt, imageUrl, slug, tags }: ArticleCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
@@ -34,9 +35,21 @@ export const ArticleCard = ({ category, title, excerpt, imageUrl, slug }: Articl
             />
           </div>
           <div className="p-8 flex flex-col h-[calc(100%-40%)] bg-primary dark:bg-[#333333] group-hover:bg-[#F5F5F5] dark:group-hover:bg-[#444444] transition-colors duration-300">
-            <span className="inline-block rounded bg-accent/10 text-accent px-2.5 py-0.5 text-xs font-medium mb-3">
-              {category}
-            </span>
+            <div className="flex flex-wrap gap-2 mb-3">
+              <span className="inline-block rounded bg-accent/10 text-accent px-2.5 py-0.5 text-xs font-medium">
+                {category}
+              </span>
+              {tags?.map((tag) => (
+                <Link
+                  key={tag.id}
+                  to={`/tag/${tag.slug}`}
+                  className="inline-block rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-0.5 text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {tag.name}
+                </Link>
+              ))}
+            </div>
             <h3 className="text-xl font-semibold mb-3 text-[#111111] dark:text-[#F1F1F1] group-hover:text-accent transition-colors line-clamp-2">
               {title}
             </h3>

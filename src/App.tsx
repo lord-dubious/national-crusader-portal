@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import CategoryPage from "./pages/CategoryPage";
 import ArticlePage from "./pages/ArticlePage";
+import TagPage from "./pages/TagPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -31,6 +32,7 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/category/:slug" element={<CategoryPage />} />
             <Route path="/article/:slug" element={<ArticlePage />} />
+            <Route path="/tag/:slug" element={<TagPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/new-article" element={<AdminDashboard />} />
             <Route path="/admin/edit-article/:id" element={<AdminDashboard />} />
