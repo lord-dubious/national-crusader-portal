@@ -21,8 +21,9 @@ export const TrendingTags = () => {
             slug
           ),
           count: count(*)
-        `, { count: 'exact' })
-        .groupBy('tags.id, tags.name, tags.slug')
+        `)
+        .select('tags!inner(*), count(*)')
+        .group('tags.id')
         .order('count', { ascending: false })
         .limit(10);
       
