@@ -50,14 +50,16 @@ export const TagPage = () => {
           featured_image,
           slug,
           category:categories(name),
-          tags!article_tags(
-            id:tags(id),
-            name:tags(name),
-            slug:tags(slug)
+          tags:article_tags(
+            tag:tags(
+              id,
+              name,
+              slug
+            )
           )
         `)
         .eq("status", "published")
-        .eq("tags.id", tagData.id)
+        .eq("article_tags.tag_id", tagData.id)
         .order("published_at", { ascending: false });
 
       if (articlesError) {
@@ -70,8 +72,16 @@ export const TagPage = () => {
         return null;
       }
 
-      console.log("Fetched articles:", articlesData);
-      return { articles: articlesData, tag: tagData };
+      // Transform the nested tags data structure
+      const transformedArticles = articlesData.map(article => ({
+        ...article,
+        tags: article.tags
+          .map(tagItem => tagItem.tag)
+          .filter(tag => tag !== null)
+      }));
+
+      console.log("Fetched articles:", transformedArticles);
+      return { articles: transformedArticles, tag: tagData };
     },
     staleTime: 60 * 1000, // Cache for 1 minute
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
