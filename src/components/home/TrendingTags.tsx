@@ -15,14 +15,14 @@ export const TrendingTags = () => {
       const { data, error } = await supabase
         .from("article_tags")
         .select(`
-          tag:tags(
+          tags (
             id,
             name,
             slug
           ),
-          count:count(*)
-        `)
-        .group('tag')
+          count: count(*)
+        `, { count: 'exact' })
+        .groupBy('tags.id, tags.name, tags.slug')
         .order('count', { ascending: false })
         .limit(10);
       
@@ -38,7 +38,7 @@ export const TrendingTags = () => {
       // Transform and filter the data
       return data
         .map(item => ({
-          ...item.tag,
+          ...item.tags,
           count: item.count
         }))
         .filter(tag => tag.id !== null);
