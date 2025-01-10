@@ -13,7 +13,7 @@ export const TrendingTags = () => {
     queryFn: async () => {
       console.log("Fetching trending tags");
       const { data, error } = await supabase
-        .from("article_tags")
+        .from('article_tags')
         .select(`
           tags (
             id,
@@ -22,8 +22,7 @@ export const TrendingTags = () => {
           ),
           count: count(*)
         `)
-        .select('tags!inner(*), count(*)')
-        .groupBy('tags.id')
+        .select('tags!inner(*)')
         .order('count', { ascending: false })
         .limit(10);
       
