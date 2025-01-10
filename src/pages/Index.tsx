@@ -10,6 +10,7 @@ const FeaturedArticle = lazy(() => import("@/components/home/FeaturedArticle").t
 const TrendingSection = lazy(() => import("@/components/home/TrendingSection").then(mod => ({ default: mod.TrendingSection })));
 const NewspaperSection = lazy(() => import("@/components/home/NewspaperSection").then(mod => ({ default: mod.NewspaperSection })));
 const CategorySection = lazy(() => import("@/components/home/CategorySection").then(mod => ({ default: mod.CategorySection })));
+const TrendingTags = lazy(() => import("@/components/home/TrendingTags").then(mod => ({ default: mod.TrendingTags })));
 
 const Index = () => {
   const { data: categories, isLoading } = useQuery({
@@ -42,6 +43,16 @@ const Index = () => {
             </Suspense>
           </div>
           
+          <div className="py-8">
+            <Suspense 
+              fallback={
+                <Skeleton className="h-20 w-full rounded-lg animate-pulse" />
+              }
+            >
+              <TrendingTags />
+            </Suspense>
+          </div>
+
           <div className="py-12">
             <Suspense 
               fallback={
