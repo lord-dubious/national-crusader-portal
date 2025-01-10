@@ -5,6 +5,13 @@ import { Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 
+interface TagWithCount {
+  id: number;
+  name: string;
+  slug: string;
+  count: number;
+}
+
 export const TrendingTags = () => {
   const { toast } = useToast();
   
@@ -15,16 +22,14 @@ export const TrendingTags = () => {
       const { data, error } = await supabase
         .from('article_tags')
         .select(`
-          tags (
+          tag_id,
+          tags!inner (
             id,
             name,
             slug
-          ),
-          count: count(*)
+          )
         `)
-        .select('tags!inner(*)')
-        .order('count', { ascending: false })
-        .limit(10);
+        .order('tag_id', { ascending: false });
       
       if (error) {
         toast({
@@ -35,13 +40,24 @@ export const TrendingTags = () => {
         throw error;
       }
 
-      // Transform and filter the data
-      return data
-        .map(item => ({
-          ...item.tags,
-          count: item.count
-        }))
-        .filter(tag => tag.id !== null);
+      // Transform the data to count tag occurrences
+      const tagCounts = data.reduce((acc: { [key: string]: TagWithCount }, curr) => {
+        const tag = curr.tags;
+        if (!acc[tag.id]) {
+          acc[tag.id] = {
+            ...tag,
+            count: 1
+          };
+        } else {
+          acc[tag.id].count += 1;
+        }
+        return acc;
+      }, {});
+
+      // Convert to array and sort by count
+      return Object.values(tagCounts)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10);
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
