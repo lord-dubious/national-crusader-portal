@@ -23,7 +23,7 @@ export const TrendingTags = () => {
           count: count(*)
         `)
         .select('tags!inner(*), count(*)')
-        .group('tags.id')
+        .groupBy('tags.id')
         .order('count', { ascending: false })
         .limit(10);
       
