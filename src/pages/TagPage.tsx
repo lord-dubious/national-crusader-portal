@@ -1,128 +1,130 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { ArticleCard } from "@/components/ArticleCard";
 import { useToast } from "@/hooks/use-toast";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const TagPage = () => {
+export const TagPage = () => {
   const { slug } = useParams();
   const { toast } = useToast();
 
-  const { data: tag, isLoading: tagLoading } = useQuery({
-    queryKey: ["tag", slug],
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["tag-articles", slug],
     queryFn: async () => {
-      console.log("Fetching tag:", slug);
-      const { data, error } = await supabase
-        .from("tags")
-        .select("*")
-        .eq("slug", slug)
-        .single();
+      console.log("Fetching articles for tag:", slug);
       
-      if (error) {
-        toast({
-          title: "Error",
-          description: "Failed to load tag",
-          variant: "destructive",
-        });
-        throw error;
-      }
-      return data;
-    },
-  });
+      // First fetch the tag
+      const { data: tagData, error: tagError } = await supabase
+        .from("tags")
+        .select("id, name")
+        .eq("slug", slug)
+        .maybeSingle();
 
-  const { data: articles, isLoading: articlesLoading } = useQuery({
-    queryKey: ["tag-articles", tag?.id],
-    queryFn: async () => {
-      console.log("Fetching articles for tag:", tag?.id);
-      const { data, error } = await supabase
+      if (tagError) {
+        console.error("Tag fetch error:", tagError);
+        toast({
+          variant: "destructive",
+          title: "Error fetching tag",
+          description: tagError.message
+        });
+        return null;
+      }
+
+      if (!tagData) {
+        console.log("No tag found for slug:", slug);
+        return null;
+      }
+
+      console.log("Found tag:", tagData);
+
+      // Then fetch the articles
+      const { data: articlesData, error: articlesError } = await supabase
         .from("articles")
         .select(`
-          *,
-          category:categories(name)
+          id,
+          title,
+          excerpt,
+          featured_image,
+          slug,
+          category:categories(name),
+          tags!article_tags(
+            id:tags(id),
+            name:tags(name),
+            slug:tags(slug)
+          )
         `)
         .eq("status", "published")
-        .in("id", (
-          await supabase
-            .from("article_tags")
-            .select("article_id")
-            .eq("tag_id", tag.id)
-        ).data?.map(at => at.article_id) || [])
+        .eq("tags.id", tagData.id)
         .order("published_at", { ascending: false });
-      
-      if (error) {
+
+      if (articlesError) {
+        console.error("Articles fetch error:", articlesError);
         toast({
-          title: "Error",
-          description: "Failed to load articles",
           variant: "destructive",
+          title: "Error fetching articles",
+          description: articlesError.message
         });
-        throw error;
+        return null;
       }
-      return data;
+
+      console.log("Fetched articles:", articlesData);
+      return { articles: articlesData, tag: tagData };
     },
-    enabled: !!tag?.id,
+    staleTime: 60 * 1000, // Cache for 1 minute
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
-  if (tagLoading || articlesLoading) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 pt-16">
-          <div className="container mx-auto px-4 py-8">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-96 bg-gray-200 rounded"></div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (!tag) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 pt-16">
-          <div className="container mx-auto px-4 py-8">
-            <h1 className="text-4xl font-bold mb-8">Tag not found</h1>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  if (error) return null;
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 pt-16">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-4xl font-bold mb-8">Articles tagged with "{tag.name}"</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {articles?.map((article) => (
-              <ArticleCard
-                key={article.id}
-                category={article.category?.name || "Uncategorized"}
-                title={article.title}
-                excerpt={article.excerpt || ""}
-                imageUrl={article.featured_image || ""}
-                slug={article.slug}
-              />
-            ))}
-            {articles?.length === 0 && (
-              <p className="col-span-full text-center text-muted-foreground">
+      <main className="flex-1 container mx-auto px-4 py-8">
+        {isLoading ? (
+          <div className="space-y-8">
+            <Skeleton className="h-12 w-48" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-96" />
+              ))}
+            </div>
+          </div>
+        ) : data?.tag ? (
+          <>
+            <h1 className="text-3xl md:text-4xl font-bold mb-8 text-[#111111] dark:text-[#F1F1F1]">
+              Articles tagged with "{data.tag.name}"
+            </h1>
+            {data.articles?.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {data.articles.map((article) => (
+                  <ArticleCard
+                    key={article.id}
+                    category={article.category?.name || "Uncategorized"}
+                    title={article.title}
+                    excerpt={article.excerpt || ""}
+                    imageUrl={article.featured_image || ""}
+                    slug={article.slug}
+                    tags={article.tags}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-lg text-muted-foreground">
                 No articles found with this tag.
               </p>
             )}
+          </>
+        ) : (
+          <div className="text-center py-12">
+            <h1 className="text-2xl font-bold mb-4">Tag Not Found</h1>
+            <p className="text-muted-foreground">
+              The tag you're looking for doesn't exist.
+            </p>
           </div>
-        </div>
+        )}
       </main>
       <Footer />
     </div>
