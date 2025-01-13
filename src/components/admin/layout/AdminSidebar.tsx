@@ -20,24 +20,29 @@ export const AdminSidebar = () => {
   const { toast } = useToast();
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      navigate('/');
+      toast({
+        title: "Signed out successfully",
+        description: "You have been signed out of your account.",
+      });
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message,
       });
-      return;
     }
-    navigate('/');
-    toast({
-      title: "Signed out successfully",
-      description: "You have been signed out of your account.",
-    });
   };
 
   const handleNavigation = (url: string) => {
-    navigate(url);
+    // Ensure we're actually changing routes
+    if (location.pathname !== url) {
+      navigate(url);
+    }
   };
 
   return (
