@@ -39,6 +39,21 @@
     <!-- PWA specific -->
     <link rel="manifest" href="/manifest.webmanifest" />
 
+    <!-- Legacy browser support -->
+    <script>
+      var modernBrowser = (
+        'assign' in Object && 'Promise' in window &&
+        'from' in Array && 'symbol' in window
+      );
+
+      if (!modernBrowser) {
+        var scriptElement = document.createElement('script');
+        scriptElement.async = false;
+        scriptElement.src = '/polyfills.js';
+        document.head.appendChild(scriptElement);
+      }
+    </script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   </head>

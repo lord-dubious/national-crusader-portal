@@ -67,6 +67,7 @@ export default defineConfig(({ mode }) => ({
     sourcemap: mode === 'development',
     minify: mode === 'production',
     target: ['es2015', 'safari11'],
+    polyfillModulePreload: true,
     rollupOptions: {
       output: {
         manualChunks: {
