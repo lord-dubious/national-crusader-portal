@@ -4,6 +4,7 @@ import { RecentArticles } from "@/components/admin/dashboard/RecentArticles";
 import { UserManagement } from "@/components/admin/UserManagement";
 import { MediaLibrary } from "@/components/admin/MediaLibrary";
 import { CategoryManagement } from "@/components/admin/CategoryManagement";
+import { TagManagement } from "@/components/admin/TagManagement";
 import { SiteSettings } from "@/components/admin/SiteSettings";
 import { ArticleForm } from "@/components/admin/ArticleForm";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -25,6 +26,7 @@ export const AdminDashboard = () => {
     if (location.pathname === '/admin') return 'dashboard';
     if (location.pathname.includes('/admin/articles')) return 'articles';
     if (location.pathname.includes('/admin/categories')) return 'categories';
+    if (location.pathname.includes('/admin/tags')) return 'tags';
     if (location.pathname.includes('/admin/users')) return 'users';
     if (location.pathname.includes('/admin/media')) return 'media';
     if (location.pathname.includes('/admin/settings')) return 'settings';
@@ -69,6 +71,10 @@ export const AdminDashboard = () => {
 
               <TabsContent value="categories">
                 <CategoryManagement />
+              </TabsContent>
+
+              <TabsContent value="tags">
+                <TagManagement />
               </TabsContent>
 
               <TabsContent value="settings">
