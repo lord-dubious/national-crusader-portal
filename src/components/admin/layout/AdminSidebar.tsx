@@ -19,7 +19,7 @@ export const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { setOpen } = useSidebar();
+  const { isOpen, setOpen } = useSidebar();
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -40,11 +40,12 @@ export const AdminSidebar = () => {
 
   const handleNavigation = (url: string) => {
     navigate(url);
-    setOpen(false); // Close sidebar after navigation
+    // Remove this line to prevent auto-closing the sidebar
+    // setOpen(false);
   };
 
   return (
-    <Sidebar className="bg-[#222222] border-r border-[#333333]" collapsible="icon">
+    <Sidebar className="bg-[#222222] border-r border-[#333333]">
       <SidebarContent>
         <SidebarGroup>
           <div className="flex items-center justify-between px-4 py-2">
