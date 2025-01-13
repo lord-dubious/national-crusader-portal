@@ -39,6 +39,22 @@ export default defineConfig(({ mode }) => ({
             type: 'image/png'
           }
         ]
+      },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/api\.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 24 * 60 * 60 // 24 hours
+              }
+            }
+          }
+        ]
       }
     })
   ].filter(Boolean),
@@ -56,6 +72,10 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot'],
+          'query-vendor': ['@tanstack/react-query'],
+          'pdf-vendor': ['react-pdf', 'pdfjs-dist'],
+          'editor-vendor': ['@tiptap/react', '@tiptap/starter-kit', '@tiptap/extension-link', '@tiptap/extension-image'],
+          'utils-vendor': ['date-fns', 'clsx', 'class-variance-authority', 'tailwind-merge']
         },
       },
     },
