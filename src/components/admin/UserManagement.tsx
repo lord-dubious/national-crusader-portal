@@ -11,23 +11,38 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
 export const UserManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
 
-  const { data: users, isLoading } = useQuery({
+  const { data: users, isLoading, error, refetch } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const { data: profiles, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
+      try {
+        console.log("Fetching profiles...");
+        const { data: profiles, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      return profiles;
+        if (error) {
+          console.error("Error fetching profiles:", error);
+          throw error;
+        }
+
+        console.log("Fetched profiles:", profiles);
+        return profiles;
+      } catch (error) {
+        console.error("Failed to fetch profiles:", error);
+        throw error;
+      }
     },
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const updateRole = useMutation({
@@ -48,16 +63,35 @@ export const UserManagement = () => {
       });
     },
     onError: (error) => {
+      console.error("Error updating role:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to update user role",
       });
     },
     onSettled: () => {
       setLoading(false);
     },
   });
+
+  if (error) {
+    return (
+      <Alert variant="destructive" className="mb-4">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertDescription>
+          Failed to load users. Please try again.{" "}
+          <Button 
+            variant="link" 
+            className="text-white underline p-0 h-auto font-normal"
+            onClick={() => refetch()}
+          >
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   if (isLoading) {
     return <div className="text-white">Loading...</div>;
