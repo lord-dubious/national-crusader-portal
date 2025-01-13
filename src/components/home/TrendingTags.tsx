@@ -32,12 +32,17 @@ export const TrendingTags = () => {
         .order('tag_id', { ascending: false });
       
       if (error) {
+        console.error("Error fetching trending tags:", error);
         toast({
           variant: "destructive",
           title: "Error fetching trending tags",
           description: error.message
         });
         throw error;
+      }
+
+      if (!data) {
+        return [];
       }
 
       // Transform the data to count tag occurrences
