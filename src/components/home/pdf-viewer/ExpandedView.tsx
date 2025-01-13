@@ -46,10 +46,10 @@ export const ExpandedView = ({
       className="h-full w-full relative" 
       onWheel={handleWheel}
     >
-      {/* Exit button moved outside the controls div */}
+      {/* Moved the button to the top-right corner with increased z-index */}
       <button 
         onClick={onClose} 
-        className="absolute right-4 top-4 z-50 p-2 bg-black/50 text-white hover:bg-white/20 rounded-full transition-colors"
+        className="fixed right-6 top-6 z-50 p-2 bg-black/50 text-white hover:bg-white/20 rounded-full transition-colors"
         aria-label="Close PDF Viewer"
       >
         <X className="h-5 w-5" />
