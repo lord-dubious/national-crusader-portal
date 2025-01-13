@@ -5,7 +5,6 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -24,7 +23,7 @@ export default defineConfig(({ mode }) => ({
       modernPolyfills: true
     }),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.ico', 'og-image.png', 'placeholder.svg'],
       manifest: {
         name: 'National Crusader',
@@ -33,6 +32,9 @@ export default defineConfig(({ mode }) => ({
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
+        start_url: '/',
+        scope: '/',
+        orientation: 'portrait',
         icons: [
           {
             src: '/favicon.ico',
@@ -42,11 +44,17 @@ export default defineConfig(({ mode }) => ({
           {
             src: '/og-image.png',
             sizes: '1200x630',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           }
         ]
       },
+      devOptions: {
+        enabled: true,
+        type: 'module'
+      },
       workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB
         runtimeCaching: [
           {
@@ -57,10 +65,30 @@ export default defineConfig(({ mode }) => ({
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 24 * 60 * 60 // 24 hours
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/[^\/]+\.supabase\.co/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'supabase-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 24 * 60 * 60 // 24 hours
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
               }
             }
           }
-        ]
+        ],
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true
       }
     })
   ].filter(Boolean),

@@ -38,19 +38,21 @@
 
     <!-- PWA specific -->
     <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="apple-touch-icon" href="/favicon.ico" />
 
     <!-- Legacy browser support -->
     <script>
-      var modernBrowser = (
-        'assign' in Object && 'Promise' in window &&
-        'from' in Array && 'symbol' in window
-      );
-
-      if (!modernBrowser) {
-        var scriptElement = document.createElement('script');
-        scriptElement.async = false;
-        scriptElement.src = '/polyfills.js';
-        document.head.appendChild(scriptElement);
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(registration => {
+              console.log('ServiceWorker registration successful');
+            })
+            .catch(err => {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
       }
     </script>
 
