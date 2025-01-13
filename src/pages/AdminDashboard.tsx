@@ -33,57 +33,68 @@ export const AdminDashboard = () => {
     return 'dashboard';
   };
 
+  // Render article form for new/edit article routes
+  if (location.pathname === '/admin/new-article') {
+    return (
+      <AdminLayout>
+        <ArticleForm />
+      </AdminLayout>
+    );
+  }
+
+  if (articleId) {
+    return (
+      <AdminLayout>
+        <ArticleForm articleId={articleId} />
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout>
-      {location.pathname === '/admin/new-article' ? (
-        <ArticleForm />
-      ) : articleId ? (
-        <ArticleForm articleId={articleId} />
-      ) : (
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            {!isMobile && (
-              <h1 className="text-2xl md:text-3xl font-bold text-white">Admin Dashboard</h1>
-            )}
-            <AdminHeaderActions />
-          </div>
-
-          <Tabs defaultValue={getActiveTab()} className="w-full">
-            <AdminNavigationTabs />
-
-            <div className="mt-4 md:mt-8">
-              <TabsContent value="dashboard" className="space-y-4 md:space-y-8">
-                <DashboardStats />
-                <RecentArticles />
-              </TabsContent>
-
-              <TabsContent value="articles">
-                <ArticlesManagement />
-              </TabsContent>
-
-              <TabsContent value="users">
-                <UserManagement />
-              </TabsContent>
-
-              <TabsContent value="media">
-                <MediaLibrary />
-              </TabsContent>
-
-              <TabsContent value="categories">
-                <CategoryManagement />
-              </TabsContent>
-
-              <TabsContent value="tags">
-                <TagManagement />
-              </TabsContent>
-
-              <TabsContent value="settings">
-                <SiteSettings />
-              </TabsContent>
-            </div>
-          </Tabs>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          {!isMobile && (
+            <h1 className="text-2xl md:text-3xl font-bold text-white">Admin Dashboard</h1>
+          )}
+          <AdminHeaderActions />
         </div>
-      )}
+
+        <Tabs defaultValue={getActiveTab()} className="w-full">
+          <AdminNavigationTabs />
+
+          <div className="mt-4 md:mt-8">
+            <TabsContent value="dashboard" className="space-y-4 md:space-y-8">
+              <DashboardStats />
+              <RecentArticles />
+            </TabsContent>
+
+            <TabsContent value="articles">
+              <ArticlesManagement />
+            </TabsContent>
+
+            <TabsContent value="users">
+              <UserManagement />
+            </TabsContent>
+
+            <TabsContent value="media">
+              <MediaLibrary />
+            </TabsContent>
+
+            <TabsContent value="categories">
+              <CategoryManagement />
+            </TabsContent>
+
+            <TabsContent value="tags">
+              <TagManagement />
+            </TabsContent>
+
+            <TabsContent value="settings">
+              <SiteSettings />
+            </TabsContent>
+          </div>
+        </Tabs>
+      </div>
     </AdminLayout>
   );
 };
