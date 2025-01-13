@@ -8,14 +8,16 @@ import { TagManagement } from "@/components/admin/TagManagement";
 import { SiteSettings } from "@/components/admin/SiteSettings";
 import { ArticleForm } from "@/components/admin/ArticleForm";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AdminHeaderActions } from "@/components/admin/dashboard/AdminHeaderActions";
 import { AdminNavigationTabs } from "@/components/admin/dashboard/AdminNavigationTabs";
 import { ArticlesManagement } from "@/components/admin/ArticlesManagement";
+import { useEffect } from "react";
 
 export const AdminDashboard = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   // Extract article ID from URL if editing
@@ -31,6 +33,33 @@ export const AdminDashboard = () => {
     if (location.pathname.includes('/admin/media')) return 'media';
     if (location.pathname.includes('/admin/settings')) return 'settings';
     return 'dashboard';
+  };
+
+  // Handle tab changes
+  const handleTabChange = (value: string) => {
+    switch (value) {
+      case 'dashboard':
+        navigate('/admin');
+        break;
+      case 'articles':
+        navigate('/admin/articles');
+        break;
+      case 'users':
+        navigate('/admin/users');
+        break;
+      case 'media':
+        navigate('/admin/media');
+        break;
+      case 'categories':
+        navigate('/admin/categories');
+        break;
+      case 'tags':
+        navigate('/admin/tags');
+        break;
+      case 'settings':
+        navigate('/admin/settings');
+        break;
+    }
   };
 
   // Render article form for new/edit article routes
@@ -60,7 +89,7 @@ export const AdminDashboard = () => {
           <AdminHeaderActions />
         </div>
 
-        <Tabs defaultValue={getActiveTab()} className="w-full">
+        <Tabs defaultValue={getActiveTab()} onValueChange={handleTabChange} className="w-full">
           <AdminNavigationTabs />
 
           <div className="mt-4 md:mt-8">
