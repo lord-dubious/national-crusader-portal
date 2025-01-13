@@ -19,7 +19,6 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' && componentTagger(),
     legacy({
       targets: ['defaults', 'not IE 11'],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
       modernPolyfills: true
     }),
     VitePWA({
@@ -55,7 +54,7 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg}'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // Increased to 5MB
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\.*/i,
@@ -128,7 +127,6 @@ export default defineConfig(({ mode }) => ({
   build: {
     sourcemap: mode === 'development',
     minify: mode === 'production',
-    target: ['es2015', 'safari11'],
     polyfillModulePreload: true,
     rollupOptions: {
       output: {
