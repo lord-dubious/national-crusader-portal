@@ -13,7 +13,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { AdminHeaderActions } from "@/components/admin/dashboard/AdminHeaderActions";
 import { AdminNavigationTabs } from "@/components/admin/dashboard/AdminNavigationTabs";
 import { ArticlesManagement } from "@/components/admin/ArticlesManagement";
-import { useEffect } from "react";
 
 export const AdminDashboard = () => {
   const location = useLocation();
