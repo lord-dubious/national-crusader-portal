@@ -24,10 +24,12 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
   const [expandedPageNumber, setExpandedPageNumber] = useState<number>(1);
   const [isOpen, setIsOpen] = useState(false);
   const [scale, setScale] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const pdfUrl = supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl;
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
+    setIsLoading(false);
   };
 
   const changePage = (offset: number, isExpanded: boolean = false) => {
@@ -46,46 +48,37 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
     setScale(prevScale => Math.min(Math.max(0.5, prevScale + delta), 3));
   };
 
+  const handleOpen = () => {
+    setIsOpen(true);
+    setIsLoading(true);
+  };
+
   return (
     <div className="bg-[#0A0A0A] rounded-lg shadow-lg p-4 border border-accent/20 hover:border-accent/40 transition-colors">
       <div className="flex flex-col items-center">
         <div 
           className="relative group cursor-pointer" 
-          onClick={() => setIsOpen(true)}
+          onClick={handleOpen}
         >
-          <Document
-            file={pdfUrl}
-            onLoadSuccess={onDocumentLoadSuccess}
-            loading={
-              <div className="flex items-center justify-center h-[400px] text-white/80">
-                Loading PDF...
-              </div>
-            }
-            error={
-              <div className="flex items-center justify-center h-[400px] text-accent">
-                Error loading PDF!
-              </div>
-            }
-          >
-            <Page 
-              pageNumber={pageNumber} 
-              width={280}
-              renderTextLayer={false}
-              renderAnnotationLayer={false}
-            />
-          </Document>
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+          {/* Placeholder Image */}
+          <div className="w-[280px] h-[400px] bg-[#151515] rounded-lg overflow-hidden">
+            <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
+              <img 
+                src="/placeholder.svg" 
+                alt="Newspaper preview" 
+                className="w-24 h-24 mb-4 opacity-50"
+              />
+              <h4 className="text-white/90 text-sm font-medium mb-2">
+                {pdf.name.replace(/\.[^/.]+$/, "").replace(/-/g, " ")}
+              </h4>
+              <p className="text-white/50 text-xs">
+                Click to view newspaper
+              </p>
+            </div>
+          </div>
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center rounded-lg">
             <Maximize2 className="text-white/0 group-hover:text-white/90 transition-all transform scale-75 group-hover:scale-100" />
           </div>
-        </div>
-        
-        <div className="mt-3">
-          <PageNavigation
-            currentPage={pageNumber}
-            totalPages={numPages}
-            onPageChange={(offset) => changePage(offset)}
-            size="small"
-          />
         </div>
 
         <h3 className="mt-3 font-medium text-xs text-white/90 text-center">
@@ -98,16 +91,18 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-[95vw] h-[95vh] p-0 bg-[#0A0A0A] border-accent/20">
-          <ExpandedView
-            pdfUrl={pdfUrl}
-            pageNumber={expandedPageNumber}
-            numPages={numPages}
-            scale={scale}
-            onPageChange={(offset) => changePage(offset, true)}
-            onZoom={handleZoom}
-            onDocumentLoadSuccess={onDocumentLoadSuccess}
-            onClose={() => setIsOpen(false)} // Add onClose handler
-          />
+          {isOpen && (
+            <ExpandedView
+              pdfUrl={pdfUrl}
+              pageNumber={expandedPageNumber}
+              numPages={numPages}
+              scale={scale}
+              onPageChange={(offset) => changePage(offset, true)}
+              onZoom={handleZoom}
+              onDocumentLoadSuccess={onDocumentLoadSuccess}
+              onClose={() => setIsOpen(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
