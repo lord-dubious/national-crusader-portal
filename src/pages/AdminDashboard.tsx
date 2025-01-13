@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AdminHeaderActions } from "@/components/admin/dashboard/AdminHeaderActions";
 import { AdminNavigationTabs } from "@/components/admin/dashboard/AdminNavigationTabs";
+import { ArticlesManagement } from "@/components/admin/ArticlesManagement";
 
 export const AdminDashboard = () => {
   const location = useLocation();
@@ -18,6 +19,17 @@ export const AdminDashboard = () => {
 
   // Extract article ID from URL if editing
   const articleId = location.pathname.match(/\/admin\/edit-article\/(\d+)/)?.[1];
+
+  // Determine which tab should be active based on the current path
+  const getActiveTab = () => {
+    if (location.pathname === '/admin') return 'dashboard';
+    if (location.pathname.includes('/admin/articles')) return 'articles';
+    if (location.pathname.includes('/admin/categories')) return 'categories';
+    if (location.pathname.includes('/admin/users')) return 'users';
+    if (location.pathname.includes('/admin/media')) return 'media';
+    if (location.pathname.includes('/admin/settings')) return 'settings';
+    return 'dashboard';
+  };
 
   return (
     <AdminLayout>
@@ -34,13 +46,17 @@ export const AdminDashboard = () => {
             <AdminHeaderActions />
           </div>
 
-          <Tabs defaultValue="dashboard" className="w-full">
+          <Tabs defaultValue={getActiveTab()} className="w-full">
             <AdminNavigationTabs />
 
             <div className="mt-4 md:mt-8">
               <TabsContent value="dashboard" className="space-y-4 md:space-y-8">
                 <DashboardStats />
                 <RecentArticles />
+              </TabsContent>
+
+              <TabsContent value="articles">
+                <ArticlesManagement />
               </TabsContent>
 
               <TabsContent value="users">
