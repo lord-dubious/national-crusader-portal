@@ -24,7 +24,8 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
   const [expandedPageNumber, setExpandedPageNumber] = useState<number>(1);
   const [isOpen, setIsOpen] = useState(false);
   const [scale, setScale] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [previewError, setPreviewError] = useState(false);
   const pdfUrl = supabase.storage.from('pdf_newspapers').getPublicUrl(pdf.name).data.publicUrl;
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
@@ -60,21 +61,41 @@ export const PDFViewer = ({ pdf }: PDFViewerProps) => {
           className="relative group cursor-pointer" 
           onClick={handleOpen}
         >
-          {/* Placeholder Image */}
           <div className="w-[280px] h-[400px] bg-[#151515] rounded-lg overflow-hidden">
-            <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
-              <img 
-                src="/placeholder.svg" 
-                alt="Newspaper preview" 
-                className="w-24 h-24 mb-4 opacity-50"
-              />
-              <h4 className="text-white/90 text-sm font-medium mb-2">
-                {pdf.name.replace(/\.[^/.]+$/, "").replace(/-/g, " ")}
-              </h4>
-              <p className="text-white/50 text-xs">
-                Click to view newspaper
-              </p>
-            </div>
+            {previewError ? (
+              <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
+                <img 
+                  src="/placeholder.svg" 
+                  alt="Newspaper preview" 
+                  className="w-24 h-24 mb-4 opacity-50"
+                />
+                <h4 className="text-white/90 text-sm font-medium mb-2">
+                  {pdf.name.replace(/\.[^/.]+$/, "").replace(/-/g, " ")}
+                </h4>
+                <p className="text-white/50 text-xs">
+                  Click to view newspaper
+                </p>
+              </div>
+            ) : (
+              <Document
+                file={pdfUrl}
+                onLoadSuccess={onDocumentLoadSuccess}
+                onLoadError={() => setPreviewError(true)}
+                loading={
+                  <div className="flex items-center justify-center h-full">
+                    <div className="animate-pulse text-white/50">Loading preview...</div>
+                  </div>
+                }
+              >
+                <Page
+                  pageNumber={1}
+                  width={280}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                  className="rounded-lg"
+                />
+              </Document>
+            )}
           </div>
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center rounded-lg">
             <Maximize2 className="text-white/0 group-hover:text-white/90 transition-all transform scale-75 group-hover:scale-100" />
