@@ -19,7 +19,7 @@ export const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { isOpen, setOpen } = useSidebar();
+  const { open, setOpen } = useSidebar();
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
