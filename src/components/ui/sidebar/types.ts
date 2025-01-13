@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 
-export type SidebarContext = {
+export type SidebarContextType = {
   state: "expanded" | "collapsed";
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -11,18 +11,14 @@ export type SidebarContext = {
 };
 
 export type SidebarProviderProps = {
+  children: ReactNode;
   defaultOpen?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  className?: string;
-  style?: React.CSSProperties;
-  children: ReactNode;
 };
 
 export type SidebarProps = {
   side?: "left" | "right";
   variant?: "sidebar" | "floating" | "inset";
   collapsible?: "offcanvas" | "icon" | "none";
-  className?: string;
-  children?: ReactNode;
 };

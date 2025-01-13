@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { useSidebar } from "@/components/ui/sidebar";
 
 const menuItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
@@ -19,7 +18,6 @@ export const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { open, setOpen } = useSidebar();
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
