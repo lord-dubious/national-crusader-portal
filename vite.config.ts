@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     sourcemap: mode === 'development',
     minify: mode === 'production',
+    target: ['es2015', 'safari11'], // Added Safari 11+ support
     rollupOptions: {
       output: {
         manualChunks: {
@@ -33,6 +34,11 @@ export default defineConfig(({ mode }) => ({
           'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot'],
         },
       },
+    },
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'es2015', // Ensures better browser compatibility
     },
   },
 }));
