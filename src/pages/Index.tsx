@@ -4,6 +4,7 @@ import { Suspense, lazy } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { BreakingNewsTicker } from "@/components/home/BreakingNewsTicker";
 
 // Lazy load components for better initial load performance
 const FeaturedArticle = lazy(() => import("@/components/home/FeaturedArticle").then(mod => ({ default: mod.FeaturedArticle })));
@@ -31,6 +32,7 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
+      <BreakingNewsTicker />
       <main className="flex-1">
         <div className="container mx-auto px-4">
           <div className="py-8">

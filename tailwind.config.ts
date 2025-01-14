@@ -71,6 +71,10 @@ export default {
             transform: "translateY(0)",
           },
         },
+        marquee: {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.5s ease-out",
