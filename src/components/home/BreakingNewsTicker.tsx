@@ -6,6 +6,16 @@ export const BreakingNewsTicker = () => {
   const { data: breakingNews } = useQuery({
     queryKey: ["breaking-news"],
     queryFn: async () => {
+      console.log("Fetching breaking news articles");
+      const { data: tags } = await supabase
+        .from("tags")
+        .select("id")
+        .or('slug.eq.breaking-news,slug.eq.breaking-news-1');
+
+      if (!tags?.length) return [];
+      
+      const tagIds = tags.map(tag => tag.id);
+      
       const { data, error } = await supabase
         .from("articles")
         .select(`
@@ -13,18 +23,19 @@ export const BreakingNewsTicker = () => {
           title,
           slug,
           article_tags!inner(
-            tag_id,
-            tags!inner(
-              id,
-              slug
-            )
+            tag_id
           )
         `)
         .eq("status", "published")
-        .eq("article_tags.tags.slug", "breaking-news")
+        .in('article_tags.tag_id', tagIds)
         .order("published_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching breaking news:", error);
+        throw error;
+      }
+      
+      console.log("Breaking news articles:", data);
       return data;
     },
   });
