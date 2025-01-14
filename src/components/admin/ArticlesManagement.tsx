@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { Edit, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export const ArticlesManagement = () => {
   const navigate = useNavigate();
@@ -26,7 +27,14 @@ export const ArticlesManagement = () => {
         .select(`
           *,
           category:categories(name),
-          author:profiles(username)
+          author:profiles(username),
+          article_tags(
+            tag:tags(
+              id,
+              name,
+              slug
+            )
+          )
         `)
         .order("created_at", { ascending: false });
 
@@ -39,7 +47,15 @@ export const ArticlesManagement = () => {
         throw error;
       }
 
-      return data;
+      // Transform the nested tags data structure
+      const transformedData = data?.map(article => ({
+        ...article,
+        tags: article.article_tags
+          .map(tagItem => tagItem.tag)
+          .filter(tag => tag !== null)
+      }));
+
+      return transformedData;
     },
   });
 
@@ -85,6 +101,7 @@ export const ArticlesManagement = () => {
             <TableHead>Category</TableHead>
             <TableHead>Author</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Tags</TableHead>
             <TableHead>Published</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -96,6 +113,15 @@ export const ArticlesManagement = () => {
               <TableCell>{article.category?.name || "Uncategorized"}</TableCell>
               <TableCell>{article.author?.username || "Unknown"}</TableCell>
               <TableCell className="capitalize">{article.status}</TableCell>
+              <TableCell>
+                <div className="flex flex-wrap gap-1">
+                  {article.tags?.map((tag) => (
+                    <Badge key={tag.id} variant="secondary" className="text-xs">
+                      {tag.name}
+                    </Badge>
+                  ))}
+                </div>
+              </TableCell>
               <TableCell>
                 {article.published_at
                   ? format(new Date(article.published_at), "MMM d, yyyy")

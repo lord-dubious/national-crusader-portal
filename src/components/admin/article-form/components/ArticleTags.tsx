@@ -77,14 +77,21 @@ export const ArticleTags = () => {
         tagToAdd = data;
       }
 
-      const updatedTags = [...selectedTags, tagToAdd.id];
-      form.setValue("tags", updatedTags);
-      setNewTag("");
-      
-      toast({
-        title: "Success",
-        description: "Tag added successfully",
-      });
+      if (!selectedTags.includes(tagToAdd.id)) {
+        const updatedTags = [...selectedTags, tagToAdd.id];
+        form.setValue("tags", updatedTags);
+        setNewTag("");
+        
+        toast({
+          title: "Success",
+          description: "Tag added successfully",
+        });
+      } else {
+        toast({
+          title: "Info",
+          description: "This tag is already added to the article",
+        });
+      }
     } catch (error) {
       console.error("Error adding tag:", error);
       toast({
