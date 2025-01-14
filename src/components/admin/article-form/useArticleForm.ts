@@ -13,7 +13,8 @@ export const useArticleForm = (articleId?: string) => {
     queryFn: async () => {
       if (!articleId) return null;
 
-      const { data, error } = await supabase
+      // First, fetch the article with its relations
+      const { data: articleData, error: articleError } = await supabase
         .from("articles")
         .select(`
           *,
@@ -23,22 +24,41 @@ export const useArticleForm = (articleId?: string) => {
         .eq("id", parseInt(articleId, 10))
         .single();
 
-      if (error) {
+      if (articleError) {
         toast({
           title: "Error",
           description: "Failed to fetch article",
           variant: "destructive",
         });
-        throw error;
+        throw articleError;
       }
 
-      return data as Article;
+      // Then fetch the article's tags
+      const { data: tagData, error: tagError } = await supabase
+        .from("article_tags")
+        .select("tag_id")
+        .eq("article_id", parseInt(articleId, 10));
+
+      if (tagError) {
+        console.error("Error fetching article tags:", tagError);
+        return articleData;
+      }
+
+      // Extract tag IDs from the tag relations
+      const tags = tagData.map(t => t.tag_id);
+
+      // Return article data with tags
+      return {
+        ...articleData,
+        tags
+      } as Article;
     },
     enabled: !!articleId,
   });
 
   React.useEffect(() => {
     if (article) {
+      console.log("Setting article with tags:", article);
       setInitialValues({
         ...article,
         category_id: article.category?.id,
