@@ -29,8 +29,8 @@ export default defineConfig(({ mode }) => ({
     }),
     legacy({
       targets: [
-        'safari >= 13',
-        'ios >= 13',
+        'safari >= 12',
+        'ios >= 12',
         'defaults'
       ],
       additionalLegacyPolyfills: [
@@ -168,7 +168,7 @@ export default defineConfig(({ mode }) => ({
     cssCodeSplit: true,
     chunkSizeWarningLimit: 1000,
     reportCompressedSize: false,
-    target: ['es2015', 'safari13'],
+    target: ['es2015', 'safari12'],
     rollupOptions: {
       output: {
         manualChunks: {
