@@ -47,75 +47,6 @@ export default defineConfig(({ mode }) => ({
             purpose: 'any'
           }
         ]
-      },
-      devOptions: {
-        enabled: true,
-        type: 'module'
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg}'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/api\.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 24 * 60 * 60 // 24 hours
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            urlPattern: /^https:\/\/[^\/]+\.supabase\.co/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'supabase-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 24 * 60 * 60 // 24 hours
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif|webp)/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'image-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            urlPattern: /^https:\/\/images\.unsplash\.com/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'unsplash-image-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          }
-        ],
-        cleanupOutdatedCaches: true,
-        skipWaiting: true,
-        clientsClaim: true
       }
     })
   ].filter(Boolean),
@@ -130,6 +61,10 @@ export default defineConfig(({ mode }) => ({
     polyfillModulePreload: true,
     target: ['es2015', 'chrome63', 'edge79', 'firefox67', 'safari12'],
     rollupOptions: {
+      input: {
+        client: './src/entry-client.tsx',
+        server: './src/entry-server.tsx'
+      },
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
@@ -142,9 +77,9 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
-  optimizeDeps: {
-    esbuildOptions: {
-      target: 'es2015',
-    },
-  },
+  ssr: {
+    format: 'cjs',
+    target: 'node',
+    noExternal: ['react-router-dom']
+  }
 }));
