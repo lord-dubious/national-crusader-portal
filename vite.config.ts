@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' && componentTagger(),
     legacy({
-      targets: ['defaults', 'not IE 11'],
+      targets: ['chrome >= 63', 'edge >= 79', 'firefox >= 67', 'safari >= 12'],
     }),
     ssr({
       prerender: true,
