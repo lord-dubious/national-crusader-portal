@@ -1,17 +1,17 @@
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { Header } from "~/components/layout/Header";
+import { Footer } from "~/components/layout/Footer";
 import { Suspense, lazy } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "~/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { BreakingNewsTicker } from "@/components/home/BreakingNewsTicker";
+import { supabase } from "~/integrations/supabase/client";
+import { BreakingNewsTicker } from "~/components/home/BreakingNewsTicker";
 
 // Lazy load components for better initial load performance
-const FeaturedArticle = lazy(() => import("@/components/home/FeaturedArticle").then(mod => ({ default: mod.FeaturedArticle })));
-const TrendingSection = lazy(() => import("@/components/home/TrendingSection").then(mod => ({ default: mod.TrendingSection })));
-const NewspaperSection = lazy(() => import("@/components/home/NewspaperSection").then(mod => ({ default: mod.NewspaperSection })));
-const CategorySection = lazy(() => import("@/components/home/CategorySection").then(mod => ({ default: mod.CategorySection })));
-const TrendingTags = lazy(() => import("@/components/home/TrendingTags").then(mod => ({ default: mod.TrendingTags })));
+const FeaturedArticle = lazy(() => import("~/components/home/FeaturedArticle").then(mod => ({ default: mod.FeaturedArticle })));
+const TrendingSection = lazy(() => import("~/components/home/TrendingSection").then(mod => ({ default: mod.TrendingSection })));
+const NewspaperSection = lazy(() => import("~/components/home/NewspaperSection").then(mod => ({ default: mod.NewspaperSection })));
+const CategorySection = lazy(() => import("~/components/home/CategorySection").then(mod => ({ default: mod.CategorySection })));
+const TrendingTags = lazy(() => import("~/components/home/TrendingTags").then(mod => ({ default: mod.TrendingTags })));
 
 export { Page };
 
