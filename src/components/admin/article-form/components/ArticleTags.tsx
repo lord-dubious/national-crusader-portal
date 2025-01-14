@@ -157,14 +157,14 @@ export const ArticleTags = () => {
                 {existingTags && existingTags.length > 0 && (
                   <div className="space-y-2">
                     <div className="text-sm text-gray-400">Recently used tags:</div>
-                    <div className="flex flex-wrap gap-2 p-2 bg-[#2A2F3E]/50 rounded-md border border-gray-600">
+                    <div className="flex flex-wrap gap-2 p-2 bg-[#2A2F3E] rounded-md border border-gray-600">
                       {existingTags
                         .filter(tag => !selectedTags.includes(tag.id))
                         .map((tag) => (
                           <Badge
                             key={tag.id}
                             variant="outline"
-                            className="cursor-pointer bg-[#2A2F3E] hover:bg-accent hover:text-accent-foreground transition-colors"
+                            className="cursor-pointer bg-secondary text-white hover:bg-accent hover:text-accent-foreground transition-colors"
                             onClick={() => handleRecentTagClick(tag)}
                           >
                             {tag.name}
