@@ -28,8 +28,17 @@ export default defineConfig(({ mode }) => ({
       })
     }),
     legacy({
-      targets: ['defaults', 'not IE 11'],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      targets: [
+        'safari >= 13',
+        'ios >= 13',
+        'defaults'
+      ],
+      additionalLegacyPolyfills: [
+        'regenerator-runtime/runtime',
+        'core-js/features/array/find',
+        'core-js/features/array/includes',
+        'core-js/features/string/includes'
+      ],
       modernPolyfills: true,
       renderLegacyChunks: true,
       polyfills: [
@@ -38,6 +47,12 @@ export default defineConfig(({ mode }) => ({
         'es.object.assign',
         'es.promise.finally',
         'es.symbol',
+        'es.symbol.async-iterator',
+        'es.array.find',
+        'es.array.includes',
+        'es.string.includes',
+        'es.object.entries',
+        'es.object.from-entries'
       ]
     }),
     VitePWA({
@@ -153,6 +168,7 @@ export default defineConfig(({ mode }) => ({
     cssCodeSplit: true,
     chunkSizeWarningLimit: 1000,
     reportCompressedSize: false,
+    target: ['es2015', 'safari13'],
     rollupOptions: {
       output: {
         manualChunks: {
