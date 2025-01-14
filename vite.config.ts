@@ -30,8 +30,9 @@ export default defineConfig(({ mode }) => ({
     }),
     legacy({
       targets: [
-        'safari >= 12',
-        'ios >= 12',
+        'ie >= 11',
+        'safari >= 10',
+        'ios >= 10',
         'chrome >= 49',
         'firefox >= 52',
         'edge >= 18',
@@ -65,13 +66,35 @@ export default defineConfig(({ mode }) => ({
         'esnext.array.find-last',
         'esnext.array.find-last-index',
         'esnext.object.has-own',
-        'esnext.array.group'
+        'esnext.array.group',
+        'es.array.flat',
+        'es.array.flat-map',
+        'es.object.from-entries',
+        'es.string.match-all',
+        'es.string.replace-all',
+        'es.string.trim',
+        'es.string.trim-start',
+        'es.string.trim-end',
+        'web.immediate',
+        'web.dom-collections.iterator',
+        'web.queue-microtask',
+        'web.structured-clone'
       ],
       additionalLegacyPolyfills: [
         'regenerator-runtime/runtime',
         'core-js/features/array/find',
         'core-js/features/array/includes',
-        'core-js/features/string/includes'
+        'core-js/features/string/includes',
+        'core-js/features/string/pad-start',
+        'core-js/features/string/pad-end',
+        'core-js/features/promise',
+        'core-js/features/symbol',
+        'core-js/features/set',
+        'core-js/features/map',
+        'whatwg-fetch',
+        'intersection-observer',
+        'custom-event-polyfill',
+        'element-closest-polyfill'
       ]
     })
   ].filter(Boolean),
@@ -81,7 +104,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    target: ['es2015', 'safari12'],
+    target: ['es2015', 'safari10'],
     minify: process.env.NODE_ENV === 'production',
     sourcemap: process.env.NODE_ENV === 'development',
     rollupOptions: {
