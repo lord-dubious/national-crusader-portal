@@ -96,7 +96,7 @@ export const MobileMenu = () => {
                     className="text-base text-white hover:text-accent transition-colors"
                     onClick={() => setOpen(false)}
                   >
-                    Dashboard
+                    Admin Dashboard
                   </Link>
                 )}
                 <Link
