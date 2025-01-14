@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => ({
         quality: '80',
         w: '0;640;828;1200;1920',
         as: 'picture',
-        metadata: 'keep' // Preserve important metadata
+        metadata: 'keep'
       })
     }),
     legacy({
@@ -82,7 +82,7 @@ export default defineConfig(({ mode }) => ({
               cacheName: 'api-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 24 * 60 * 60 // 24 hours
+                maxAgeSeconds: 24 * 60 * 60
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -96,7 +96,7 @@ export default defineConfig(({ mode }) => ({
               cacheName: 'supabase-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 24 * 60 * 60 // 24 hours
+                maxAgeSeconds: 24 * 60 * 60
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -110,7 +110,7 @@ export default defineConfig(({ mode }) => ({
               cacheName: 'image-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
+                maxAgeSeconds: 7 * 24 * 60 * 60
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -124,7 +124,7 @@ export default defineConfig(({ mode }) => ({
               cacheName: 'unsplash-image-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
+                maxAgeSeconds: 7 * 24 * 60 * 60
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -149,10 +149,10 @@ export default defineConfig(({ mode }) => ({
     },
     minify: mode === 'production',
     sourcemap: mode === 'development',
-    assetsInlineLimit: 4096, // Inline small assets
-    cssCodeSplit: true, // Enable CSS code splitting
-    chunkSizeWarningLimit: 1000, // Increase chunk size warning limit
-    reportCompressedSize: false, // Disable compressed size reporting for faster builds
+    assetsInlineLimit: 4096,
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 1000,
+    reportCompressedSize: false,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -180,20 +180,20 @@ export default defineConfig(({ mode }) => ({
         chunkFileNames: 'chunks/[name]-[hash].js',
       },
     },
-    target: 'es2015', // Target modern browsers for better optimization
+    target: 'es2015',
   },
   optimizeDeps: {
     esbuildOptions: {
       target: 'es2015',
-      treeShaking: true, // Enable tree shaking
-      minify: true, // Minify dependencies
+      treeShaking: true,
+      minify: true,
     },
-    exclude: ['@tiptap/extension-image'], // Exclude problematic dependencies
+    exclude: ['@tiptap/extension-image'],
   },
   css: {
     devSourcemap: true,
     modules: {
-      scopeBehavior: 'local' as const, // Fix: Use type assertion to specify literal type
+      scopeBehavior: 'local'
     },
   },
 }));
