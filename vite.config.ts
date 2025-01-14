@@ -23,7 +23,8 @@ export default defineConfig(({ mode }) => ({
         format: 'webp',
         quality: '80',
         w: '0;640;828;1200;1920',
-        as: 'picture' 
+        as: 'picture',
+        metadata: 'keep' // Preserve important metadata
       })
     }),
     legacy({
@@ -148,7 +149,10 @@ export default defineConfig(({ mode }) => ({
     },
     minify: mode === 'production',
     sourcemap: mode === 'development',
-    assetsInlineLimit: 4096,
+    assetsInlineLimit: 4096, // Inline small assets
+    cssCodeSplit: true, // Enable CSS code splitting
+    chunkSizeWarningLimit: 1000, // Increase chunk size warning limit
+    reportCompressedSize: false, // Disable compressed size reporting for faster builds
     rollupOptions: {
       output: {
         manualChunks: {
@@ -172,12 +176,24 @@ export default defineConfig(({ mode }) => ({
           
           return `assets/${extType}/[name]-[hash][extname]`;
         },
+        entryFileNames: 'entries/[name]-[hash].js',
+        chunkFileNames: 'chunks/[name]-[hash].js',
       },
     },
+    target: 'es2015', // Target modern browsers for better optimization
   },
   optimizeDeps: {
     esbuildOptions: {
       target: 'es2015',
+      treeShaking: true, // Enable tree shaking
+      minify: true, // Minify dependencies
+    },
+    exclude: ['@tiptap/extension-image'], // Exclude problematic dependencies
+  },
+  css: {
+    devSourcemap: true,
+    modules: {
+      scopeBehavior: 'local',
     },
   },
 }));
