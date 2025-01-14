@@ -6,7 +6,7 @@ export const AdminNavigationTabs = () => {
   const isMobile = useIsMobile();
 
   return (
-    <TabsList className="w-full bg-[#222222] p-1 flex flex-wrap gap-1 overflow-x-auto">
+    <TabsList className="w-full bg-[#333333] p-1 flex flex-wrap gap-1 overflow-x-auto">
       <TabsTrigger 
         value="dashboard" 
         className="flex-1 md:flex-none min-w-[40px] flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
