@@ -128,6 +128,7 @@ export default defineConfig(({ mode }) => ({
     sourcemap: mode === 'development',
     minify: mode === 'production',
     polyfillModulePreload: true,
+    target: ['es2015', 'chrome63', 'edge79', 'firefox67', 'safari12'],
     rollupOptions: {
       output: {
         manualChunks: {
