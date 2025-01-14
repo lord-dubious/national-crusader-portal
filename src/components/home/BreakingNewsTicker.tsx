@@ -15,15 +15,14 @@ export const BreakingNewsTicker = () => {
           id,
           title,
           slug,
-          article_tags!inner(
-            tag_id,
-            tags!inner(
+          article_tags!inner (
+            tags!inner (
               slug
             )
           )
         `)
         .eq('status', 'published')
-        .eq('tags.slug', 'breaking-news')
+        .eq('article_tags.tags.slug', 'breaking-news')
         .order('published_at', { ascending: false });
 
       if (error) throw error;
@@ -39,7 +38,7 @@ export const BreakingNewsTicker = () => {
         {breakingNews.map((article, index) => (
           <button
             key={article.id}
-            onClick={() => navigate(`/articles/${article.slug}`)}
+            onClick={() => navigate(`/article/${article.slug}`)}
             className={cn(
               "px-4 font-semibold hover:underline cursor-pointer",
               index !== 0 && "border-l border-red-400"
