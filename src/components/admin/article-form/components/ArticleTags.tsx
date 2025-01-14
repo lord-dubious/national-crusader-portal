@@ -7,11 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { ArticleFormValues } from "../types";
 
 export const ArticleTags = () => {
   const [newTag, setNewTag] = useState("");
   const form = useFormContext<ArticleFormValues>();
+  const { toast } = useToast();
   const selectedTags = form.watch("tags") || [];
 
   const { data: existingTags } = useQuery({
@@ -27,30 +29,62 @@ export const ArticleTags = () => {
     },
   });
 
+  const createUniqueSlug = (name: string, existingTags: any[]) => {
+    let baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    let slug = baseSlug;
+    let counter = 1;
+    
+    while (existingTags?.some(tag => tag.slug === slug)) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+    
+    return slug;
+  };
+
   const handleAddTag = async () => {
     if (!newTag.trim()) return;
 
-    let tagToAdd = existingTags?.find(
-      (tag) => tag.name.toLowerCase() === newTag.toLowerCase()
-    );
+    try {
+      let tagToAdd = existingTags?.find(
+        (tag) => tag.name.toLowerCase() === newTag.toLowerCase()
+      );
 
-    if (!tagToAdd) {
-      const { data, error } = await supabase
-        .from("tags")
-        .insert([{ name: newTag, slug: newTag.toLowerCase().replace(/\s+/g, "-") }])
-        .select()
-        .single();
+      if (!tagToAdd) {
+        const uniqueSlug = createUniqueSlug(newTag, existingTags || []);
+        const { data, error } = await supabase
+          .from("tags")
+          .insert([{ name: newTag, slug: uniqueSlug }])
+          .select()
+          .single();
 
-      if (error) {
-        console.error("Error creating tag:", error);
-        return;
+        if (error) {
+          toast({
+            title: "Error",
+            description: "Failed to create tag",
+            variant: "destructive",
+          });
+          return;
+        }
+        tagToAdd = data;
       }
-      tagToAdd = data;
-    }
 
-    const updatedTags = [...selectedTags, tagToAdd.id];
-    form.setValue("tags", updatedTags);
-    setNewTag("");
+      const updatedTags = [...selectedTags, tagToAdd.id];
+      form.setValue("tags", updatedTags);
+      setNewTag("");
+      
+      toast({
+        title: "Success",
+        description: "Tag added successfully",
+      });
+    } catch (error) {
+      console.error("Error adding tag:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add tag",
+        variant: "destructive",
+      });
+    }
   };
 
   const removeTag = (tagId: number) => {
