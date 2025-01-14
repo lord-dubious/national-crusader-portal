@@ -193,7 +193,7 @@ export default defineConfig(({ mode }) => ({
   css: {
     devSourcemap: true,
     modules: {
-      scopeBehavior: 'local',
+      scopeBehavior: 'local' as const, // Fix: Use type assertion to specify literal type
     },
   },
 }));
