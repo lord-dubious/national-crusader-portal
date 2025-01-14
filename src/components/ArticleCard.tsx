@@ -56,7 +56,7 @@ export const ArticleCard = ({ category, title, excerpt, imageUrl, slug, tags }: 
               />
             </picture>
           </div>
-          <div className="p-8 flex flex-col h-[calc(100%-40%)] bg-transparent dark:bg-transparent group-hover:bg-[#F5F5F5] dark:group-hover:bg-[#444444] transition-colors duration-300">
+          <div className="p-8 flex flex-col h-[calc(100%-40%)] bg-transparent transition-colors duration-300">
             <div className="flex flex-wrap gap-2 mb-3">
               <span className="inline-block rounded bg-accent/10 text-accent px-2.5 py-0.5 text-xs font-medium">
                 {category}
