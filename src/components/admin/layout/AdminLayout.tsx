@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -35,7 +35,7 @@ const getBreadcrumbTitle = (path: string) => {
   }
 };
 
-export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+export const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -163,7 +163,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
             </Breadcrumb>
           </div>
           <div className="max-w-[1400px] mx-auto">
-            {children}
+            <Outlet />
           </div>
         </main>
       </div>
