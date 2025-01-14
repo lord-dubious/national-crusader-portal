@@ -39,9 +39,7 @@ export const AdminSidebar = () => {
   };
 
   const handleNavigation = (url: string) => {
-    if (location.pathname !== url) {
-      navigate(url);
-    }
+    navigate(url);
   };
 
   return (
