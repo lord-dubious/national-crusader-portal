@@ -30,11 +30,13 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
       featured_image: "",
       is_featured: false,
       author_id: "",
+      tags: [],
     },
   });
 
   React.useEffect(() => {
     if (initialValues) {
+      console.log("Setting initial values:", initialValues);
       form.reset(initialValues);
     }
   }, [initialValues, form]);
@@ -61,10 +63,7 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
         published_at: values.status === "published" ? new Date().toISOString() : null,
       };
 
-      console.log("Saving article data:", articleData);
-
       if (articleId) {
-        console.log("Updating article with ID:", articleId);
         const { error: updateError } = await supabase
           .from("articles")
           .update(articleData)
@@ -80,14 +79,45 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
           return;
         }
 
+        // Update article tags
+        if (values.tags && values.tags.length > 0) {
+          // First, remove existing tags
+          const { error: deleteError } = await supabase
+            .from("article_tags")
+            .delete()
+            .eq("article_id", parseInt(articleId, 10));
+
+          if (deleteError) {
+            console.error("Error removing old tags:", deleteError);
+            return;
+          }
+
+          // Then, insert new tags
+          const tagRelations = values.tags.map((tagId) => ({
+            article_id: parseInt(articleId, 10),
+            tag_id: tagId,
+          }));
+
+          const { error: insertError } = await supabase
+            .from("article_tags")
+            .insert(tagRelations);
+
+          if (insertError) {
+            console.error("Error inserting new tags:", insertError);
+            return;
+          }
+        }
+
         toast({
           title: "Success",
           description: "Article updated successfully",
         });
       } else {
-        const { error: createError } = await supabase
+        const { data: newArticle, error: createError } = await supabase
           .from("articles")
-          .insert([articleData]);
+          .insert([articleData])
+          .select()
+          .single();
 
         if (createError) {
           console.error("Error creating article:", createError);
@@ -97,6 +127,23 @@ export const ArticleForm = ({ articleId }: ArticleFormProps) => {
             variant: "destructive",
           });
           return;
+        }
+
+        // Insert article tags for new article
+        if (values.tags && values.tags.length > 0 && newArticle) {
+          const tagRelations = values.tags.map((tagId) => ({
+            article_id: newArticle.id,
+            tag_id: tagId,
+          }));
+
+          const { error: tagError } = await supabase
+            .from("article_tags")
+            .insert(tagRelations);
+
+          if (tagError) {
+            console.error("Error adding tags:", tagError);
+            return;
+          }
         }
 
         toast({
