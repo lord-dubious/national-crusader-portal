@@ -38,6 +38,12 @@ export const AdminSidebar = () => {
     }
   };
 
+  const handleNavigation = (url: string) => {
+    if (location.pathname !== url) {
+      navigate(url);
+    }
+  };
+
   return (
     <Sidebar className="bg-[#222222] border-r border-[#333333]">
       <SidebarContent>
@@ -51,16 +57,15 @@ export const AdminSidebar = () => {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
-                    asChild
+                    onClick={() => handleNavigation(item.url)}
                     className={cn(
                       "flex items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-accent transition-colors",
                       location.pathname === item.url && "bg-accent"
                     )}
+                    tooltip={item.title}
                   >
-                    <button onClick={() => navigate(item.url)}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </button>
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
