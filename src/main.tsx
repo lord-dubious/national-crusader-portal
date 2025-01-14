@@ -1,4 +1,5 @@
-import './index.css';
+import { createRoot } from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
 
-// This file is now just importing styles
-// The actual rendering is handled by entry-client.tsx and entry-server.tsx
+createRoot(document.getElementById("root")!).render(<App />);

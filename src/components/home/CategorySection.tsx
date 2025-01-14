@@ -1,16 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "~/integrations/supabase/client";
-import { useToast } from "~/hooks/use-toast";
-import { Button } from "~/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { ArticleCard } from "~/components/ArticleCard";
+import { ArticleCard } from "@/components/ArticleCard";
 import { Link } from "react-router-dom";
 
-interface CategorySectionProps {
-  categorySlug: string;
-}
-
-export const CategorySection = ({ categorySlug }: CategorySectionProps) => {
+export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
   const { toast } = useToast();
 
   const { data: articles, error, isLoading } = useQuery({

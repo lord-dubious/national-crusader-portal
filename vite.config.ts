@@ -4,7 +4,6 @@ import legacy from "@vitejs/plugin-legacy";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
-import ssr from 'vite-plugin-ssr/plugin';
 
 export default defineConfig(({ mode }) => ({
   server: {
@@ -19,12 +18,8 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' && componentTagger(),
     legacy({
-      targets: ['chrome >= 63', 'edge >= 79', 'firefox >= 67', 'safari >= 12'],
-    }),
-    ssr({
-      prerender: true,
-      includeAssetsImportedByServer: true,
-      baseAssets: '/public'
+      targets: ['defaults', 'not IE 11'],
+      modernPolyfills: true
     }),
     VitePWA({
       registerType: 'prompt',
@@ -126,15 +121,13 @@ export default defineConfig(({ mode }) => ({
   ].filter(Boolean),
   resolve: {
     alias: {
-      '~': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
   build: {
-    modulePreload: {
-      polyfill: true
-    },
     sourcemap: mode === 'development',
     minify: mode === 'production',
+    polyfillModulePreload: true,
     target: ['es2015', 'chrome63', 'edge79', 'firefox67', 'safari12'],
     rollupOptions: {
       output: {
