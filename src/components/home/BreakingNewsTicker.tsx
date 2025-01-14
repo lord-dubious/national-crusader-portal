@@ -25,7 +25,10 @@ export const BreakingNewsTicker = () => {
         .eq("article_tags.tags.slug", "breaking-news")
         .order("published_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching breaking news:", error);
+        throw error;
+      }
       console.log("Breaking news data:", data);
       return data;
     },
@@ -37,7 +40,7 @@ export const BreakingNewsTicker = () => {
   }
 
   return (
-    <div className="w-full bg-red-600 text-white py-3 overflow-hidden shadow-md">
+    <div className="fixed top-16 left-0 right-0 z-50 w-full bg-red-600 text-white py-3 shadow-md">
       <div className="container mx-auto px-4 flex items-center">
         <div className="flex-shrink-0 flex items-center mr-4">
           <AlertCircle className="w-5 h-5 mr-2" />
@@ -49,7 +52,7 @@ export const BreakingNewsTicker = () => {
               <Link
                 key={article.id}
                 to={`/article/${article.slug}`}
-                className="inline-block hover:underline"
+                className="inline-block hover:underline text-white"
               >
                 <span className="mx-4">{article.title}</span>
                 {index < breakingNews.length - 1 && (
