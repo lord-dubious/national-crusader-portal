@@ -1,5 +1,5 @@
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutDashboard, Users, Image, FolderTree, Settings, Tag } from "lucide-react";
+import { LayoutDashboard, Users, Image, FolderTree, Settings } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export const AdminNavigationTabs = () => {
@@ -34,13 +34,6 @@ export const AdminNavigationTabs = () => {
       >
         <FolderTree className="h-4 w-4" />
         <span className={isMobile ? "hidden" : "inline"}>Categories</span>
-      </TabsTrigger>
-      <TabsTrigger 
-        value="tags" 
-        className="flex-1 md:flex-none min-w-[40px] flex items-center gap-2 data-[state=active]:bg-[#DC2626] data-[state=active]:text-white hover:bg-[#DC2626]/70"
-      >
-        <Tag className="h-4 w-4" />
-        <span className={isMobile ? "hidden" : "inline"}>Tags</span>
       </TabsTrigger>
       <TabsTrigger 
         value="settings" 
