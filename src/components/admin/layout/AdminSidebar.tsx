@@ -51,7 +51,7 @@ export const AdminSidebar = () => {
         <SidebarGroup>
           <div className="flex items-center justify-between px-4 py-2">
             <SidebarGroupLabel className="text-[#8E9196]">Admin Panel</SidebarGroupLabel>
-            <SidebarTrigger className="text-white hover:text-accent fixed right-4 z-50" />
+            <SidebarTrigger className="text-white hover:text-accent left-4 z-50" />
           </div>
           <SidebarGroupContent>
             <SidebarMenu>
