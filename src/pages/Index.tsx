@@ -10,7 +10,7 @@ export const Index = () => {
       <BreakingNewsTicker />
       <FeaturedArticle />
       <TrendingSection />
-      <CategorySection />
+      <CategorySection categorySlug="politics" />
       <NewspaperSection />
     </div>
   );
