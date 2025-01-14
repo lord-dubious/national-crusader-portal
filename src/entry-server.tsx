@@ -4,6 +4,7 @@ import { StaticRouter } from 'react-router-dom/server'
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import App from './App'
+import { dehydrate } from '@tanstack/react-query'
 
 export function render(url: string) {
   // Create a new QueryClient for each render
@@ -12,6 +13,7 @@ export function render(url: string) {
       queries: {
         retry: 1,
         refetchOnWindowFocus: false,
+        suspense: true, // Enable suspense mode
       },
     },
   })
@@ -28,8 +30,8 @@ export function render(url: string) {
     </React.StrictMode>
   )
 
-  // Serialize the query state
-  const dehydratedState = JSON.stringify(queryClient.getQueryData([]))
+  // Properly dehydrate the queryClient state
+  const dehydratedState = dehydrate(queryClient)
 
-  return { html, state: dehydratedState }
+  return { html, state: JSON.stringify(dehydratedState) }
 }
