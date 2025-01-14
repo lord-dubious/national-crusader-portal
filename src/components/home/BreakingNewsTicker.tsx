@@ -12,9 +12,15 @@ export const BreakingNewsTicker = () => {
         .select("id")
         .or('slug.eq.breaking-news,slug.eq.breaking-news-1');
 
-      if (!tags?.length) return [];
+      console.log("Found breaking news tags:", tags);
+      
+      if (!tags?.length) {
+        console.log("No breaking news tags found");
+        return [];
+      }
       
       const tagIds = tags.map(tag => tag.id);
+      console.log("Tag IDs to search for:", tagIds);
       
       const { data, error } = await supabase
         .from("articles")
@@ -40,24 +46,27 @@ export const BreakingNewsTicker = () => {
     },
   });
 
-  if (!breakingNews?.length) return null;
-
+  // Remove the conditional rendering to see if the component structure is correct
   return (
-    <div className="bg-accent text-accent-foreground py-2 overflow-hidden">
+    <div className="bg-red-600 text-white py-2 overflow-hidden">
       <div className="animate-[marquee_20s_linear_infinite] whitespace-nowrap">
-        {breakingNews.map((article, index) => (
-          <Link
-            key={article.id}
-            to={`/article/${article.slug}`}
-            className="inline-block mx-4"
-          >
-            <span className="font-bold mr-2">BREAKING NEWS:</span>
-            {article.title}
-            {index < breakingNews.length - 1 && (
-              <span className="mx-4">•</span>
-            )}
-          </Link>
-        ))}
+        {breakingNews && breakingNews.length > 0 ? (
+          breakingNews.map((article, index) => (
+            <Link
+              key={article.id}
+              to={`/article/${article.slug}`}
+              className="inline-block mx-4"
+            >
+              <span className="font-bold mr-2">BREAKING NEWS:</span>
+              {article.title}
+              {index < breakingNews.length - 1 && (
+                <span className="mx-4">•</span>
+              )}
+            </Link>
+          ))
+        ) : (
+          <span className="inline-block mx-4">No breaking news at this time</span>
+        )}
       </div>
     </div>
   );
