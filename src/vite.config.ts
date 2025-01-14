@@ -46,7 +46,16 @@ export default defineConfig(({ mode }) => ({
         'core-js/features/object/assign',
         'core-js/features/symbol'
       ],
-      modernPolyfills: true,
+      modernPolyfills: [
+        'es.array.iterator',
+        'es.promise',
+        'es.object.assign',
+        'es.promise.finally',
+        'es.symbol',
+        'es.array.find',
+        'es.array.includes',
+        'es.string.includes'
+      ],
       renderLegacyChunks: true,
       polyfills: [
         'es.array.iterator',
