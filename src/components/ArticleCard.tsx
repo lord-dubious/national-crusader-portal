@@ -19,7 +19,7 @@ export const ArticleCard = ({ category, title, excerpt, imageUrl, slug, tags }: 
       to={slug ? `/article/${slug}` : "#"} 
       className="block h-full"
     >
-      <Card className="group h-full cursor-pointer animate-fade-up bg-primary dark:bg-[#333333] shadow-md hover:shadow-xl transition-all duration-300 hover:translate-y-[-2px]">
+      <Card className="group h-full cursor-pointer animate-fade-up bg-primary dark:bg-[#333333] shadow-md hover:shadow-xl transition-all duration-300 hover:translate-y-[-2px] relative">
         <CardContent className="p-0 h-full">
           <div className="aspect-[16/10] w-full overflow-hidden bg-muted">
             <picture>
@@ -56,7 +56,7 @@ export const ArticleCard = ({ category, title, excerpt, imageUrl, slug, tags }: 
               />
             </picture>
           </div>
-          <div className="p-8 flex flex-col h-[calc(100%-40%)] bg-primary dark:bg-[#333333] group-hover:bg-[#F5F5F5] dark:group-hover:bg-[#444444] transition-colors duration-300">
+          <div className="p-8 flex flex-col h-[calc(100%-40%)] bg-transparent dark:bg-transparent group-hover:bg-[#F5F5F5] dark:group-hover:bg-[#444444] transition-colors duration-300">
             <div className="flex flex-wrap gap-2 mb-3">
               <span className="inline-block rounded bg-accent/10 text-accent px-2.5 py-0.5 text-xs font-medium">
                 {category}
