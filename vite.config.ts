@@ -160,10 +160,16 @@ export default defineConfig(({ mode }) => ({
           'utils-vendor': ['date-fns', 'clsx', 'class-variance-authority', 'tailwind-merge']
         },
         assetFileNames: (assetInfo) => {
-          let extType = assetInfo.name.split('.').at(1);
+          if (!assetInfo.name) return 'assets/[name]-[hash][extname]';
+          
+          const extArray = assetInfo.name.split('.');
+          const ext = extArray.length > 1 ? extArray.pop() : '';
+          let extType = ext || '';
+          
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
             extType = 'img';
           }
+          
           return `assets/${extType}/[name]-[hash][extname]`;
         },
       },
