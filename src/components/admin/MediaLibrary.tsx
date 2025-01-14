@@ -9,17 +9,19 @@ import { useToast } from "@/hooks/use-toast";
 
 interface MediaLibraryProps {
   onSelect?: (url: string) => void;
+  type?: 'image' | 'pdf';
+  bucketName?: string;
 }
 
-export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
+export const MediaLibrary = ({ onSelect, type = 'image', bucketName = 'media' }: MediaLibraryProps) => {
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
 
   const { data: mediaFiles, refetch } = useQuery({
-    queryKey: ["media-files"],
+    queryKey: ["media-files", bucketName],
     queryFn: async () => {
       const { data, error } = await supabase.storage
-        .from('media')
+        .from(bucketName)
         .list();
       
       if (error) throw error;
@@ -34,11 +36,11 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
       if (!file) return;
 
       const fileExt = file.name.split('.').pop();
-      const filePath = `${Math.random()}.${fileExt}`;
+      const fileName = `${file.name.split('.')[0]}_${Math.random()}.${fileExt}`;
 
       const { error } = await supabase.storage
-        .from('media')
-        .upload(filePath, file);
+        .from(bucketName)
+        .upload(fileName, file);
 
       if (error) throw error;
 
@@ -61,7 +63,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
   const deleteFile = async (path: string) => {
     try {
       const { error } = await supabase.storage
-        .from('media')
+        .from(bucketName)
         .remove([path]);
 
       if (error) throw error;
@@ -82,7 +84,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
 
   const handleSelect = (file: any) => {
     if (onSelect) {
-      const url = supabase.storage.from('media').getPublicUrl(file.name).data.publicUrl;
+      const url = supabase.storage.from(bucketName).getPublicUrl(file.name).data.publicUrl;
       onSelect(url);
     }
   };
@@ -92,7 +94,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
           <Image className="h-5 w-5 text-white" />
-          Media Library
+          {type === 'pdf' ? 'PDF Library' : 'Media Library'}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -101,19 +103,28 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
             type="file"
             onChange={uploadFile}
             disabled={uploading}
-            accept="image/*"
+            accept={type === 'pdf' ? "application/pdf" : "image/*"}
             className="bg-[#444444] border-[#555555] text-white file:bg-[#555555] file:text-white file:border-[#666666] hover:file:bg-[#DC2626] file:transition-colors"
           />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {mediaFiles?.map((file) => (
             <div key={file.name} className="relative group">
-              <img
-                src={`${supabase.storage.from('media').getPublicUrl(file.name).data.publicUrl}`}
-                alt={file.name}
-                className="w-full aspect-square object-cover rounded-lg cursor-pointer border border-[#444444] hover:border-[#DC2626] transition-colors"
-                onClick={() => handleSelect(file)}
-              />
+              {type === 'pdf' ? (
+                <div 
+                  className="w-full aspect-square bg-[#444444] rounded-lg flex items-center justify-center cursor-pointer border border-[#444444] hover:border-[#DC2626] transition-colors"
+                  onClick={() => handleSelect(file)}
+                >
+                  <span className="text-white">{file.name}</span>
+                </div>
+              ) : (
+                <img
+                  src={`${supabase.storage.from(bucketName).getPublicUrl(file.name).data.publicUrl}`}
+                  alt={file.name}
+                  className="w-full aspect-square object-cover rounded-lg cursor-pointer border border-[#444444] hover:border-[#DC2626] transition-colors"
+                  onClick={() => handleSelect(file)}
+                />
+              )}
               <Button
                 variant="destructive"
                 size="icon"
