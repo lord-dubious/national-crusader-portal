@@ -29,6 +29,9 @@ export const ArticleTags = () => {
     },
   });
 
+  console.log("Selected tags:", selectedTags);
+  console.log("Existing tags:", existingTags);
+
   const createUniqueSlug = (name: string, existingTags: any[]) => {
     let baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     let slug = baseSlug;
@@ -139,7 +142,7 @@ export const ArticleTags = () => {
                     Add
                   </Button>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border border-gray-600 rounded-md">
                   {selectedTags.map((tagId) => {
                     const tag = existingTags?.find((t) => t.id === tagId);
                     if (!tag) return null;
@@ -147,7 +150,7 @@ export const ArticleTags = () => {
                       <Badge 
                         key={tag.id}
                         variant="secondary"
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 bg-accent text-accent-foreground"
                       >
                         {tag.name}
                         <X
