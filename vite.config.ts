@@ -4,6 +4,7 @@ import legacy from "@vitejs/plugin-legacy";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
+import { imagetools } from 'vite-imagetools';
 
 export default defineConfig(({ mode }) => ({
   server: {
@@ -17,9 +18,26 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
+    imagetools({
+      defaultDirectives: new URLSearchParams({
+        format: 'webp',
+        quality: '80',
+        w: '0;640;828;1200;1920',
+        as: 'picture' 
+      })
+    }),
     legacy({
       targets: ['defaults', 'not IE 11'],
-      modernPolyfills: true
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      modernPolyfills: true,
+      renderLegacyChunks: true,
+      polyfills: [
+        'es.array.iterator',
+        'es.promise',
+        'es.object.assign',
+        'es.promise.finally',
+        'es.symbol',
+      ]
     }),
     VitePWA({
       registerType: 'prompt',
@@ -54,7 +72,7 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg}'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\.*/i,
@@ -125,10 +143,12 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    sourcemap: mode === 'development',
+    modulePreload: {
+      polyfill: true
+    },
     minify: mode === 'production',
-    polyfillModulePreload: true,
-    target: ['es2015', 'chrome63', 'edge79', 'firefox67', 'safari12'],
+    sourcemap: mode === 'development',
+    assetsInlineLimit: 4096,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -138,6 +158,13 @@ export default defineConfig(({ mode }) => ({
           'pdf-vendor': ['react-pdf', 'pdfjs-dist'],
           'editor-vendor': ['@tiptap/react', '@tiptap/starter-kit', '@tiptap/extension-link', '@tiptap/extension-image'],
           'utils-vendor': ['date-fns', 'clsx', 'class-variance-authority', 'tailwind-merge']
+        },
+        assetFileNames: (assetInfo) => {
+          let extType = assetInfo.name.split('.').at(1);
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+            extType = 'img';
+          }
+          return `assets/${extType}/[name]-[hash][extname]`;
         },
       },
     },

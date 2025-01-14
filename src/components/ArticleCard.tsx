@@ -22,17 +22,39 @@ export const ArticleCard = ({ category, title, excerpt, imageUrl, slug, tags }: 
       <Card className="group h-full cursor-pointer animate-fade-up bg-primary dark:bg-[#333333] shadow-md hover:shadow-xl transition-all duration-300 hover:translate-y-[-2px]">
         <CardContent className="p-0 h-full">
           <div className="aspect-[16/10] w-full overflow-hidden bg-muted">
-            <img
-              src={imageUrl || "/placeholder.svg"}
-              alt={title}
-              className={`h-full w-full object-cover transition-all duration-500 ${
-                imageLoaded 
-                  ? "opacity-100 scale-100 group-hover:scale-105" 
-                  : "opacity-0 scale-95"
-              }`}
-              loading="lazy"
-              onLoad={() => setImageLoaded(true)}
-            />
+            <picture>
+              <source
+                media="(min-width: 1920px)"
+                srcSet={`${imageUrl}?w=1920&format=webp&quality=80`}
+                type="image/webp"
+              />
+              <source
+                media="(min-width: 1200px)"
+                srcSet={`${imageUrl}?w=1200&format=webp&quality=80`}
+                type="image/webp"
+              />
+              <source
+                media="(min-width: 828px)"
+                srcSet={`${imageUrl}?w=828&format=webp&quality=80`}
+                type="image/webp"
+              />
+              <source
+                media="(min-width: 640px)"
+                srcSet={`${imageUrl}?w=640&format=webp&quality=80`}
+                type="image/webp"
+              />
+              <img
+                src={imageUrl || "/placeholder.svg"}
+                alt={title}
+                className={`h-full w-full object-cover transition-all duration-500 ${
+                  imageLoaded 
+                    ? 'opacity-100 scale-100 group-hover:scale-105' 
+                    : 'opacity-0 scale-95'
+                }`}
+                loading="lazy"
+                onLoad={() => setImageLoaded(true)}
+              />
+            </picture>
           </div>
           <div className="p-8 flex flex-col h-[calc(100%-40%)] bg-primary dark:bg-[#333333] group-hover:bg-[#F5F5F5] dark:group-hover:bg-[#444444] transition-colors duration-300">
             <div className="flex flex-wrap gap-2 mb-3">
