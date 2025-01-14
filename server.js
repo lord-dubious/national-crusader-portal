@@ -34,11 +34,13 @@ async function createServer() {
       // Load server entry
       const { render } = await vite.ssrLoadModule('/src/entry-server.tsx')
 
-      // Render app HTML
-      const { html: appHtml } = await render(url)
+      // Render app HTML and get state
+      const { html: appHtml, state } = await render(url)
 
-      // Inject app HTML into template
-      const html = template.replace(`<div id="root"></div>`, `<div id="root">${appHtml}</div>`)
+      // Inject app HTML and state into template
+      const html = template
+        .replace(`<div id="root"></div>`, `<div id="root">${appHtml}</div>`)
+        .replace('</head>', `<script>window.__INITIAL_STATE__ = ${state}</script></head>`)
 
       // Send rendered HTML
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
