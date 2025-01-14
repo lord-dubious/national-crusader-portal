@@ -29,15 +29,33 @@ export default defineConfig(({ mode }) => ({
     }),
     legacy({
       targets: [
-        'safari >= 12',
-        'ios >= 12',
-        'defaults'
+        'ie >= 11',
+        'safari >= 10',
+        'ios >= 10',
+        'chrome >= 49',
+        'firefox >= 52',
+        'edge >= 79',
+        'opera >= 36',
+        'android >= 4.4'
       ],
       additionalLegacyPolyfills: [
         'regenerator-runtime/runtime',
         'core-js/features/array/find',
         'core-js/features/array/includes',
-        'core-js/features/string/includes'
+        'core-js/features/string/includes',
+        'core-js/features/promise',
+        'core-js/features/object/assign',
+        'core-js/features/symbol',
+        'core-js/features/set',
+        'core-js/features/map',
+        'core-js/features/weak-map',
+        'core-js/features/weak-set',
+        'core-js/features/array/from',
+        'core-js/features/array/find-index',
+        'core-js/features/array/iterator',
+        'core-js/features/string/starts-with',
+        'core-js/features/string/ends-with',
+        'core-js/features/string/repeat'
       ],
       modernPolyfills: true,
       renderLegacyChunks: true,
@@ -52,7 +70,16 @@ export default defineConfig(({ mode }) => ({
         'es.array.includes',
         'es.string.includes',
         'es.object.entries',
-        'es.object.from-entries'
+        'es.object.from-entries',
+        'es.array.from',
+        'es.string.starts-with',
+        'es.string.ends-with',
+        'es.string.repeat',
+        'es.array.find-index',
+        'es.map',
+        'es.set',
+        'es.weak-map',
+        'es.weak-set'
       ]
     }),
     VitePWA({
@@ -168,7 +195,7 @@ export default defineConfig(({ mode }) => ({
     cssCodeSplit: true,
     chunkSizeWarningLimit: 1000,
     reportCompressedSize: false,
-    target: ['es2015', 'safari12'],
+    target: ['es2015', 'safari10', 'chrome49', 'firefox52', 'edge79', 'ie11'],
     rollupOptions: {
       output: {
         manualChunks: {
@@ -201,6 +228,12 @@ export default defineConfig(({ mode }) => ({
     esbuildOptions: {
       treeShaking: true,
       minify: true,
+      supported: {
+        'top-level-await': true,
+        'dynamic-import': true,
+        'import-meta': true,
+      },
+      target: ['es2015', 'safari10', 'chrome49', 'firefox52', 'edge79', 'ie11']
     },
     exclude: ['@tiptap/extension-image'],
   },
