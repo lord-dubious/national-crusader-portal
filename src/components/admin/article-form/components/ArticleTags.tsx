@@ -18,7 +18,7 @@ export const ArticleTags = () => {
   const { toast } = useToast();
   const selectedTags = form.watch("tags") || [];
 
-  const { data: existingTags } = useQuery({
+  const { data: existingTags, isLoading } = useQuery({
     queryKey: ["tags"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -27,12 +27,9 @@ export const ArticleTags = () => {
         .order("name");
       
       if (error) throw error;
-      return data;
+      return data || []; // Ensure we always return an array
     },
   });
-
-  console.log("Selected tags:", selectedTags);
-  console.log("Existing tags:", existingTags);
 
   const handleSelectTag = (tagId: number) => {
     if (!selectedTags.includes(tagId)) {
@@ -74,34 +71,41 @@ export const ArticleTags = () => {
                       role="combobox"
                       aria-expanded={open}
                       className="w-full justify-between bg-[#2A2F3E] border-gray-600 text-white hover:bg-[#363d4f]"
+                      disabled={isLoading}
                     >
-                      Select tags...
+                      {isLoading ? "Loading tags..." : "Select tags..."}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-full p-0 bg-[#2A2F3E] border-gray-600">
-                    <Command className="bg-transparent">
-                      <CommandInput 
-                        placeholder="Search tags..." 
-                        className="text-white placeholder:text-gray-400"
-                      />
-                      <CommandEmpty className="text-gray-400 p-2">No tags found.</CommandEmpty>
-                      <CommandGroup className="max-h-60 overflow-auto">
-                        {existingTags?.map((tag) => (
-                          <CommandItem
-                            key={tag.id}
-                            value={tag.name}
-                            onSelect={() => handleSelectTag(tag.id)}
-                            className={cn(
-                              "text-white hover:bg-[#363d4f]",
-                              selectedTags.includes(tag.id) && "bg-[#363d4f]"
-                            )}
-                          >
-                            {tag.name}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </Command>
+                    {existingTags && existingTags.length > 0 ? (
+                      <Command className="bg-transparent">
+                        <CommandInput 
+                          placeholder="Search tags..." 
+                          className="text-white placeholder:text-gray-400"
+                        />
+                        <CommandEmpty className="text-gray-400 p-2">No tags found.</CommandEmpty>
+                        <CommandGroup className="max-h-60 overflow-auto">
+                          {existingTags.map((tag) => (
+                            <CommandItem
+                              key={tag.id}
+                              value={tag.name}
+                              onSelect={() => handleSelectTag(tag.id)}
+                              className={cn(
+                                "text-white hover:bg-[#363d4f]",
+                                selectedTags.includes(tag.id) && "bg-[#363d4f]"
+                              )}
+                            >
+                              {tag.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </Command>
+                    ) : (
+                      <div className="p-4 text-sm text-gray-400">
+                        {isLoading ? "Loading tags..." : "No tags available"}
+                      </div>
+                    )}
                   </PopoverContent>
                 </Popover>
                 <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border border-gray-600 rounded-md">
