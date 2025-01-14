@@ -131,7 +131,7 @@ export const ArticleTags = () => {
           <FormItem>
             <FormLabel className="text-white">Tags</FormLabel>
             <FormControl>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <div className="flex gap-2">
                   <Input
                     value={newTag}
@@ -155,19 +155,22 @@ export const ArticleTags = () => {
                   </Button>
                 </div>
                 {existingTags && existingTags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 py-2">
-                    {existingTags
-                      .filter(tag => !selectedTags.includes(tag.id))
-                      .map((tag) => (
-                        <Badge
-                          key={tag.id}
-                          variant="outline"
-                          className="cursor-pointer hover:bg-accent"
-                          onClick={() => handleRecentTagClick(tag)}
-                        >
-                          {tag.name}
-                        </Badge>
-                      ))}
+                  <div className="space-y-2">
+                    <div className="text-sm text-gray-400">Recently used tags:</div>
+                    <div className="flex flex-wrap gap-2 p-2 bg-[#2A2F3E]/50 rounded-md border border-gray-600">
+                      {existingTags
+                        .filter(tag => !selectedTags.includes(tag.id))
+                        .map((tag) => (
+                          <Badge
+                            key={tag.id}
+                            variant="outline"
+                            className="cursor-pointer bg-[#2A2F3E] hover:bg-accent hover:text-accent-foreground transition-colors"
+                            onClick={() => handleRecentTagClick(tag)}
+                          >
+                            {tag.name}
+                          </Badge>
+                        ))}
+                    </div>
                   </div>
                 )}
                 <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border border-gray-600 rounded-md">
