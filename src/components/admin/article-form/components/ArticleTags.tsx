@@ -2,16 +2,18 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useFormContext } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+import { X, ChevronsUpDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArticleFormValues } from "../types";
+import { cn } from "@/lib/utils";
 
 export const ArticleTags = () => {
-  const [newTag, setNewTag] = useState("");
+  const [open, setOpen] = useState(false);
   const form = useFormContext<ArticleFormValues>();
   const { toast } = useToast();
   const selectedTags = form.watch("tags") || [];
@@ -32,75 +34,20 @@ export const ArticleTags = () => {
   console.log("Selected tags:", selectedTags);
   console.log("Existing tags:", existingTags);
 
-  const createUniqueSlug = (name: string, existingTags: any[]) => {
-    let baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-    let slug = baseSlug;
-    let counter = 1;
-    
-    while (existingTags?.some(tag => tag.slug === slug)) {
-      slug = `${baseSlug}-${counter}`;
-      counter++;
-    }
-    
-    return slug;
-  };
-
-  const handleAddTag = async () => {
-    if (!newTag.trim()) return;
-
-    try {
-      let tagToAdd = existingTags?.find(
-        (tag) => tag.name.toLowerCase() === newTag.toLowerCase()
-      );
-
-      if (!tagToAdd) {
-        const uniqueSlug = createUniqueSlug(newTag, existingTags || []);
-        console.log("Creating new tag with slug:", uniqueSlug);
-        
-        const { data, error } = await supabase
-          .from("tags")
-          .insert([{ 
-            name: newTag, 
-            slug: uniqueSlug,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }])
-          .select()
-          .single();
-
-        if (error) {
-          console.error("Error creating tag:", error);
-          toast({
-            title: "Error",
-            description: "Failed to create tag",
-            variant: "destructive",
-          });
-          return;
-        }
-        tagToAdd = data;
-      }
-
-      if (!selectedTags.includes(tagToAdd.id)) {
-        const updatedTags = [...selectedTags, tagToAdd.id];
-        form.setValue("tags", updatedTags);
-        setNewTag("");
-        
-        toast({
-          title: "Success",
-          description: "Tag added successfully",
-        });
-      } else {
-        toast({
-          title: "Info",
-          description: "This tag is already added to the article",
-        });
-      }
-    } catch (error) {
-      console.error("Error adding tag:", error);
+  const handleSelectTag = (tagId: number) => {
+    if (!selectedTags.includes(tagId)) {
+      const updatedTags = [...selectedTags, tagId];
+      form.setValue("tags", updatedTags);
+      setOpen(false);
+      
       toast({
-        title: "Error",
-        description: "Failed to add tag",
-        variant: "destructive",
+        title: "Success",
+        description: "Tag added successfully",
+      });
+    } else {
+      toast({
+        title: "Info",
+        description: "This tag is already added to the article",
       });
     }
   };
@@ -120,28 +67,43 @@ export const ArticleTags = () => {
             <FormLabel className="text-white">Tags</FormLabel>
             <FormControl>
               <div className="space-y-2">
-                <div className="flex gap-2">
-                  <Input
-                    value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    placeholder="Add a tag"
-                    className="bg-[#2A2F3E] border-gray-600 text-white placeholder:text-gray-400"
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleAddTag();
-                      }
-                    }}
-                  />
-                  <Button 
-                    type="button" 
-                    onClick={handleAddTag}
-                    variant="secondary"
-                    className="hover:bg-accent hover:text-accent-foreground"
-                  >
-                    Add
-                  </Button>
-                </div>
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      className="w-full justify-between bg-[#2A2F3E] border-gray-600 text-white hover:bg-[#363d4f]"
+                    >
+                      Select tags...
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0 bg-[#2A2F3E] border-gray-600">
+                    <Command className="bg-transparent">
+                      <CommandInput 
+                        placeholder="Search tags..." 
+                        className="text-white placeholder:text-gray-400"
+                      />
+                      <CommandEmpty className="text-gray-400 p-2">No tags found.</CommandEmpty>
+                      <CommandGroup className="max-h-60 overflow-auto">
+                        {existingTags?.map((tag) => (
+                          <CommandItem
+                            key={tag.id}
+                            value={tag.name}
+                            onSelect={() => handleSelectTag(tag.id)}
+                            className={cn(
+                              "text-white hover:bg-[#363d4f]",
+                              selectedTags.includes(tag.id) && "bg-[#363d4f]"
+                            )}
+                          >
+                            {tag.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border border-gray-600 rounded-md">
                   {selectedTags.map((tagId) => {
                     const tag = existingTags?.find((t) => t.id === tagId);
