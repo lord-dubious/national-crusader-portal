@@ -22,7 +22,8 @@ export const ArticleTags = () => {
       const { data, error } = await supabase
         .from("tags")
         .select("*")
-        .order("name");
+        .order("created_at", { ascending: false })
+        .limit(10);
       
       if (error) throw error;
       return data;
@@ -110,6 +111,17 @@ export const ArticleTags = () => {
     form.setValue("tags", updatedTags);
   };
 
+  const handleRecentTagClick = (tag: any) => {
+    if (!selectedTags.includes(tag.id)) {
+      const updatedTags = [...selectedTags, tag.id];
+      form.setValue("tags", updatedTags);
+      toast({
+        title: "Success",
+        description: "Tag added successfully",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <FormField
@@ -142,6 +154,22 @@ export const ArticleTags = () => {
                     Add
                   </Button>
                 </div>
+                {existingTags && existingTags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 py-2">
+                    {existingTags
+                      .filter(tag => !selectedTags.includes(tag.id))
+                      .map((tag) => (
+                        <Badge
+                          key={tag.id}
+                          variant="outline"
+                          className="cursor-pointer hover:bg-accent"
+                          onClick={() => handleRecentTagClick(tag)}
+                        >
+                          {tag.name}
+                        </Badge>
+                      ))}
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border border-gray-600 rounded-md">
                   {selectedTags.map((tagId) => {
                     const tag = existingTags?.find((t) => t.id === tagId);
