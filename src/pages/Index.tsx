@@ -32,7 +32,9 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <BreakingNewsTicker />
+      <div className="mt-16"> {/* Add margin-top to account for fixed header height */}
+        <BreakingNewsTicker />
+      </div>
       <main className="flex-1">
         <div className="container mx-auto px-4">
           <div className="py-8">

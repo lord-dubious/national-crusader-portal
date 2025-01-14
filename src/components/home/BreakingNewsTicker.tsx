@@ -26,14 +26,18 @@ export const BreakingNewsTicker = () => {
         .order("published_at", { ascending: false });
 
       if (error) throw error;
+      console.log("Breaking news data:", data);
       return data;
     },
   });
 
-  if (!breakingNews?.length) return null;
+  if (!breakingNews?.length) {
+    console.log("No breaking news available");
+    return null;
+  }
 
   return (
-    <div className="bg-red-600 text-white py-2 overflow-hidden shadow-md">
+    <div className="w-full bg-red-600 text-white py-3 overflow-hidden shadow-md">
       <div className="container mx-auto px-4 flex items-center">
         <div className="flex-shrink-0 flex items-center mr-4">
           <AlertCircle className="w-5 h-5 mr-2" />
