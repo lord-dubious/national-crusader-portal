@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => ({
     ssr({
       prerender: true,
       includeAssetsImportedByServer: true,
-      baseAssets: 'public'
+      baseAssets: '/public'
     }),
     VitePWA({
       registerType: 'prompt',
