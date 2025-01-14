@@ -10,9 +10,7 @@ import TagPage from "./pages/TagPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import { useState, useEffect } from "react";
-import { isOldBrowser } from "./utils/browserDetection";
-import { FallbackHtml } from "./components/FallbackHtml";
+import { useState } from "react";
 
 function App() {
   const [queryClient] = useState(() => new QueryClient({
@@ -23,20 +21,6 @@ function App() {
       },
     },
   }));
-
-  const [isLegacyBrowser, setIsLegacyBrowser] = useState(false);
-
-  useEffect(() => {
-    setIsLegacyBrowser(isOldBrowser());
-  }, []);
-
-  if (isLegacyBrowser) {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <FallbackHtml />
-      </QueryClientProvider>
-    );
-  }
 
   return (
     <QueryClientProvider client={queryClient}>
