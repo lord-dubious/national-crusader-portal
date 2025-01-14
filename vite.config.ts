@@ -196,11 +196,9 @@ export default defineConfig(({ mode }) => ({
         chunkFileNames: 'chunks/[name]-[hash].js',
       },
     },
-    target: 'es2015',
   },
   optimizeDeps: {
     esbuildOptions: {
-      target: 'es2015',
       treeShaking: true,
       minify: true,
     },
