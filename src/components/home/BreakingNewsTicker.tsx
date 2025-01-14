@@ -6,26 +6,43 @@ export const BreakingNewsTicker = () => {
   const { data: breakingNews } = useQuery({
     queryKey: ["breaking-news"],
     queryFn: async () => {
+      // First, get the breaking-news tag ID
+      const { data: tagData, error: tagError } = await supabase
+        .from("tags")
+        .select("id")
+        .eq("slug", "breaking-news")
+        .single();
+
+      if (tagError) {
+        console.error("Error fetching breaking-news tag:", tagError);
+        return [];
+      }
+
+      if (!tagData) {
+        console.log("No breaking-news tag found");
+        return [];
+      }
+
+      // Then fetch articles with this tag
       const { data, error } = await supabase
         .from("articles")
         .select(`
           id,
           title,
           slug,
-          article_tags!inner(
-            tag_id,
-            tags!inner(
-              id,
-              slug
-            )
+          article_tags!inner (
+            tag_id
           )
         `)
         .eq("status", "published")
-        .eq("article_tags.tags.slug", "breaking-news")
-        .order("published_at", { ascending: false });
+        .eq("article_tags.tag_id", tagData.id);
 
-      if (error) throw error;
-      console.log("Breaking news data:", data);
+      if (error) {
+        console.error("Error fetching breaking news articles:", error);
+        return [];
+      }
+
+      console.log("Breaking news articles found:", data);
       return data;
     },
   });
