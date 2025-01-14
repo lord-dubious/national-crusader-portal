@@ -30,12 +30,13 @@ export const BreakingNewsTicker = () => {
           id,
           title,
           slug,
-          article_tags!inner (
+          article_tags!inner(
             tag_id
           )
         `)
         .eq("status", "published")
-        .eq("article_tags.tag_id", tagData.id);
+        .eq("article_tags.tag_id", tagData.id)
+        .order("published_at", { ascending: false });
 
       if (error) {
         console.error("Error fetching breaking news articles:", error);
@@ -50,13 +51,13 @@ export const BreakingNewsTicker = () => {
   if (!breakingNews?.length) return null;
 
   return (
-    <div className="bg-accent text-accent-foreground py-2 overflow-hidden relative">
-      <div className="flex whitespace-nowrap animate-[marquee_20s_linear_infinite]">
+    <div className="bg-red-600 text-white py-2 overflow-hidden relative">
+      <div className="flex whitespace-nowrap animate-[marquee_20s_linear_infinite] hover:pause">
         {breakingNews.map((article, index) => (
           <Link
             key={article.id}
             to={`/article/${article.slug}`}
-            className="inline-block mx-4 hover:text-white transition-colors"
+            className="inline-block mx-4 hover:text-gray-200 transition-colors"
           >
             <span className="font-bold mr-2">BREAKING NEWS:</span>
             {article.title}
@@ -70,7 +71,7 @@ export const BreakingNewsTicker = () => {
           <Link
             key={`duplicate-${article.id}`}
             to={`/article/${article.slug}`}
-            className="inline-block mx-4 hover:text-white transition-colors"
+            className="inline-block mx-4 hover:text-gray-200 transition-colors"
           >
             <span className="font-bold mr-2">BREAKING NEWS:</span>
             {article.title}
