@@ -4,6 +4,7 @@ import legacy from "@vitejs/plugin-legacy";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
+import { imagetools } from 'vite-imagetools';
 
 export default defineConfig(({ mode }) => ({
   server: {
@@ -17,9 +18,34 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
+    imagetools({
+      defaultDirectives: new URLSearchParams({
+        format: 'webp',
+        quality: '80',
+        w: '0;640;828;1200;1920',
+        as: 'picture',
+        metadata: 'keep'
+      })
+    }),
     legacy({
-      targets: ['defaults', 'not IE 11'],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      targets: [
+        'safari >= 10',
+        'ios >= 10',
+        'chrome >= 49',
+        'firefox >= 52',
+        'edge >= 79',
+        'opera >= 36',
+        'android >= 4.4'
+      ],
+      additionalLegacyPolyfills: [
+        'regenerator-runtime/runtime',
+        'core-js/features/array/find',
+        'core-js/features/array/includes',
+        'core-js/features/string/includes',
+        'core-js/features/promise',
+        'core-js/features/object/assign',
+        'core-js/features/symbol'
+      ],
       modernPolyfills: true,
       renderLegacyChunks: true,
       polyfills: [
@@ -27,7 +53,7 @@ export default defineConfig(({ mode }) => ({
         'es.promise',
         'es.object.assign',
         'es.promise.finally',
-        'es.symbol',
+        'es.symbol'
       ]
     }),
     VitePWA({
@@ -57,10 +83,6 @@ export default defineConfig(({ mode }) => ({
           }
         ]
       },
-      devOptions: {
-        enabled: true,
-        type: 'module'
-      },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
@@ -73,23 +95,6 @@ export default defineConfig(({ mode }) => ({
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 24 * 60 * 60
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            urlPattern: /^https:\/\/[^\/]+\.supabase\.co/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'supabase-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 24 * 60 * 60
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
               }
             }
           },
@@ -101,23 +106,6 @@ export default defineConfig(({ mode }) => ({
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 7 * 24 * 60 * 60
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            urlPattern: /^https:\/\/images\.unsplash\.com/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'unsplash-image-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 7 * 24 * 60 * 60
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
               }
             }
           }
@@ -139,22 +127,27 @@ export default defineConfig(({ mode }) => ({
     },
     minify: mode === 'production',
     sourcemap: mode === 'development',
+    target: ['es2015', 'safari10'],
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot'],
-          'query-vendor': ['@tanstack/react-query'],
-          'pdf-vendor': ['react-pdf', 'pdfjs-dist'],
-          'editor-vendor': ['@tiptap/react', '@tiptap/starter-kit', '@tiptap/extension-link', '@tiptap/extension-image'],
-          'utils-vendor': ['date-fns', 'clsx', 'class-variance-authority', 'tailwind-merge']
-        },
-      },
-    },
+          'query-vendor': ['@tanstack/react-query']
+        }
+      }
+    }
   },
   optimizeDeps: {
     esbuildOptions: {
-      target: 'es2015',
-    },
+      target: 'es2015'
+    }
   },
+  css: {
+    devSourcemap: true,
+    modules: {
+      localsConvention: 'camelCase',
+      generateScopedName: '[name]__[local]___[hash:base64:5]'
+    }
+  }
 }));
