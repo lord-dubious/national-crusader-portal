@@ -24,7 +24,8 @@ export default defineConfig(({ mode }) => ({
     }),
     ssr({
       prerender: true,
-      includeAssetsImportedByServer: true
+      includeAssetsImportedByServer: true,
+      baseAssets: 'public'
     }),
     VitePWA({
       registerType: 'prompt',
@@ -126,10 +127,13 @@ export default defineConfig(({ mode }) => ({
   ].filter(Boolean),
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '~': path.resolve(__dirname, './src'),
     },
   },
   build: {
+    modulePreload: {
+      polyfill: true
+    },
     sourcemap: mode === 'development',
     minify: mode === 'production',
     polyfillModulePreload: true,
