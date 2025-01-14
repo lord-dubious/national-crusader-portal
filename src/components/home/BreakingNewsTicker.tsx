@@ -15,8 +15,8 @@ export const BreakingNewsTicker = () => {
           id,
           title,
           slug,
-          article_tags!inner (
-            tags!inner (
+          article_tags (
+            tags (
               slug
             )
           )
