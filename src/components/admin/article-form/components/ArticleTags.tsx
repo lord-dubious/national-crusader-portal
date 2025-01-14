@@ -52,13 +52,21 @@ export const ArticleTags = () => {
 
       if (!tagToAdd) {
         const uniqueSlug = createUniqueSlug(newTag, existingTags || []);
+        console.log("Creating new tag with slug:", uniqueSlug);
+        
         const { data, error } = await supabase
           .from("tags")
-          .insert([{ name: newTag, slug: uniqueSlug }])
+          .insert([{ 
+            name: newTag, 
+            slug: uniqueSlug,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }])
           .select()
           .single();
 
         if (error) {
+          console.error("Error creating tag:", error);
           toast({
             title: "Error",
             description: "Failed to create tag",
