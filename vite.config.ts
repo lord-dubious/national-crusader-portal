@@ -29,7 +29,6 @@ export default defineConfig(({ mode }) => ({
     }),
     legacy({
       targets: [
-        'ie >= 11',
         'safari >= 10',
         'ios >= 10',
         'chrome >= 49',
@@ -45,17 +44,7 @@ export default defineConfig(({ mode }) => ({
         'core-js/features/string/includes',
         'core-js/features/promise',
         'core-js/features/object/assign',
-        'core-js/features/symbol',
-        'core-js/features/set',
-        'core-js/features/map',
-        'core-js/features/weak-map',
-        'core-js/features/weak-set',
-        'core-js/features/array/from',
-        'core-js/features/array/find-index',
-        'core-js/features/array/iterator',
-        'core-js/features/string/starts-with',
-        'core-js/features/string/ends-with',
-        'core-js/features/string/repeat'
+        'core-js/features/symbol'
       ],
       modernPolyfills: true,
       renderLegacyChunks: true,
@@ -64,22 +53,7 @@ export default defineConfig(({ mode }) => ({
         'es.promise',
         'es.object.assign',
         'es.promise.finally',
-        'es.symbol',
-        'es.symbol.async-iterator',
-        'es.array.find',
-        'es.array.includes',
-        'es.string.includes',
-        'es.object.entries',
-        'es.object.from-entries',
-        'es.array.from',
-        'es.string.starts-with',
-        'es.string.ends-with',
-        'es.string.repeat',
-        'es.array.find-index',
-        'es.map',
-        'es.set',
-        'es.weak-map',
-        'es.weak-set'
+        'es.symbol'
       ]
     }),
     VitePWA({
@@ -109,10 +83,6 @@ export default defineConfig(({ mode }) => ({
           }
         ]
       },
-      devOptions: {
-        enabled: true,
-        type: 'module'
-      },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
@@ -125,23 +95,6 @@ export default defineConfig(({ mode }) => ({
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 24 * 60 * 60
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            urlPattern: /^https:\/\/[^\/]+\.supabase\.co/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'supabase-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 24 * 60 * 60
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
               }
             }
           },
@@ -153,23 +106,6 @@ export default defineConfig(({ mode }) => ({
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 7 * 24 * 60 * 60
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            urlPattern: /^https:\/\/images\.unsplash\.com/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'unsplash-image-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 7 * 24 * 60 * 60
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
               }
             }
           }
@@ -191,51 +127,21 @@ export default defineConfig(({ mode }) => ({
     },
     minify: mode === 'production',
     sourcemap: mode === 'development',
-    assetsInlineLimit: 4096,
-    cssCodeSplit: true,
-    chunkSizeWarningLimit: 1000,
-    reportCompressedSize: false,
-    target: ['es2015', 'safari10', 'chrome49', 'firefox52', 'edge79', 'ie11'],
+    target: ['es2015', 'safari10'],
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot'],
-          'query-vendor': ['@tanstack/react-query'],
-          'pdf-vendor': ['react-pdf', 'pdfjs-dist'],
-          'editor-vendor': ['@tiptap/react', '@tiptap/starter-kit', '@tiptap/extension-link', '@tiptap/extension-image'],
-          'utils-vendor': ['date-fns', 'clsx', 'class-variance-authority', 'tailwind-merge']
-        },
-        assetFileNames: (assetInfo) => {
-          if (!assetInfo.name) return 'assets/[name]-[hash][extname]';
-          
-          const extArray = assetInfo.name.split('.');
-          const ext = extArray.length > 1 ? extArray.pop() : '';
-          let extType = ext || '';
-          
-          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
-            extType = 'img';
-          }
-          
-          return `assets/${extType}/[name]-[hash][extname]`;
-        },
-        entryFileNames: 'entries/[name]-[hash].js',
-        chunkFileNames: 'chunks/[name]-[hash].js',
-      },
-    },
+          'query-vendor': ['@tanstack/react-query']
+        }
+      }
+    }
   },
   optimizeDeps: {
     esbuildOptions: {
-      treeShaking: true,
-      minify: true,
-      supported: {
-        'top-level-await': true,
-        'dynamic-import': true,
-        'import-meta': true,
-      },
-      target: ['es2015', 'safari10', 'chrome49', 'firefox52', 'edge79', 'ie11']
-    },
-    exclude: ['@tiptap/extension-image'],
+      target: 'es2015'
+    }
   },
   css: {
     devSourcemap: true,
@@ -243,5 +149,5 @@ export default defineConfig(({ mode }) => ({
       localsConvention: 'camelCase',
       generateScopedName: '[name]__[local]___[hash:base64:5]'
     }
-  },
+  }
 }));
