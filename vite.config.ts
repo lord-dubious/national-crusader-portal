@@ -8,12 +8,16 @@ import { legacyConfig } from "./src/config/vite/legacy.config";
 import { pwaConfig } from "./src/config/vite/pwa.config";
 import { serverConfig } from "./src/config/vite/server.config";
 
-export default defineConfig(({ mode }) => ({
-  server: serverConfig,
+export default defineConfig({
+  server: {
+    port: 8080,
+    ...serverConfig
+  },
   preview: serverConfig,
   plugins: [
     react(),
-    mode === 'development' && componentTagger(),
+    legacyConfig,
+    process.env.NODE_ENV === 'development' && componentTagger(),
     imagetools({
       defaultDirectives: new URLSearchParams({
         format: 'webp',
@@ -23,7 +27,6 @@ export default defineConfig(({ mode }) => ({
         metadata: 'keep'
       })
     }),
-    legacyConfig,
     pwaConfig
   ].filter(Boolean),
   resolve: {
@@ -44,4 +47,4 @@ export default defineConfig(({ mode }) => ({
       generateScopedName: '[name]__[local]___[hash:base64:5]'
     }
   }
-}));
+});
