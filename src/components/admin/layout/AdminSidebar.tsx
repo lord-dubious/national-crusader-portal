@@ -38,12 +38,6 @@ export const AdminSidebar = () => {
     }
   };
 
-  const handleNavigation = (url: string) => {
-    if (location.pathname !== url) {
-      navigate(url);
-    }
-  };
-
   return (
     <Sidebar className="bg-[#222222] border-r border-[#333333]">
       <SidebarContent>
@@ -56,28 +50,26 @@ export const AdminSidebar = () => {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    onClick={() => handleNavigation(item.url)}
+                  <button
+                    onClick={() => navigate(item.url)}
                     className={cn(
-                      "flex items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-accent transition-colors",
+                      "flex w-full items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-accent transition-colors",
                       location.pathname === item.url && "bg-accent"
                     )}
-                    tooltip={item.title}
                   >
                     <item.icon className="h-4 w-4" />
                     <span>{item.title}</span>
-                  </SidebarMenuButton>
+                  </button>
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  onClick={handleLogout} 
-                  className="flex items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-accent transition-colors"
-                  tooltip="Logout"
+                <button 
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-accent transition-colors"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Logout</span>
-                </SidebarMenuButton>
+                </button>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
