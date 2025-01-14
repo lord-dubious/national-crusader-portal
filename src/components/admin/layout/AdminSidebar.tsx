@@ -39,7 +39,6 @@ export const AdminSidebar = () => {
   };
 
   const handleNavigation = (url: string) => {
-    // Ensure we're actually changing routes
     if (location.pathname !== url) {
       navigate(url);
     }
