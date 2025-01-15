@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { Clock } from "lucide-react";
 
 interface ArticleCardProps {
   category: string;
@@ -12,7 +13,14 @@ interface ArticleCardProps {
   tags?: { id: number; name: string; slug: string }[];
   size?: "small" | "medium" | "large";
   publishedAt?: string | null;
+  content?: string;
 }
+
+const calculateReadTime = (content: string): number => {
+  const wordsPerMinute = 200;
+  const words = content?.split(/\s+/).length || 0;
+  return Math.ceil(words / wordsPerMinute);
+};
 
 export const ArticleCard = ({ 
   category, 
@@ -22,9 +30,11 @@ export const ArticleCard = ({
   slug, 
   tags,
   size = "medium",
-  publishedAt 
+  publishedAt,
+  content = ""
 }: ArticleCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const readTime = calculateReadTime(content);
 
   const timeAgo = publishedAt 
     ? formatDistanceToNow(new Date(publishedAt), { addSuffix: true })
@@ -34,7 +44,7 @@ export const ArticleCard = ({
     small: {
       container: "flex gap-4 h-32",
       image: "w-32 h-32",
-      content: "flex-1",
+      content: "flex-1 p-3",
       title: "text-base font-semibold line-clamp-2",
       excerpt: "hidden",
     },
@@ -122,11 +132,15 @@ export const ArticleCard = ({
                 {excerpt}
               </p>
             )}
-            {timeAgo && (
-              <time className="text-xs text-[#666666] dark:text-[#999999]">
-                {timeAgo}
-              </time>
-            )}
+            <div className="flex items-center gap-4 text-xs text-[#666666] dark:text-[#999999]">
+              {timeAgo && (
+                <time>{timeAgo}</time>
+              )}
+              <div className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                <span>{readTime} min read</span>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -43,6 +43,7 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
           id,
           title,
           excerpt,
+          content,
           featured_image,
           slug,
           published_at,
@@ -125,7 +126,6 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Main featured article */}
           <div className="lg:col-span-8">
             <ArticleCard
               key={mainArticle.id}
@@ -137,10 +137,10 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
               tags={mainArticle.tags}
               size="large"
               publishedAt={mainArticle.published_at}
+              content={mainArticle.content}
             />
           </div>
 
-          {/* Secondary articles grid */}
           <div className="lg:col-span-4 grid grid-cols-1 gap-6">
             {secondaryArticles.slice(0, 4).map((article) => (
               <ArticleCard
@@ -153,6 +153,7 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
                 tags={article.tags}
                 size="small"
                 publishedAt={article.published_at}
+                content={article.content}
               />
             ))}
           </div>
