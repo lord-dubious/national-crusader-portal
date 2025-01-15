@@ -47,7 +47,7 @@ export const ArticleCard = ({
       content: "flex-1 p-3",
       title: "text-sm font-medium line-clamp-2",
       excerpt: "hidden",
-      metadata: "text-[10px] sm:text-xs",
+      metadata: "text-[9px] sm:text-[10px]", // Made even smaller
     },
     medium: {
       container: "h-full",
@@ -137,12 +137,12 @@ export const ArticleCard = ({
                 </p>
               )}
             </div>
-            <div className={`flex items-center gap-2 ${styles.metadata} text-[#666666] dark:text-[#999999]`}>
+            <div className={`flex items-center gap-1.5 ${styles.metadata} text-[#666666] dark:text-[#999999]`}>
               {timeAgo && (
                 <time>{timeAgo}</time>
               )}
               <div className="flex items-center gap-1">
-                <Clock className={`w-${size === 'small' ? '2.5' : '3'} h-${size === 'small' ? '2.5' : '3'}`} />
+                <Clock className={`w-${size === 'small' ? '2' : '3'} h-${size === 'small' ? '2' : '3'}`} />
                 <span>{readTime} min read</span>
               </div>
             </div>
