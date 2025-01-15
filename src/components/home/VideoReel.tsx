@@ -104,7 +104,10 @@ export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelP
               </Link>
             ))}
           </div>
-          <ScrollBar orientation="horizontal" />
+          <ScrollBar 
+            orientation="horizontal" 
+            className="flex h-2.5 bg-transparent transition-colors ease-out hover:bg-border/50 data-[state=visible]:bg-border/50" 
+          />
         </ScrollArea>
       </div>
     </div>
