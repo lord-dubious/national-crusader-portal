@@ -14,7 +14,6 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
     queryFn: async () => {
       console.log("Fetching articles for category:", categorySlug);
       
-      // First fetch the category
       const { data: categoryData, error: categoryError } = await supabase
         .from("categories")
         .select("id, name")
@@ -38,7 +37,6 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
 
       console.log("Found category:", categoryData);
 
-      // Then fetch the articles
       const { data: articlesData, error: articlesError } = await supabase
         .from("articles")
         .select(`
@@ -47,12 +45,20 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
           excerpt,
           featured_image,
           slug,
-          category:categories(name, slug)
+          published_at,
+          category:categories(name, slug),
+          tags:article_tags(
+            tag:tags(
+              id,
+              name,
+              slug
+            )
+          )
         `)
         .eq("status", "published")
         .eq("category_id", categoryData.id)
         .order("published_at", { ascending: false })
-        .limit(3);
+        .limit(6);
       
       if (articlesError) {
         console.error("Articles fetch error:", articlesError);
@@ -64,11 +70,19 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
         return null;
       }
 
-      console.log("Fetched articles:", articlesData);
-      return { articles: articlesData, category: categoryData };
+      // Transform the nested tags data structure
+      const transformedArticles = articlesData?.map(article => ({
+        ...article,
+        tags: article.tags
+          .map(tagItem => tagItem.tag)
+          .filter(tag => tag !== null)
+      }));
+
+      console.log("Fetched articles:", transformedArticles);
+      return { articles: transformedArticles, category: categoryData };
     },
-    staleTime: 60 * 1000, // Cache for 1 minute
-    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
 
   if (isLoading) {
@@ -90,6 +104,8 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
 
   if (error || !articles?.articles?.length) return null;
 
+  const [mainArticle, ...secondaryArticles] = articles.articles;
+
   return (
     <section className="py-16 first:pt-0 last:pb-0 animate-fade-up">
       <div className="relative bg-[#EBEBEB] dark:bg-[#222222] shadow-lg rounded-xl p-12 overflow-hidden border border-[#D1D1D1] dark:border-[#333333]">
@@ -107,17 +123,39 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
             </Link>
           </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articles.articles.map((article) => (
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Main featured article */}
+          <div className="lg:col-span-8">
             <ArticleCard
-              key={article.id}
-              category={article.category?.name || "Uncategorized"}
-              title={article.title}
-              excerpt={article.excerpt || ""}
-              imageUrl={article.featured_image || ""}
-              slug={article.slug}
+              key={mainArticle.id}
+              category={mainArticle.category?.name || "Uncategorized"}
+              title={mainArticle.title}
+              excerpt={mainArticle.excerpt || ""}
+              imageUrl={mainArticle.featured_image || ""}
+              slug={mainArticle.slug}
+              tags={mainArticle.tags}
+              size="large"
+              publishedAt={mainArticle.published_at}
             />
-          ))}
+          </div>
+
+          {/* Secondary articles grid */}
+          <div className="lg:col-span-4 grid grid-cols-1 gap-6">
+            {secondaryArticles.slice(0, 4).map((article) => (
+              <ArticleCard
+                key={article.id}
+                category={article.category?.name || "Uncategorized"}
+                title={article.title}
+                excerpt={article.excerpt || ""}
+                imageUrl={article.featured_image || ""}
+                slug={article.slug}
+                tags={article.tags}
+                size="small"
+                publishedAt={article.published_at}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

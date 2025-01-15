@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 
 interface ArticleCardProps {
   category: string;
@@ -9,19 +10,60 @@ interface ArticleCardProps {
   imageUrl: string;
   slug?: string;
   tags?: { id: number; name: string; slug: string }[];
+  size?: "small" | "medium" | "large";
+  publishedAt?: string | null;
 }
 
-export const ArticleCard = ({ category, title, excerpt, imageUrl, slug, tags }: ArticleCardProps) => {
+export const ArticleCard = ({ 
+  category, 
+  title, 
+  excerpt, 
+  imageUrl, 
+  slug, 
+  tags,
+  size = "medium",
+  publishedAt 
+}: ArticleCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  const timeAgo = publishedAt 
+    ? formatDistanceToNow(new Date(publishedAt), { addSuffix: true })
+    : null;
+
+  const cardStyles = {
+    small: {
+      container: "flex gap-4 h-32",
+      image: "w-32 h-32",
+      content: "flex-1",
+      title: "text-base font-semibold line-clamp-2",
+      excerpt: "hidden",
+    },
+    medium: {
+      container: "h-full",
+      image: "aspect-[16/10] w-full",
+      content: "p-6",
+      title: "text-xl font-semibold line-clamp-2",
+      excerpt: "line-clamp-3",
+    },
+    large: {
+      container: "h-full",
+      image: "aspect-[16/9] w-full",
+      content: "p-8",
+      title: "text-2xl md:text-3xl font-bold line-clamp-3",
+      excerpt: "line-clamp-3",
+    },
+  };
+
+  const styles = cardStyles[size];
 
   return (
     <Link 
       to={slug ? `/article/${slug}` : "#"} 
       className="block h-full"
     >
-      <Card className="group h-full cursor-pointer animate-fade-up bg-primary dark:bg-[#333333] shadow-md hover:shadow-xl transition-all duration-300 hover:translate-y-[-2px] relative">
-        <CardContent className="p-0 h-full">
-          <div className="aspect-[16/10] w-full overflow-hidden bg-muted">
+      <Card className={`group cursor-pointer animate-fade-up bg-primary dark:bg-[#333333] shadow-md hover:shadow-xl transition-all duration-300 hover:translate-y-[-2px] relative ${styles.container}`}>
+        <CardContent className={`p-0 h-full ${size === 'small' ? 'flex' : ''}`}>
+          <div className={`overflow-hidden bg-muted ${styles.image}`}>
             <picture>
               <source
                 media="(min-width: 1920px)"
@@ -56,12 +98,12 @@ export const ArticleCard = ({ category, title, excerpt, imageUrl, slug, tags }: 
               />
             </picture>
           </div>
-          <div className="p-8 flex flex-col h-[calc(100%-40%)] bg-transparent transition-colors duration-300">
-            <div className="flex flex-wrap gap-2 mb-3">
+          <div className={`${styles.content} flex flex-col`}>
+            <div className="flex flex-wrap gap-2 mb-2">
               <span className="inline-block rounded bg-accent/10 text-accent px-2.5 py-0.5 text-xs font-medium">
                 {category}
               </span>
-              {tags?.map((tag) => (
+              {size !== 'small' && tags?.map((tag) => (
                 <Link
                   key={tag.id}
                   to={`/tag/${tag.slug}`}
@@ -72,12 +114,19 @@ export const ArticleCard = ({ category, title, excerpt, imageUrl, slug, tags }: 
                 </Link>
               ))}
             </div>
-            <h3 className="text-xl font-semibold mb-3 text-[#111111] dark:text-[#F1F1F1] group-hover:text-accent transition-colors line-clamp-2">
+            <h3 className={`${styles.title} text-[#111111] dark:text-[#F1F1F1] group-hover:text-accent transition-colors mb-2`}>
               {title}
             </h3>
-            <p className="text-[#444444] dark:text-[#C8C8C9] line-clamp-3 text-sm flex-grow">
-              {excerpt}
-            </p>
+            {styles.excerpt !== "hidden" && (
+              <p className="text-[#444444] dark:text-[#C8C8C9] text-sm flex-grow mb-2">
+                {excerpt}
+              </p>
+            )}
+            {timeAgo && (
+              <time className="text-xs text-[#666666] dark:text-[#999999]">
+                {timeAgo}
+              </time>
+            )}
           </div>
         </CardContent>
       </Card>
