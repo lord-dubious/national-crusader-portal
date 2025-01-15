@@ -24,6 +24,18 @@ interface VideoReelProps {
   categorySlug: string;
 }
 
+// Array of background colors for video cards
+const cardBackgrounds = [
+  "bg-[#8B5CF6]",  // Vivid Purple
+  "bg-[#D946EF]",  // Magenta Pink
+  "bg-[#F97316]",  // Bright Orange
+  "bg-[#0EA5E9]",  // Ocean Blue
+  "bg-[#F2FCE2]",  // Soft Green
+  "bg-[#FEF7CD]",  // Soft Yellow
+  "bg-[#FEC6A1]",  // Soft Orange
+  "bg-[#E5DEFF]",  // Soft Purple
+];
+
 export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelProps) => {
   const { data: videos, isLoading } = useQuery({
     queryKey: ["category-videos", categoryId],
@@ -66,7 +78,7 @@ export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelP
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-bold tracking-tight text-[#111111] dark:text-[#F1F1F1]">
-              {categoryName} Videos
+              Must-Watch {categoryName} Videos
             </h2>
             <div className="h-1 w-16 bg-accent rounded hidden sm:block" />
           </div>
@@ -80,7 +92,7 @@ export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelP
 
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex space-x-4">
-            {videos.map((video) => (
+            {videos.map((video, index) => (
               <Link
                 key={video.id}
                 to={`/article/${video.slug}`}
@@ -92,7 +104,7 @@ export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelP
                     alt={video.title}
                     className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+                  <div className={`absolute inset-0 ${cardBackgrounds[index % cardBackgrounds.length]} flex items-center justify-center opacity-80 group-hover:opacity-90 transition-opacity`}>
                     <Play className="w-12 h-12 text-white" />
                   </div>
                 </div>
