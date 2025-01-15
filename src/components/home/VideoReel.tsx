@@ -25,9 +25,14 @@ interface VideoReelProps {
 }
 
 export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelProps) => {
-  const { data: videos, isLoading } = useQuery({
+  const { data: videos, isLoading, error } = useQuery({
     queryKey: ["category-videos", categoryId],
     queryFn: async () => {
+      if (!categoryId) {
+        console.log("No category ID provided");
+        return [];
+      }
+
       console.log("Fetching video articles for category:", categoryId);
       const { data, error } = await supabase
         .from("articles")
@@ -49,14 +54,22 @@ export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelP
         console.error("Error fetching video articles:", error);
         throw error;
       }
+
       console.log("Fetched video articles:", data);
       return data as VideoArticle[];
     },
-    enabled: !!categoryId,
+    enabled: Boolean(categoryId),
+    retry: 2,
   });
 
-  if (isLoading || !videos?.length) {
-    console.log("No videos found or still loading for category:", categoryId);
+  // If there's an error or no videos, don't render anything
+  if (error || !videos?.length) {
+    console.log("No videos found or error occurred for category:", categoryId);
+    return null;
+  }
+
+  // Don't render loading state to avoid layout shifts
+  if (isLoading) {
     return null;
   }
 
