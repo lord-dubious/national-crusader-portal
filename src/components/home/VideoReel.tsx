@@ -28,6 +28,7 @@ export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelP
   const { data: videos, isLoading } = useQuery({
     queryKey: ["category-videos", categoryId],
     queryFn: async () => {
+      console.log("Fetching video articles for category:", categoryId);
       const { data, error } = await supabase
         .from("articles")
         .select(`
@@ -44,13 +45,20 @@ export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelP
         .order("published_at", { ascending: false })
         .limit(10);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching video articles:", error);
+        throw error;
+      }
+      console.log("Fetched video articles:", data);
       return data as VideoArticle[];
     },
     enabled: !!categoryId,
   });
 
-  if (isLoading || !videos?.length) return null;
+  if (isLoading || !videos?.length) {
+    console.log("No videos found or still loading for category:", categoryId);
+    return null;
+  }
 
   return (
     <div className="py-8 first:pt-0 last:pb-0">
@@ -75,7 +83,7 @@ export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelP
             {videos.map((video) => (
               <Link
                 key={video.id}
-                to={`/articles/${video.slug}`}
+                to={`/article/${video.slug}`}
                 className="relative group flex-none w-[250px] overflow-hidden rounded-lg"
               >
                 <div className="relative aspect-video overflow-hidden rounded-lg">
