@@ -14,6 +14,8 @@ export interface Article {
   published_at: string | null;
   slug: string;
   is_featured: boolean | null;
+  has_video: boolean | null;
+  video_url: string | null;
   category?: {
     id: number;
     name: string;
@@ -31,6 +33,8 @@ export const articleFormSchema = z.object({
   is_featured: z.boolean().nullable(),
   author_id: z.string().nullable(),
   tags: z.array(z.number()).nullable(),
+  has_video: z.boolean().nullable(),
+  video_url: z.string().nullable(),
 });
 
 export type ArticleFormValues = z.infer<typeof articleFormSchema>;
