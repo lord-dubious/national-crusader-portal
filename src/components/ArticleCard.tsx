@@ -45,8 +45,9 @@ export const ArticleCard = ({
       container: "flex gap-4 h-32",
       image: "w-32 h-32",
       content: "flex-1 p-3",
-      title: "text-base font-semibold line-clamp-2",
+      title: "text-sm font-medium line-clamp-2",
       excerpt: "hidden",
+      metadata: "text-[10px] sm:text-xs",
     },
     medium: {
       container: "h-full",
@@ -54,6 +55,7 @@ export const ArticleCard = ({
       content: "p-6",
       title: "text-xl font-semibold line-clamp-2",
       excerpt: "line-clamp-3",
+      metadata: "text-xs",
     },
     large: {
       container: "h-full",
@@ -61,6 +63,7 @@ export const ArticleCard = ({
       content: "p-8",
       title: "text-2xl md:text-3xl font-bold line-clamp-3",
       excerpt: "line-clamp-3",
+      metadata: "text-sm",
     },
   };
 
@@ -108,36 +111,38 @@ export const ArticleCard = ({
               />
             </picture>
           </div>
-          <div className={`${styles.content} flex flex-col`}>
-            <div className="flex flex-wrap gap-2 mb-2">
-              <span className="inline-block rounded bg-accent/10 text-accent px-2.5 py-0.5 text-xs font-medium">
-                {category}
-              </span>
-              {size !== 'small' && tags?.map((tag) => (
-                <Link
-                  key={tag.id}
-                  to={`/tag/${tag.slug}`}
-                  className="inline-block rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-0.5 text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {tag.name}
-                </Link>
-              ))}
+          <div className={`${styles.content} flex flex-col justify-between`}>
+            <div>
+              <div className="flex flex-wrap gap-2 mb-2">
+                <span className="inline-block rounded bg-accent/10 text-accent px-2.5 py-0.5 text-xs font-medium">
+                  {category}
+                </span>
+                {size !== 'small' && tags?.map((tag) => (
+                  <Link
+                    key={tag.id}
+                    to={`/tag/${tag.slug}`}
+                    className="inline-block rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-0.5 text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {tag.name}
+                  </Link>
+                ))}
+              </div>
+              <h3 className={`${styles.title} text-[#111111] dark:text-[#F1F1F1] group-hover:text-accent transition-colors mb-2`}>
+                {title}
+              </h3>
+              {styles.excerpt !== "hidden" && (
+                <p className="text-[#444444] dark:text-[#C8C8C9] text-sm flex-grow mb-2">
+                  {excerpt}
+                </p>
+              )}
             </div>
-            <h3 className={`${styles.title} text-[#111111] dark:text-[#F1F1F1] group-hover:text-accent transition-colors mb-2`}>
-              {title}
-            </h3>
-            {styles.excerpt !== "hidden" && (
-              <p className="text-[#444444] dark:text-[#C8C8C9] text-sm flex-grow mb-2">
-                {excerpt}
-              </p>
-            )}
-            <div className="flex items-center gap-4 text-xs text-[#666666] dark:text-[#999999]">
+            <div className={`flex items-center gap-2 ${styles.metadata} text-[#666666] dark:text-[#999999]`}>
               {timeAgo && (
                 <time>{timeAgo}</time>
               )}
               <div className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
+                <Clock className={`w-${size === 'small' ? '2.5' : '3'} h-${size === 'small' ? '2.5' : '3'}`} />
                 <span>{readTime} min read</span>
               </div>
             </div>
