@@ -10,7 +10,7 @@ interface VideoArticle {
   id: number;
   title: string;
   slug: string;
-  video_url: string;
+  video_url: string | null;
   featured_image: string | null;
   category: {
     name: string;
@@ -24,7 +24,11 @@ interface VideoReelProps {
   categorySlug: string;
 }
 
-const getVideoThumbnail = (videoUrl: string) => {
+const getVideoThumbnail = (videoUrl: string | null) => {
+  if (!videoUrl) {
+    return "https://source.unsplash.com/random/800x600?video"; // Default thumbnail
+  }
+  
   // YouTube thumbnail extraction
   const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
   const youtubeMatch = videoUrl.match(youtubeRegex);
