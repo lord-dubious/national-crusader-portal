@@ -59,6 +59,7 @@ export const CategorySection = ({ categorySlug }: { categorySlug: string }) => {
         `)
         .eq("status", "published")
         .eq("category_id", categoryData.id)
+        .eq("has_video", false) // Only fetch non-video articles
         .order("published_at", { ascending: false })
         .limit(6);
       
