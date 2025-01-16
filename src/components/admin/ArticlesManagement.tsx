@@ -58,9 +58,8 @@ export const ArticlesManagement = () => {
 
       return { articles: transformedData, totalCount: count };
     },
-    refetchInterval: 0, // Disable automatic refetching
     staleTime: 0, // Consider data stale immediately
-    cacheTime: 0, // Disable caching
+    gcTime: 0, // Disable garbage collection (formerly cacheTime)
     refetchOnMount: true, // Always refetch when component mounts
     refetchOnWindowFocus: true, // Refetch when window regains focus
   });
