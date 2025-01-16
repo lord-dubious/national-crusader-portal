@@ -89,8 +89,17 @@ const ArticlePage = () => {
                 )}
               </div>
             </div>
+
+            {/* Article excerpt if available */}
+            {article?.excerpt && (
+              <div className="mb-8 text-lg text-muted-foreground italic border-l-4 border-primary pl-4">
+                {article.excerpt}
+              </div>
+            )}
+
+            {/* Main article content */}
             <div 
-              className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground ProseMirror"
+              className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground prose-img:rounded-lg prose-img:my-8 ProseMirror"
               dangerouslySetInnerHTML={{ __html: article?.content || "" }}
             />
           </div>
