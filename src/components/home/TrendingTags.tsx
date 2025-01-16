@@ -82,15 +82,15 @@ export const TrendingTags = () => {
   if (isLoading || !trendingTags?.length) return null;
 
   return (
-    <section className="bg-background py-8">
-      <div className="container mx-auto">
-        <div className="flex items-center mb-6">
+    <section className="w-full bg-background py-12">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center mb-8">
           <Tag className="h-5 w-5 text-accent mr-2" />
           <h2 className="text-xl font-semibold">Trending Topics</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {trendingTags.map((tag) => (
-            <Card key={tag.id} className="p-4">
+            <Card key={tag.id} className="p-6 bg-[#EBEBEB] dark:bg-[#222222] border border-[#D1D1D1] dark:border-[#333333]">
               <Link 
                 to={`/tag/${tag.slug}`}
                 className="inline-block mb-4"
@@ -112,8 +112,9 @@ export const TrendingTags = () => {
                     {article.featured_image && (
                       <img 
                         src={article.featured_image} 
-                        alt={article.title}
+                        alt=""
                         className="w-16 h-16 object-cover rounded"
+                        loading="lazy"
                       />
                     )}
                     <h3 className="text-sm font-medium group-hover:text-accent transition-colors line-clamp-2">
