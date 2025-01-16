@@ -22,7 +22,7 @@ export const ArticlesManagement = () => {
   const { data: articles, isLoading, refetch } = useQuery({
     queryKey: ["articles"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error, count } = await supabase
         .from("articles")
         .select(`
           *,
@@ -35,7 +35,7 @@ export const ArticlesManagement = () => {
               slug
             )
           )
-        `)
+        `, { count: 'exact' })
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -55,7 +55,7 @@ export const ArticlesManagement = () => {
           .filter(tag => tag !== null)
       }));
 
-      return transformedData;
+      return { articles: transformedData, totalCount: count };
     },
   });
 
@@ -88,7 +88,10 @@ export const ArticlesManagement = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white">Articles</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-white">Articles</h2>
+          <p className="text-sm text-gray-400">Total articles: {articles?.totalCount || 0}</p>
+        </div>
         <Button onClick={() => navigate("/admin/new-article")} variant="active">
           New Article
         </Button>
@@ -107,7 +110,7 @@ export const ArticlesManagement = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {articles?.map((article) => (
+          {articles?.articles?.map((article) => (
             <TableRow key={article.id}>
               <TableCell className="font-medium">{article.title}</TableCell>
               <TableCell>{article.category?.name || "Uncategorized"}</TableCell>
