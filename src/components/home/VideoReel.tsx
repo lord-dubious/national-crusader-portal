@@ -24,29 +24,33 @@ interface VideoReelProps {
   categorySlug: string;
 }
 
-const getVideoThumbnail = (videoUrl: string | null) => {
+const getVideoThumbnail = (videoUrl: string | null): string => {
   if (!videoUrl) {
     return "https://source.unsplash.com/random/800x600?video"; // Default thumbnail
   }
   
-  // YouTube thumbnail extraction
-  const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-  const youtubeMatch = videoUrl.match(youtubeRegex);
-  
-  if (youtubeMatch && youtubeMatch[1]) {
-    return `https://img.youtube.com/vi/${youtubeMatch[1]}/maxresdefault.jpg`;
+  try {
+    // YouTube thumbnail extraction
+    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const youtubeMatch = videoUrl.match(youtubeRegex);
+    
+    if (youtubeMatch && youtubeMatch[1]) {
+      return `https://img.youtube.com/vi/${youtubeMatch[1]}/maxresdefault.jpg`;
+    }
+    
+    // Vimeo thumbnail extraction (would require an API call in a real implementation)
+    const vimeoRegex = /vimeo\.com\/(\d+)/;
+    const vimeoMatch = videoUrl.match(vimeoRegex);
+    
+    if (vimeoMatch) {
+      // For now, return a placeholder. In a real app, you'd want to fetch the actual thumbnail
+      return "https://source.unsplash.com/random/800x600?video";
+    }
+  } catch (error) {
+    console.error("Error extracting video thumbnail:", error);
   }
   
-  // Vimeo thumbnail extraction (would require an API call in a real implementation)
-  const vimeoRegex = /vimeo\.com\/(\d+)/;
-  const vimeoMatch = videoUrl.match(vimeoRegex);
-  
-  if (vimeoMatch) {
-    // For now, return a placeholder. In a real app, you'd want to fetch the actual thumbnail
-    return "https://source.unsplash.com/random/800x600?video";
-  }
-  
-  // Default thumbnail for other video URLs
+  // Default thumbnail for other video URLs or if extraction fails
   return "https://source.unsplash.com/random/800x600?video";
 };
 
@@ -130,6 +134,7 @@ export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelP
                     src={video.featured_image || getVideoThumbnail(video.video_url)}
                     alt={video.title}
                     className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
                     <Play className="w-12 h-12 text-white" />
