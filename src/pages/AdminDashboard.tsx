@@ -25,12 +25,12 @@ export const AdminDashboard = () => {
   // Determine which tab should be active based on the current path
   const getActiveTab = () => {
     if (location.pathname === '/admin') return 'dashboard';
-    if (location.pathname.includes('/admin/articles')) return 'articles';
-    if (location.pathname.includes('/admin/categories')) return 'categories';
-    if (location.pathname.includes('/admin/tags')) return 'tags';
-    if (location.pathname.includes('/admin/users')) return 'users';
-    if (location.pathname.includes('/admin/media')) return 'media';
-    if (location.pathname.includes('/admin/settings')) return 'settings';
+    if (location.pathname === '/admin/articles') return 'articles';
+    if (location.pathname === '/admin/categories') return 'categories';
+    if (location.pathname === '/admin/tags') return 'tags';
+    if (location.pathname === '/admin/users') return 'users';
+    if (location.pathname === '/admin/media') return 'media';
+    if (location.pathname === '/admin/settings') return 'settings';
     return 'dashboard';
   };
 
@@ -78,6 +78,15 @@ export const AdminDashboard = () => {
     );
   }
 
+  // If we're on the /admin/articles route, render the ArticlesManagement component directly
+  if (location.pathname === '/admin/articles') {
+    return (
+      <AdminLayout>
+        <ArticlesManagement />
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout>
       <div className="flex flex-col gap-4">
@@ -95,10 +104,6 @@ export const AdminDashboard = () => {
             <TabsContent value="dashboard" className="space-y-4 md:space-y-8">
               <DashboardStats />
               <RecentArticles />
-            </TabsContent>
-
-            <TabsContent value="articles">
-              <ArticlesManagement />
             </TabsContent>
 
             <TabsContent value="users">
