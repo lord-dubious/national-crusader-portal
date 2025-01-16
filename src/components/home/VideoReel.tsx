@@ -24,6 +24,28 @@ interface VideoReelProps {
   categorySlug: string;
 }
 
+const getVideoThumbnail = (videoUrl: string) => {
+  // YouTube thumbnail extraction
+  const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+  const youtubeMatch = videoUrl.match(youtubeRegex);
+  
+  if (youtubeMatch && youtubeMatch[1]) {
+    return `https://img.youtube.com/vi/${youtubeMatch[1]}/maxresdefault.jpg`;
+  }
+  
+  // Vimeo thumbnail extraction (would require an API call in a real implementation)
+  const vimeoRegex = /vimeo\.com\/(\d+)/;
+  const vimeoMatch = videoUrl.match(vimeoRegex);
+  
+  if (vimeoMatch) {
+    // For now, return a placeholder. In a real app, you'd want to fetch the actual thumbnail
+    return "https://source.unsplash.com/random/800x600?video";
+  }
+  
+  // Default thumbnail for other video URLs
+  return "https://source.unsplash.com/random/800x600?video";
+};
+
 export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelProps) => {
   const { data: videos, isLoading, error } = useQuery({
     queryKey: ["category-videos", categoryId],
@@ -101,7 +123,7 @@ export const VideoReel = ({ categoryId, categoryName, categorySlug }: VideoReelP
               >
                 <div className="relative aspect-video overflow-hidden rounded-lg">
                   <img
-                    src={video.featured_image || "/placeholder.svg"}
+                    src={video.featured_image || getVideoThumbnail(video.video_url)}
                     alt={video.title}
                     className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                   />
