@@ -22,6 +22,7 @@ export const ArticlesManagement = () => {
   const { data: articles, isLoading, refetch } = useQuery({
     queryKey: ["articles"],
     queryFn: async () => {
+      console.log("Fetching fresh articles data...");
       const { data, error, count } = await supabase
         .from("articles")
         .select(`
@@ -57,6 +58,11 @@ export const ArticlesManagement = () => {
 
       return { articles: transformedData, totalCount: count };
     },
+    refetchInterval: 0, // Disable automatic refetching
+    staleTime: 0, // Consider data stale immediately
+    cacheTime: 0, // Disable caching
+    refetchOnMount: true, // Always refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when window regains focus
   });
 
   const handleDelete = async (id: number) => {
