@@ -33,7 +33,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
     queryKey: ["pdf-files"],
     queryFn: async () => {
       const { data, error } = await supabase.storage
-        .from('pdf_newspaper')
+        .from('pdf_newspapers')
         .list();
       
       if (error) throw error;
@@ -41,14 +41,14 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
     },
   });
 
-  const uploadFile = async (event: React.ChangeEvent<HTMLInputElement>, bucket: 'media' | 'pdf_newspaper') => {
+  const uploadFile = async (event: React.ChangeEvent<HTMLInputElement>, bucket: 'media' | 'pdf_newspapers') => {
     try {
       setUploading(true);
       const file = event.target.files?.[0];
       if (!file) return;
 
       // Validate file type for PDFs
-      if (bucket === 'pdf_newspaper' && file.type !== 'application/pdf') {
+      if (bucket === 'pdf_newspapers' && file.type !== 'application/pdf') {
         toast({
           variant: "destructive",
           title: "Invalid file type",
@@ -87,7 +87,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
     }
   };
 
-  const deleteFile = async (path: string, bucket: 'media' | 'pdf_newspaper') => {
+  const deleteFile = async (path: string, bucket: 'media' | 'pdf_newspapers') => {
     try {
       const { error } = await supabase.storage
         .from(bucket)
@@ -114,7 +114,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
     }
   };
 
-  const handleSelect = (file: any, bucket: 'media' | 'pdf_newspaper') => {
+  const handleSelect = (file: any, bucket: 'media' | 'pdf_newspapers') => {
     if (onSelect) {
       const url = supabase.storage.from(bucket).getPublicUrl(file.name).data.publicUrl;
       onSelect(url);
@@ -176,7 +176,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
             <div className="mb-6">
               <Input
                 type="file"
-                onChange={(e) => uploadFile(e, 'pdf_newspaper')}
+                onChange={(e) => uploadFile(e, 'pdf_newspapers')}
                 disabled={uploading}
                 accept=".pdf"
                 className="bg-[#444444] border-[#555555] text-white file:bg-[#555555] file:text-white file:border-[#666666] hover:file:bg-[#DC2626] file:transition-colors"
@@ -198,7 +198,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
                         variant="ghost"
                         size="icon"
                         className="hover:bg-[#DC2626]/20"
-                        onClick={() => handleSelect(file, 'pdf_newspaper')}
+                        onClick={() => handleSelect(file, 'pdf_newspapers')}
                       >
                         <UploadIcon className="h-4 w-4 text-white" />
                       </Button>
@@ -206,7 +206,7 @@ export const MediaLibrary = ({ onSelect }: MediaLibraryProps) => {
                         variant="ghost"
                         size="icon"
                         className="hover:bg-[#DC2626]/20"
-                        onClick={() => deleteFile(file.name, 'pdf_newspaper')}
+                        onClick={() => deleteFile(file.name, 'pdf_newspapers')}
                       >
                         <Trash2 className="h-4 w-4 text-white" />
                       </Button>
