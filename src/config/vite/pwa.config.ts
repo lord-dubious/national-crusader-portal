@@ -1,3 +1,4 @@
+
 import { VitePWA } from 'vite-plugin-pwa';
 
 export const pwaConfig = VitePWA({
