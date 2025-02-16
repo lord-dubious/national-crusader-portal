@@ -5,8 +5,8 @@ export const buildConfig: BuildOptions = {
   modulePreload: {
     polyfill: true
   },
-  minify: 'production',
-  sourcemap: 'development',
+  minify: 'esbuild',
+  sourcemap: true,
   target: ['es2015', 'safari10'],
   rollupOptions: {
     output: {
